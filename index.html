@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Escolar Retro v1.0</title>
+    <style>
+        /* --- ESTILO RETRO (ANOS 90/2000) --- */
+        :root {
+            --bg-color: #008080; /* Verde clássico do Windows 95 */
+            --window-bg: #ced4da;
+            --title-bar-bg: linear-gradient(90deg, #000080, #1084d0); /* Gradient clássico */
+            --text-color: #000000;
+            --border-light: #ffffff;
+            --border-dark: #808080;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: url('https://www.transparenttextures.com/patterns/90s-triangles.png'); /* Textura sutil */
+            font-family: "MS Sans Serif", "Arial", sans-serif;
+            color: var(--text-color);
+            margin: 20px;
+            font-size: 14px;
+        }
+
+        /* Container Principal estilo Desktop/PSP */
+        #desktop {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header e GIFs Animados */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border: 3px double #0f0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .gif-banner {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Sistema de Abas (Menu) */
+        nav {
+            display: flex;
+            gap: 5px;
+            margin-bottom: -2px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .tab-btn {
+            background: var(--window-bg);
+            border: 2px solid;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            background: #e5e5e5;
+            padding-top: 10px;
+            margin-bottom: -2px;
+        }
+
+        /* Estrutura de Janela OS */
+        .window {
+            background: var(--window-bg);
+            border: 2px solid;
+            border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            display: none;
+            padding: 4px;
+        }
+
+        .window.active {
+            display: block;
+        }
+
+        .title-bar {
+            background: var(--title-bar-bg);
+            color: white;
+            padding: 4px 6px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .window-body {
+            background: #fff;
+            border: 2px solid;
+            border-color: var(--border-dark) var(--border-light) var(--border-light) var(--border-dark);
+            margin: 8px 4px 4px 4px;
+            padding: 15px;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* --- PÁGINA: COLÉGIO --- */
+        .colegio-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .marquee-container {
+            background: #000;
+            color: #ff0;
+            padding: 5px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* --- PÁGINA: REPOSITÓRIO (8 MATÉRIAS) --- */
+        .repo-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 15px;
+        }
+
+        .materias-sidebar {
+            background: var(--window-bg);
+            padding: 10px;
+            border: 2px inset #fff;
+        }
+
+        .materia-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: #fff;
+            border: 1px solid var(--border-dark);
+            padding: 8px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .materia-btn.selected {
+            background: #000080;
+            color: white;
+        }
+
+        .activities-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .activity-card {
+            border: 2px outset #fff;
+            background: var(--window-bg);
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .activity-card img {
+            width: 32px;
+            height: 32px;
+            display: block;
+            margin: 0 auto 5px auto;
+        }
+
+        /* Formulário de Criação */
+        .admin-panel {
+            background: #f1f1f1;
+            border: 2px dashed var(--border-dark);
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .admin-panel input, .admin-panel select, .admin-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+
+        /* --- UTILITÁRIOS & ELEMENTOS ESTÉTICOS --- */
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .pixel-img {
+            image-rendering: pixelated;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="desktop">
+
+    <header>
+        <h1>BEM-VINDO AO Umamusume Archive </h1>
+        <div class="marquee-container">
+            <marquee scrollamount="5"> Carlinhos recordista mundial da steel ball run</marquee>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="switchTab('colegio')">🏫 páginal inicial</button>
+        <button class="tab-btn" onclick="switchTab('repositorio')">💾 wiki</button>
+        <button class="tab-btn" onclick="switchTab('extra1')">🌐 fórum</button>
+        <button class="tab-btn" onclick="switchTab('extra2')">🎮 Sala de Jogos</button>
+    </nav>
+
+    <div id="colegio" class="window active">
+        <div class="title-bar">
+            <div class="title-bar-text"><span>📁</span> C:\Institucional\Sobre_Nos.txt</div>
+        </div>
+        <div class="window-body">
+            <div class="colegio-container">
+                <div>
+                    <h2>Colégio Estadual Unidade Polo</h2>
+                    <p>Fundado em 1998, o <strong>Colégio Cyber-Sucesso</strong> prepara os alunos para o futuro da internet e da tecnologia. Contamos com laboratórios de informática equipados com os mais modernos computadores de disquete e conexão discada de alta velocidade (56kbps)!</p>
+                    <br>
+                    <h3>Nossos Cursos</h3>
+                    <p>- Desenvolvimento de Sistemas
+                        - Inteligência Artificial (IA) </p>
+                    <br>
+                    <img src="https://www.cobrareporter.com.br/wp-content/uploads/2023/05/Col%C3%A9gio-Unidade-Polo-arapongas-1-1024x576.jpeg" alt="GIF Animado Escola" class="pixel-img">
+                </div>
+                <div>
+                    <h3>Galeria de Fotos</h3>
+                    <p>Nossos alunos em ação:</p>
+                    <img src="https://www.cobrareporter.com.br/wp-content/uploads/2023/05/Col%C3%A9gio-Unidade-Polo-arapongas-18.jpeg" alt="Lab" class="pixel-img" style="margin-bottom: 10px;">
+                    <img src="https://www.gis.seed.pr.gov.br/gis/exibirFoto.jpg?codFoto=298">
+                    <p><span class="blink" style="color: red; font-weight: bold;">[NOVO!]</span> Pátio reformado com suporte a novos bebedouros.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="repositorio" class="window">
+        <div class="title-bar">
+            <div class="title-bar-text"><span>🗄️</span> D:\Atividades_Escolares\Database.exe</div>
+        </div>
+        <div class="window-body">
+            
+            <div class="admin-panel">
+                <strong>🔧 Sistema Integrado de Repositório (Adicionar Atividade)</strong><br>
+                <input type="text" id="act-title" placeholder="Título da Atividade">
+                <input type="text" id="act-link" placeholder="URL do Link (Ex: http://...)">
+                <select id="act-materia">
+                    <option value="mat">programação Back-end</option>
+                    <option value="port">Análise e Projeto de Sistema</option>
+                    <option value="hist">Programação Mobile</option>
+                    <option value="geo">Ciência De Dados</option>
+                    <option value="cien">Programação no Desenvolvimento de Sistema
+                    </option>
+                    <option value="ing">Banco de Dados</option>
+                    <option value="art">Computação Gráfica</option>
+                    <option value="ef">extra</option>
+                </select>
+                <select id="act-icon">
+                    <option value="📄">Documento (📄)</option>
+                    <option value="💾">Disquete (💾)</option>
+                    <option value="🌐">Link Web (🌐)</option>
+                    <option value="🎨">Paleta/Arte (🎨)</option>
+                </select>
+                <button onclick="addActivity()" style="font-weight: bold; background: #ccc; cursor: pointer;">Salvar no Banco de Dados</button>
+            </div>
+
+            <div class="repo-layout">
+                <div class="materias-sidebar">
+                    <strong>Matérias:</strong><hr>
+                    <button class="materia-btn selected" onclick="selectMateria('mat', this)"> programação Back-end</button>
+                    <button class="materia-btn" onclick="selectMateria('port', this)">Análise e Projeto de Sistema</button>
+                    <button class="materia-btn" onclick="selectMateria('hist', this)"> Programação Mobile</button>
+                    <button class="materia-btn" onclick="selectMateria('geo', this)"> Ciência De Dados</button>
+                    <button class="materia-btn" onclick="selectMateria('cien', this)"> Programação no Desenvolvimento de Sistema</button>
+                    <button class="materia-btn" onclick="selectMateria('ing', this)"> Banco de Dados</button>
+                    <button class="materia-btn" onclick="selectMateria('art', this)"> Computação Gráfica</button>
+                    <button class="materia-btn" onclick="selectMateria('ef', this)"> Extra</button>
+                </div>
+
+                <div>
+                    <h3 id="current-materia-title">Atividades de Matemática</h3>
+                    <div class="activities-list" id="activities-container">
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="extra1" class="window">
+        <div class="title-bar">
+            <div class="title-bar-text"><span>ℹ️</span> C:\Menu\Informacoes_Uteis.html</div>
+        </div>
+        <div class="window-body">
+            <h2>...</h2>
+        
+                <img src="https://via.placeholder.com/150x50/ff00ff/ffffff?text=Visitas:003421" alt="Contador de Visitas Retro">
+                <p>Você é o visitante número 3.421!</p>
+            </center>
+        </div>
+    </div>
+
+    <div id="extra2" class="window">
+        <div class="title-bar">
+            <div class="title-bar-text"><span>🎮</span> D:\Jogos\WebGames.lnk</div>
+        </div>
+        <div class="window-body" style="text-align: center; background: #000; color: #fff;">
+            <h2 style="color: #00ff00;">🕹️ Espaço Arcade do Colégio 🕹️</h2>
+            <p>Área reservada para o descanso dos alunos na hora do intervalo.</p>
+            <br>
+            <div style="border: 4px ridge #fff; padding: 20px; background: #222; display: inline-block;">
+                <p class="blink" style="color: yellow; font-size: 18px;">[ÁREA EM CONSTRUÇÃO]</p>
+                <p>Em breve: Jogos clássicos em Flash e emuladores direto no navegador!</p>
+                <img src="https://via.placeholder.com/200x100/333/00ff00?text=[Insira_Aqui_Seu_Jogo]" alt="Placeholder Jogo" class="pixel-img">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- LÓGICA DE ABAS ---
+    function switchTab(tabId) {
+        // Oculta todas as janelas
+        document.querySelectorAll('.window').forEach(win => {
+            win.classList.remove('active');
+        });
+        // Remove active dos botões
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Ativa a janela e o botão clicado
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // --- LÓGICA DO REPOSITÓRIO DINÂMICO ---
+    let currentMateria = 'mat';
+    
+    // Nomes amigáveis para exibição
+    const materiaNames = {
+        mat: 'programação Back-end', port: 'Análise e Projeto de Sistema', hist: 'Programação Mobile', geo: 'Ciência De Dados',
+        cien: 'Programação no Desenvolvimento de Sistema', ing: 'Banco de Dados', art: 'Computação Gráfica', ef: 'extra'
+    };
+
+    // Inicializa banco de dados local ou puxa o existente
+    let dbActivities = JSON.parse(localStorage.getItem('colegio_repo_db')) || {
+        mat: [{title: 'Lista de Exercícios 1', link: '#', icon: '📄'}],
+        port: [], hist: [], geo: [], cien: [], ing: [], art: [], ef: []
+    };
+
+    function selectMateria(materiaId, btnElement) {
+        currentMateria = materiaId;
+        
+        // Atualiza botões da sidebar
+        document.querySelectorAll('.materia-btn').forEach(btn => btn.classList.remove('selected'));
+        btnElement.classList.add('selected');
+        
+        // Atualiza título e renderiza
+        document.getElementById('current-materia-title').innerText = `Atividades de ${materiaNames[materiaId]}`;
+        renderActivities();
+    }
+
+    function renderActivities() {
+        const container = document.getElementById('activities-container');
+        container.innerHTML = ''; // Limpa atual
+        
+        const list = dbActivities[currentMateria] || [];
+        
+        if(list.length === 0) {
+            container.innerHTML = '<p style="color:#808080; grid-column: 1/-1;">Nenhuma atividade cadastrada nesta matéria ainda.</p>';
+            return;
+        }
+
+        list.forEach(act => {
+            const card = document.createElement('div');
+            card.className = 'activity-card';
+            card.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 5px;">${act.icon}</div>
+                <strong>${act.title}</strong><br><br>
+                <a href="${act.link}" target="_blank" style="color: #0000ff; font-weight: bold;">[ABRIR LINK]</a>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function addActivity() {
+        const titleInput = document.getElementById('act-title');
+        const linkInput = document.getElementById('act-link');
+        const materiaSelect = document.getElementById('act-materia');
+        const iconSelect = document.getElementById('act-icon');
+
+        if(!titleInput.value || !linkInput.value) {
+            alert('Por favor, preencha o Título e o Link da atividade!');
+            return;
+        }
+
+        const newActivity = {
+            title: titleInput.value,
+            link: linkInput.value,
+            icon: iconSelect.value
+        };
+
+        // Adiciona na matéria escolhida no formulário
+        dbActivities[materiaSelect.value].push(newActivity);
+        
+        // Salva no LocalStorage
+        localStorage.setItem('colegio_repo_db', JSON.stringify(dbActivities));
+
+        // Limpa campos
+        titleInput.value = '';
+        linkInput.value = '';
+
+        // Força a visualização ir para a matéria que acabou de receber o upload para conferência
+        const targetBtn = Array.from(document.querySelectorAll('.materia-btn')).find(b => b.innerText.includes(materiaNames[materiaSelect.value]));
+        if(targetBtn) selectMateria(materiaSelect.value, targetBtn);
+    }
+
+    // Renderiza inicialmente ao abrir o site
+    renderActivities();
+</script>
+
+</body>
+</html>
