@@ -1,0 +1,59 @@
+.janela-retro {
+    background-color: #c0c0c0;
+    border: 3px outset #ffffff;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #000000;
+}
+
+.janela-titulo {
+    background-color: #000080;
+    color: #ffffff;
+    padding: 3px 5px;
+    font-weight: bold;
+    margin-top: -15px;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-bottom: 15px;
+}
+
+.campo-form {
+    margin-bottom: 10px;
+}
+
+.campo-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.campo-form input, .campo-form select, .campo-form textarea {
+    background-color: #ffffff;
+    border: 2px inset #ffffff;
+    padding: 4px;
+    font-family: monospace;
+    width: 95%;
+}
+
+/* Simulação do Banner e Foto do Usuário */
+.perfil-banner {
+    height: 100px;
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    border: 2px inset #ffffff;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.perfil-foto {
+    width: 60px;
+    height: 60px;
+    background-color: #808080;
+    border: 3px outset #ffffff;
+    position: absolute;
+    bottom: -30px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
