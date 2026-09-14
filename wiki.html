@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uma_Wiki - Página Inicial dos Personagens</title>
+  <style>
+    /* Reset e Configurações Globais estilo Orkut */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #c1b2ba; /* Azul clássico Orkut */
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333333;
+    }
+    a {
+      color: #983b8c;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Barra Superior (Header) */
+    .orkut-header {
+      background-color: #b46db4;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: white;
+      border-bottom: 2px solid #903b98;
+    }
+    .orkut-logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-style: italic;
+      color: #E41A82; /* Rosa Orkut */
+      background-color: #FFFFFF;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: -1px;
+    }
+    .orkut-logo span {
+      color: #b46da9;
+    }
+    .nav-menu a {
+      color: white;
+      margin-left: 15px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    /* Estrutura Principal de Colunas */
+    .main-container {
+      max-width: 980px;
+      margin: 15px auto;
+      display: flex;
+      gap: 12px;
+      padding: 0 10px;
+    }
+
+    /* Configuração das Colunas */
+    .col-left { width: 190px; flex-shrink: 0; }
+    .col-center { flex: 1; }
+    .col-right { width: 220px; flex-shrink: 0; }
+
+    /* Componente de Caixa Orkut */
+    .box {
+      background-color: #FFFFFF;
+      border: 1px solid #ffc3ff;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    .box-header {
+      background-color: #f1d4ee;
+      color: #983b8a;
+      font-weight: bold;
+      font-size: 11px;
+      padding: 5px 8px;
+      margin: -10px -10px 10px -10px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border-bottom: 1px solid #ffc3ee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Menu Lateral */
+    .side-menu {
+      list-style: none;
+    }
+    .side-menu li {
+      padding: 5px 0;
+      border-bottom: 1px solid #E5ECF9;
+    }
+    .side-menu li:last-child {
+      border-bottom: none;
+    }
+    .side-menu a {
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Caixa de Busca de Personagens */
+    .search-box {
+      background: #F4F7FC;
+      border: 1px solid #ffc3f7;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1;
+      padding: 5px 8px;
+      border: 1px solid #ffc3f0;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+    .btn-orkut {
+      background: #ECE9D8;
+      border: 1px solid #b97fb3;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    .btn-orkut:hover {
+      background: #F0EFE2;
+    }
+
+    /* Banner de Boas-Vindas */
+    .welcome-banner {
+      background: linear-gradient(135deg, #b46da0, #a82d9a);
+      color: white;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    .welcome-banner h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    /* Grid de Personagens */
+    .character-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    /* Card do Personagem */
+    .char-card {
+      background: #FAFAFA;
+      border: 1px solid #ffc3f5;
+      border-radius: 4px;
+      padding: 8px;
+      display: flex;
+      gap: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .char-card:hover {
+      background: #FFFFFF;
+      border-color: #a82d98;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .char-thumb {
+      width: 75px;
+      height: 90px;
+      object-fit: cover;
+      border: 1px solid #ffc3ea;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .char-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .char-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #a82d9c;
+    }
+    .char-class {
+      color: #666;
+      font-size: 10px;
+      margin-top: 2px;
+    }
+    .char-badge {
+      display: inline-block;
+      background: #E41A82;
+      color: white;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: bold;
+      width: fit-content;
+      margin-top: 3px;
+    }
+    .char-ratings {
+      font-size: 10px;
+      color: #888;
+      margin-top: 4px;
+    }
+    .btn-view-profile {
+      align-self: flex-start;
+      margin-top: 6px;
+      background: #E5ECF9;
+      border: 1px solid #ffc3f5;
+      color: #983b81;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .char-card:hover .btn-view-profile {
+      background: #983b96;
+      color: white;
+    }
+
+    /* Lista Lateral (Em Alta / Atualizações) */
+    .top-list {
+      list-style: none;
+    }
+    .top-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      border-bottom: 1px dashed #f9e5f2;
+      padding-bottom: 6px;
+    }
+    .top-list img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #ffc3f1;
+      object-fit: cover;
+    }
+    .top-list-text strong {
+      display: block;
+      color: #983b7e;
+      font-size: 11px;
+    }
+    .top-list-text span {
+      font-size: 9px;
+      color: #777;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .main-container { flex-direction: column; }
+      .col-left, .col-right { width: 100%; }
+      .character-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR (HEADER) -->
+  <header class="orkut-header">
+    <div class="orkut-logo">Uma <span>wiki</span></div>
+    <nav class="nav-menu">
+      <a href="index.html">Início</a>
+      <a href="#">Personagens</a>
+      <a href="#">Guildas</a>
+      <a href="#">Episódios</a>
+    </nav>
+  </header>
+
+  <!-- CONTAINER PRINCIPAL -->
+  <div class="main-container">
+
+    <!-- COLUNA ESQUERDA: MENU DE NAVEGAÇÃO -->
+    <aside class="col-left">
+      <div class="box">
+        <div class="box-header">Navegação Wiki</div>
+        <ul class="side-menu">
+          <li><a href="#">🏠 Página Inicial</a></li>
+          <li><a href="#">👥 Todos os Personagens</a></li>
+          <li><a href="#">⚔️ Classes & Profissões</a></li>
+          <li><a href="#">🔮 Elementos & Magias</a></li>
+          <li><a href="#">📜 Guildas & Facções</a></li>
+          <li><a href="#">➕ Criar Novo Personagem</a></li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <div class="box-header">Academias Populares</div>
+        <ul class="side-menu">
+          <li><a href="#">Kasamatsu (0)</a></li>
+          <li><a href="#">Tracen (0)</a></li>
+          <li><a href="#"> ... (0)</a></li>
+          <li><a href="#"> ... (0)</a></li>
+        </ul>
+      </div>
+    </aside>
+
+
+    <!-- COLUNA CENTRAL: CATALOGO DE PERSONAGENS -->
+    <main class="col-center">
+
+      <!-- BANNER DE BOAS VINDAS -->
+      <div class="welcome-banner">
+        <h2>Bem-vindo à Orkut Wiki de Personagens! ⚡</h2>
+        <p>Explore as fichas completas, habilidades, aliados e depoimentos dos heróis e vilões do nosso universo.</p>
+      </div>
+
+      <!-- BARRA DE BUSCA EM TEMPO REAL -->
+      <div class="search-box">
+        <span style="font-weight: bold; color: #983b7f;">Buscar:</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Digite o nome, classe ou elemento..." onkeyup="filterCharacters()">
+        <button class="btn-orkut">Pesquisar</button>
+      </div>
+
+      <div class="box">
+        <div class="box-header">
+          <span>Personagens Cadastrados</span>
+          <span style="font-size: 10px; font-weight: normal;">Mostrando 6 de 6</span>
+        </div>
+
+        <!-- GRID DE CARDS DE PERSONAGENS -->
+        <div class="character-grid" id="characterGrid">
+
+          <!-- CARD 1: Goldship (Redireciona para Goldship.html) -->
+          <a href="wiki_base copy.html" style="text-decoration: none;">
+            <div class="char-card" data-search="Goldship">
+              <img class="char-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTofgRnlahN2X24WmrgIg4Y3Vel3REX15P4os683IiMAOKdp7sM9CKdeOE&s=10" alt="Kaelen">
+              <div class="char-info">
+                <div>
+                  <div class="char-title">Goldship</div>
+                </div>
+                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- CARD 2: LYRA -->
+          <a href="#" onclick="alert('Página de Lyra em construção! Clique no Kaelen para ver um perfil completo.'); return false;" style="text-decoration: none;">
+            <div class="char-card" data-search="lyra arqueira floresta vento rank a">
+              <img class="char-thumb" src="https://picsum.photos/id/1012/150/150" alt="Lyra">
+              <div class="char-info">
+                <div>
+                  <div class="char-title">Lyra, a Arqueira</div>
+                  <div class="char-class">Patrulheira / Caçadora</div>
+                  <span class="char-badge" style="background:#7d2e6b;">🍃 Vento • Rank A</span>
+                  <div class="char-ratings">😃 Confiável | 👍 Legal</div>
+                </div>
+                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- CARD 3: MESTRE THORNE -->
+          <a href="#" onclick="alert('Página de Thorne em construção!'); return false;" style="text-decoration: none;">
+            <div class="char-card" data-search="thorne mestre paladino terra luz rank s">
+              <img class="char-thumb" src="https://picsum.photos/id/1027/150/150" alt="Thorne">
+              <div class="char-info">
+                <div>
+                  <div class="char-title">Mestre Thorne</div>
+                  <div class="char-class">Paladino Guardião</div>
+                  <span class="char-badge" style="background:#795548;">🛡️ Terra • Rank S</span>
+                  <div class="char-ratings">😃 Confiável | 👍 Legal</div>
+                </div>
+                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- CARD 4: ARIA MÍSTICA -->
+          <a href="#" onclick="alert('Página de Aria em construção!'); return false;" style="text-decoration: none;">
+            <div class="char-card" data-search="aria mistica sacerdotisa agua cura rank a">
+              <img class="char-thumb" src="https://picsum.photos/id/1005/150/150" alt="Aria">
+              <div class="char-info">
+                <div>
+                  <div class="char-title">Aria Mística</div>
+                  <div class="char-class">Sacerdotisa da Água</div>
+                  <span class="char-badge" style="background:#0288D1;">💧 Água • Rank A</span>
+                  <div class="char-ratings">❤️ Sexy | 👍 Legal</div>
+                </div>
+                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- CARD 5: GARRICK -->
+          <a href="#" onclick="alert('Página de Garrick em construção!'); return false;" style="text-decoration: none;">
+            <div class="char-card" data-search="garrick cavaleiro aco ferro rank b">
+              <img class="char-thumb" src="https://picsum.photos/id/1062/150/150" alt="Garrick">
+              <div class="char-info">
+                <div>
+                  <div class="char-title">Garrick de Aço</div>
+                  <div class="char-class">Guerreiro Pesado</div>
+                  <span class="char-badge" style="background:#607D8B;">⚔️ Metal • Rank B</span>
+                  <div class="char-ratings">😃 Confiável | 👍 Legal</div>
+                </div>
+                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- CARD 6: ZEPHYR -->
+          <a href="#" onclick="alert('Página de Zephyr em construção!'); return false;" style="text-decoration: none;">
+            <div class="char-card" data-search="zephyr ladino sombras velocidade rank a">
+              <img class="char-thumb" src="https://picsum.photos/id/1074/150/150" alt="Zephyr">
+              <div class="char-info">
+                <div>
+                  <div class="char-title">Zephyr, o Veloz</div>
+                  <div class="char-class">Ladino das Sombras</div>
+                  <span class="char-badge" style="background:#2da848;">🌑 Sombras • Rank A</span>
+                  <div class="char-ratings">❤️ Sexy | 👍 Legal</div>
+                </div>
+                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
+              </div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </main>
+
+
+    <!-- COLUNA DIREITA: ESTATÍSTICAS E EM ALTA -->
+    <aside class="col-right">
+      
+      <!-- Em Alta -->
+      <div class="box">
+        <div class="box-header">🔥 Personagens em Alta</div>
+        <ul class="top-list">
+          <li>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTofgRnlahN2X24WmrgIg4Y3Vel3REX15P4os683IiMAOKdp7sM9CKdeOE&s=10" alt="Goldship">
+            <div class="top-list-text">
+              <strong><a href="wiki_base copy.html">Goldship</a></strong>
+              <span>12.450 km</span>
+            </div>
+          </li>
+          <li>
+            <img src="https://picsum.photos/id/1012/80/80" alt="Lyra">
+            <div class="top-list-text">
+              <strong>Lyra</strong>
+              <span>8.920 visualizações</span>
+            </div>
+          </li>
+          <li>
+            <img src="https://picsum.photos/id/1005/80/80" alt="Aria">
+            <div class="top-list-text">
+              <strong>Aria Mística</strong>
+              <span>6.110 visualizações</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Comunidades Orkut Wiki -->
+      <div class="box">
+        <div class="box-header">clubes</div>
+        <p style="margin-bottom: 8px;">Participe das discussões:</p>
+        <ul class="side-menu">
+          <li><a href="#">Clube do café</a></li>
+          <li><a href="#">...</a></li>
+          <li><a href="#">...</a></li>
+        </ul>
+      </div>
+
+      <!-- Estatísticas Globais -->
+      <div class="box">
+        <div class="box-header">Estatísticas do Site</div>
+        <p><strong>Total de Fichas:</strong> 48</p>
+        <p><strong>Editores Ativos:</strong> 156</p>
+        <p><strong>Depoimentos Enviados:</strong> 890</p>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- JAVASCRIPT PARA A BARRA DE BUSCA EM TEMPO REAL -->
+  <script>
+    function filterCharacters() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.char-card');
+
+      cards.forEach(card => {
+        const searchText = card.getAttribute('data-search').toLowerCase();
+        const cardTitle = card.querySelector('.char-title').innerText.toLowerCase();
+
+        // Se o texto de busca bater com o título ou tags do card, mostra, senão esconde
+        if (searchText.includes(input) || cardTitle.includes(input)) {
+          card.parentElement.style.display = "block"; // mostra o link que envelopa o card
+        } else {
+          card.parentElement.style.display = "none";  // esconde
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

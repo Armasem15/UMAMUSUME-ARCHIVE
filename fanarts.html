@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEWGROUNDS // Art Portal Deluxe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,900&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           RESET & ESTILOS NEWGROUNDS
+           ========================================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1f1f1f;
+            --bg-card-hover: #2a2a2a;
+            --ng-orange: #ff6600;
+            --ng-yellow: #ffcc00;
+            --ng-dark-orange: #cc5200;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --rating-l: #4caf50;
+            --rating-12: #ff9800;
+            --rating-18: #f44336;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Roboto Condensed', sans-serif;
+            background-image: radial-gradient(#222 10%, transparent 11%);
+            background-size: 15px 15px;
+            padding-bottom: 50px;
+        }
+
+        button, input, select, textarea {
+            font-family: inherit;
+        }
+
+        /* ==========================================
+           HEADER / NAVBAR & USER XP BAR
+           ========================================== */
+        header {
+            background-color: #0a0a0a;
+            border-bottom: 4px solid var(--ng-orange);
+            box-shadow: 0 4px 15px rgba(255, 102, 0, 0.25);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: var(--ng-orange);
+            text-transform: uppercase;
+            font-style: italic;
+            text-shadow: 2px 2px 0px #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span { color: var(--ng-yellow); }
+        .logo-badge { background: var(--ng-orange); color: #000; padding: 0 6px; border-radius: 4px; font-style: normal; }
+
+        /* Painel de Nível e EXP do Usuário */
+        .user-stats-bar {
+            background: #181818;
+            border: 1px solid #333;
+            padding: 6px 12px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+
+        .user-rank { font-weight: bold; color: var(--ng-yellow); }
+        .xp-bar-outer {
+            width: 100px;
+            height: 10px;
+            background: #000;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+        .xp-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--ng-orange), var(--ng-yellow));
+            width: 30%;
+            transition: width 0.4s ease;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-action {
+            background: linear-gradient(180deg, var(--ng-yellow) 0%, var(--ng-orange) 100%);
+            color: #000;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 8px 14px;
+            border: 2px solid #000;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+            transition: all 0.1s;
+        }
+
+        .btn-action:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #000;
+        }
+
+        .btn-sound {
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* ==========================================
+           MAIN CONTAINER & CONTROLS
+           ========================================== */
+        .container {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .controls-bar {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .btn-filter {
+            background: #111;
+            color: #ccc;
+            border: 1px solid #444;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-filter:hover, .btn-filter.active {
+            background: var(--ng-orange);
+            color: #000;
+            border-color: var(--ng-yellow);
+        }
+
+        .search-sort-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-box input, .sort-select {
+            background: #111;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 7px 10px;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .search-box input:focus, .sort-select:focus {
+            border-color: var(--ng-orange);
+        }
+
+        /* ==========================================
+           GRID DE FANARTS
+           ========================================== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #222;
+            padding-bottom: 8px;
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            color: #fff;
+            border-left: 5px solid var(--ng-orange);
+            padding-left: 10px;
+            text-transform: uppercase;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .art-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .art-card:hover {
+            border-color: var(--ng-orange);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+            background-color: var(--bg-card-hover);
+        }
+
+        .art-thumb-box {
+            position: relative;
+            width: 100%;
+            height: 210px;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .art-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .art-card:hover .art-thumb { transform: scale(1.06); }
+
+        .rating-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            border-radius: 3px;
+            color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            z-index: 2;
+        }
+        .badge-L { background-color: var(--rating-l); color: #fff; }
+        .badge-12 { background-color: var(--rating-12); color: #000; }
+        .badge-18 { background-color: var(--rating-18); color: #fff; }
+
+        .btn-fav-card {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #555;
+            color: #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.2s;
+        }
+
+        .btn-fav-card.active, .btn-fav-card:hover {
+            color: #ff3366;
+            border-color: #ff3366;
+            background: #000;
+        }
+
+        .art-info {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .art-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--ng-yellow);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .art-author { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
+
+        .art-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            background: #141414;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #282828;
+        }
+
+        .score-box { color: var(--ng-yellow); font-weight: bold; }
+
+        /* ==========================================
+           MODAIS (DETALHES E UPLOAD)
+           ========================================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-container {
+            background: #181818;
+            border: 3px solid var(--ng-orange);
+            border-radius: 8px;
+            max-width: 950px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 102, 0, 0.4);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 2rem; color: #fff;
+            cursor: pointer; font-weight: bold; z-index: 10;
+        }
+        .close-modal-btn:hover { color: var(--ng-orange); }
+
+        /* Modal Detalhes Arte */
+        .art-modal-body {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .art-modal-preview {
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #333;
+            border-radius: 6px;
+            min-height: 350px;
+        }
+
+        .art-modal-preview img {
+            max-width: 100%;
+            max-height: 550px;
+            object-fit: contain;
+        }
+
+        .vote-section {
+            background: #111;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #444;
+            margin-top: 5px;
+        }
+
+        .star-rating .star:hover,
+        .star-rating .star.selected {
+            color: var(--ng-yellow);
+        }
+
+        /* Seção Comentários */
+        .comments-section {
+            border-top: 1px solid #333;
+            padding-top: 15px;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .comment-form input {
+            flex-grow: 1;
+            background: #0a0a0a;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 4px;
+        }
+
+        .comments-list {
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .comment-card {
+            background: #222;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border-left: 3px solid var(--ng-orange);
+            font-size: 0.88rem;
+        }
+
+        /* Modal Upload Form */
+        .upload-form {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: var(--ng-yellow);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            background: #0a0a0a;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 800px) {
+            .art-modal-body { grid-template-columns: 1fr; }
+            .nav-container { flex-direction: column; align-items: stretch; text-align: center; }
+            .header-actions { justify-content: center; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER / BARRA DE NAVEGAÇÃO -->
+    <header>
+        <div class="nav-container">
+            <div class="logo" onclick="filterCategory('all')">
+                <span class="logo-badge">NG</span> ART<span>PORTAL</span>
+            </div>
+
+            <!-- Gamificação: EXP e Nível estilo Newgrounds -->
+            <div class="user-stats-bar">
+                <div>
+                    <div><strong>Usuário:</strong> <span style="color: #fff;">PixelKnight</span></div>
+                    <div class="user-rank" id="userRankText">Nível 3 - Portal Cadet</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color:#888;">EXP: <span id="userXpVal">120</span> / <span id="nextXpVal">200</span></div>
+                    <div class="xp-bar-outer"><div class="xp-bar-inner" id="xpBarInner"></div></div>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-sound" id="btnSoundToggle" onclick="toggleSound()">🔊 Som: ON</button>
+                <button class="btn-action" onclick="openUploadModal()">+ SUBMETER ARTE</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO DA GALERIA -->
+    <div class="container">
+
+        <!-- CONTROLES, FILTROS E BUSCA -->
+        <div class="controls-bar">
+            <div class="filter-group">
+                <button class="btn-filter active" onclick="filterCategory('all', event)">Tudo</button>
+                <button class="btn-filter" onclick="filterCategory('games', event)">Games</button>
+                <button class="btn-filter" onclick="filterCategory('anime', event)">Anime</button>
+                <button class="btn-filter" onclick="filterCategory('cartoons', event)">Desenhos</button>
+                <button class="btn-filter" onclick="filterCategory('original', event)">Originais</button>
+                <button class="btn-filter" onclick="filterCategory('favs', event)" style="color: #ff3366;">❤️ Favoritos</button>
+            </div>
+
+            <div class="search-sort-group">
+                <div class="search-box">
+                    <input type="text" id="searchInput" onkeyup="applyFilters()" placeholder="Buscar arte ou autor...">
+                </div>
+                <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+                    <option value="recent">Mais Recentes</option>
+                    <option value="rating">Melhor Avaliados</option>
+                    <option value="views">Mais Vistos</option>
+                    <option value="title">Título (A-Z)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- GRID DE ARTES -->
+        <div class="section-header">
+            <h3 class="section-title" id="sectionTitleDisplay">Galeria em Destaque</h3>
+            <span style="color: #888; font-size: 0.9rem;" id="artCounter">0 artes exibidas</span>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid">
+            <!-- Os cards de arte são injetados dinamicamente via JS -->
+        </div>
+
+    </div>
+
+    <!-- MODAL DE VISUALIZAÇÃO DE ARTE -->
+    <div class="modal-overlay" id="artModal">
+        <div class="modal-container">
+            <span class="close-modal-btn" onclick="closeModal('artModal')">&times;</span>
+            <div class="art-modal-body">
+                
+                <div class="art-modal-preview">
+                    <img id="modalImg" src="" alt="Arte Ampiliada">
+                </div>
+
+                <div>
+                    <h2 style="color: var(--ng-yellow); font-size: 1.8rem;" id="modalTitle">Título da Arte</h2>
+                    <div style="color: var(--text-muted); margin-bottom: 12px;">
+                        Por <strong style="color: #fff;" id="modalAuthor">Autor</strong> |
+                        Classificação: <span id="modalRatingBadge" class="rating-badge"></span>
+                    </div>
+
+                    <p style="color: #ddd; font-size: 0.95rem; line-height: 1.4; margin-bottom: 15px;" id="modalDesc">
+                        Descrição da imagem...
+                    </p>
+
+                    <!-- Sistema Interativo de Votação (VOTE SYSTEM) -->
+                    <div class="vote-section">
+                        <div style="font-weight: bold; color: var(--ng-orange); text-transform: uppercase;">Sua Avaliação (Score)</div>
+                        <div class="star-rating" id="starRatingBox">
+                            <span class="star" onclick="rateArt(1)">★</span>
+                            <span class="star" onclick="rateArt(2)">★</span>
+                            <span class="star" onclick="rateArt(3)">★</span>
+                            <span class="star" onclick="rateArt(4)">★</span>
+                            <span class="star" onclick="rateArt(5)">★</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
+                            Média Atual: <strong style="color: var(--ng-yellow);" id="modalScore">0.0</strong> / 5.0 (<span id="modalVotes">0</span> votos)
+                        </div>
+                    </div>
+
+                    <!-- Comentários -->
+                    <div class="comments-section">
+                        <h4 style="color: var(--ng-orange); margin-bottom: 8px;">Comentários da Comunidade</h4>
+                        <div class="comment-form">
+                            <input type="text" id="commentInput" placeholder="Escreva algo (Ganhe +15 EXP)...">
+                            <button class="btn-action" onclick="postComment()">Postar</button>
+                        </div>
+                        <div class="comments-list" id="commentsList">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE UPLOAD / SUBMETER FANART -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-container" style="max-width: 600px;">
+            <span class="close-modal-btn" onclick="closeModal('uploadModal')">&times;</span>
+            <form class="upload-form" onsubmit="handleArtSubmit(event)">
+                <h2 style="color: var(--ng-orange); font-family: 'Montserrat';">SUBMETER NOVA FANART</h2>
+                
+                <div class="form-group">
+                    <label>Título da Obra</label>
+                    <input type="text" id="upTitle" required placeholder="Ex: Pico vs Tankman">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Seu Nome/Nick</label>
+                        <input type="text" id="upAuthor" required placeholder="Ex: NewgArtist">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="upCategory">
+                            <option value="games">Games</option>
+                            <option value="anime">Anime/Manga</option>
+                            <option value="cartoons">Desenhos Animados</option>
+                            <option value="original">Arte Original</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Classificação Etária</label>
+                        <select id="upRating">
+                            <option value="L">Livre (E)</option>
+                            <option value="12">12+ (Teen)</option>
+                            <option value="18">18+ (Adulto)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>URL da Imagem (Ou Imagem Local)</label>
+                        <input type="text" id="upImgUrl" placeholder="https://site.com/imagem.jpg">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ou faça upload de arquivo local:</label>
+                    <input type="file" id="upFileInput" accept="image/*" onchange="previewFile(event)">
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea id="upDesc" rows="3" placeholder="Conte os detalhes do processo de criação..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-action" style="padding: 12px; margin-top: 10px;">PUBLICAR NO PORTAL (+50 EXP)</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LÓGICA E DADOS -->
+    <script>
+        /* ==========================================
+           1. ESTADO E DADOS INICIAIS (LOCALSTORAGE)
+           ========================================== */
+        const defaultArts = [
+            {
+                id: 1, title: "Pico's School Remastered", author: "TomFulpFan", category: "games",
+                rating: "18", ratingClass: "badge-18", score: 4.9, votes: 320, views: 5400,
+                img: "https://picsum.photos/id/1025/600/600",
+                desc: "Fanart comemorativa dos clássicos do Flash Player! Pintado no Photoshop.",
+                comments: [{ user: "Captain", text: "Excelente arte, nostálgica demais!" }]
+            },
+            {
+                id: 2, title: "Cyber-Samurai 2077", author: "KuroNinja", category: "anime",
+                rating: "12", ratingClass: "badge-12", score: 4.6, votes: 140, views: 2300,
+                img: "https://picsum.photos/id/1059/600/600",
+                desc: "Estudo de iluminação neon e estética cyberpunk dos anos 90.",
+                comments: []
+            },
+            {
+                id: 3, title: "O Castelo do Mago", author: "FantasyArt", category: "original",
+                rating: "L", ratingClass: "badge-L", score: 4.8, votes: 210, views: 3100,
+                img: "https://picsum.photos/id/1062/600/600",
+                desc: "Arte conceitual criada para um jogo indie de aventura em pixels.",
+                comments: []
+            },
+            {
+                id: 4, title: "Encontro Espacial", author: "AstroKid", category: "cartoons",
+                rating: "L", ratingClass: "badge-L", score: 4.2, votes: 85, views: 1200,
+                img: "https://picsum.photos/id/1069/600/600",
+                desc: "Ilustração infantil e colorida de exploração espacial.",
+                comments: []
+            }
+        ];
+
+        // Carregar do LocalStorage ou usar padrões
+        let arts = JSON.parse(localStorage.getItem('ng_arts_data')) || defaultArts;
+        let favorites = JSON.parse(localStorage.getItem('ng_favs')) || [];
+        let userData = JSON.parse(localStorage.getItem('ng_user_data')) || { xp: 120, level: 3, rank: "Portal Cadet" };
+        
+        let currentFilter = 'all';
+        let activeArtId = null;
+        let soundEnabled = true;
+        let uploadedImgBase64 = null;
+
+        /* ==========================================
+           2. SINTETIZADOR DE SOM CHIPTUNE (WEB AUDIO API)
+           ========================================== */
+        function playSFX(type) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(300, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.05);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                    osc.start(); osc.stop(ctx.currentTime + 0.05);
+                } else if (type === 'vote') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, ctx.currentTime);
+                    osc.frequency.setValueAtTime(600, ctx.currentTime + 0.08);
+                    osc.frequency.setValueAtTime(800, ctx.currentTime + 0.16);
+                    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                    osc.start(); osc.stop(ctx.currentTime + 0.25);
+                } else if (type === 'levelup') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783, ctx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(1046, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    osc.start(); osc.stop(ctx.currentTime + 0.5);
+                }
+            } catch (e) { console.log('Audio error', e); }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('btnSoundToggle').innerText = soundEnabled ? "🔊 Som: ON" : "🔇 Som: OFF";
+        }
+
+        /* ==========================================
+           3. GAMIFICAÇÃO & EXP
+           ========================================== */
+        function addEXP(amount) {
+            userData.xp += amount;
+            const nextXp = userData.level * 80;
+            if (userData.xp >= nextXp) {
+                userData.level++;
+                playSFX('levelup');
+                alert(`🎉 PARABÉNS! Você subiu para o Nível ${userData.level}!`);
+                if(userData.level === 4) userData.rank = "Portal Officer";
+                if(userData.level >= 5) userData.rank = "Flash Veteran";
+            }
+            updateUserUI();
+            saveState();
+        }
+
+        function updateUserUI() {
+            const nextXp = userData.level * 80;
+            document.getElementById('userXpVal').innerText = userData.xp;
+            document.getElementById('nextXpVal').innerText = nextXp;
+            document.getElementById('userRankText').innerText = `Nível ${userData.level} - ${userData.rank}`;
+            const pct = Math.min(100, (userData.xp / nextXp) * 100);
+            document.getElementById('xpBarInner').style.width = `${pct}%`;
+        }
+
+        /* ==========================================
+           4. RENDERIZAÇÃO DA GALERIA & FILTROS
+           ========================================== */
+        function renderGallery(items) {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+
+            document.getElementById('artCounter').innerText = `${items.length} artes encontradas`;
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #777; padding: 40px;">
+                    Nenhuma fanart encontrada para este filtro.
+                </div>`;
+                return;
+            }
+
+            items.forEach(art => {
+                const isFav = favorites.includes(art.id);
+                const card = document.createElement('div');
+                card.className = 'art-card';
+
+                card.innerHTML = `
+                    <div class="art-thumb-box" onclick="openArtModal(${art.id})">
+                        <span class="rating-badge badge-${art.rating}">[${art.rating}]</span>
+                        <img class="art-thumb" src="${art.img}" alt="${art.title}">
+                    </div>
+                    <button class="btn-fav-card ${isFav ? 'active' : ''}" onclick="toggleFav(${art.id}, event)" title="Favoritar">
+                        ${isFav ? '♥' : '♡'}
+                    </button>
+                    <div class="art-info" onclick="openArtModal(${art.id})">
+                        <div class="art-title">${art.title}</div>
+                        <div class="art-author">por ${art.author}</div>
+                        <div class="art-footer">
+                            <span class="score-box">★ ${art.score.toFixed(1)}</span>
+                            <span style="color:#777">👁 ${art.views}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function applyFilters() {
+            playSFX('click');
+            let filtered = [...arts];
+
+            // Categoria ou Favoritos
+            if (currentFilter === 'favs') {
+                filtered = filtered.filter(art => favorites.includes(art.id));
+            } else if (currentFilter !== 'all') {
+                filtered = filtered.filter(art => art.category === currentFilter);
+            }
+
+            // Busca por texto
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (query !== '') {
+                filtered = filtered.filter(art => 
+                    art.title.toLowerCase().includes(query) || 
+                    art.author.toLowerCase().includes(query)
+                );
+            }
+
+            // Ordenação
+            const sortBy = document.getElementById('sortSelect').value;
+            if (sortBy === 'rating') filtered.sort((a,b) => b.score - a.score);
+            if (sortBy === 'views') filtered.sort((a,b) => b.views - a.views);
+            if (sortBy === 'title') filtered.sort((a,b) => a.title.localeCompare(b.title));
+            if (sortBy === 'recent') filtered.sort((a,b) => b.id - a.id);
+
+            renderGallery(filtered);
+        }
+
+        function filterCategory(cat, event) {
+            currentFilter = cat;
+            if (event) {
+                document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+            
+            // Atualiza título da seção
+            const titles = { all: "Galeria em Destaque", games: "Fanarts de Games", anime: "Fanarts de Anime", cartoons: "Desenhos Animados", original: "Artes Originais", favs: "Seus Favoritos ❤️" };
+            document.getElementById('sectionTitleDisplay').innerText = titles[cat] || "Galeria";
+
+            applyFilters();
+        }
+
+        function toggleFav(id, event) {
+            event.stopPropagation();
+            playSFX('click');
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+            } else {
+                favorites.push(id);
+            }
+            saveState();
+            applyFilters();
+        }
+
+        /* ==========================================
+           5. MODAL DE DETALHES & VOTAÇÃO & COMENTÁRIOS
+           ========================================== */
+        function openArtModal(id) {
+            playSFX('click');
+            const art = arts.find(a => a.id === id);
+            if (!art) return;
+
+            activeArtId = id;
+            art.views++; // Incrementa views ao abrir
+
+            document.getElementById('modalImg').src = art.img;
+            document.getElementById('modalTitle').innerText = art.title;
+            document.getElementById('modalAuthor').innerText = art.author;
+            document.getElementById('modalDesc').innerText = art.desc;
+            document.getElementById('modalScore').innerText = art.score.toFixed(1);
+            document.getElementById('modalVotes').innerText = art.votes;
+            
+            const badge = document.getElementById('modalRatingBadge');
+            badge.className = `rating-badge badge-${art.rating}`;
+            badge.innerText = `[${art.rating}]`;
+
+            renderComments(art.comments);
+            resetStars();
+
+            document.getElementById('artModal').style.display = 'flex';
+            saveState();
+        }
+
+        function rateArt(stars) {
+            playSFX('vote');
+            const art = arts.find(a => a.id === activeArtId);
+            if (!art) return;
+
+            // Recalcula média de notas dinamicamente
+            const totalScore = (art.score * art.votes) + stars;
+            art.votes++;
+            art.score = totalScore / art.votes;
+
+            document.getElementById('modalScore').innerText = art.score.toFixed(1);
+            document.getElementById('modalVotes').innerText = art.votes;
+
+            // Ilumina estrelas no UI
+            const starElements = document.querySelectorAll('#starRatingBox .star');
+            starElements.forEach((el, index) => {
+                if (index < stars) el.classList.add('selected');
+                else el.classList.remove('selected');
+            });
+
+            addEXP(10); // +10 EXP por votar!
+            saveState();
+            applyFilters();
+        }
+
+        function resetStars() {
+            document.querySelectorAll('#starRatingBox .star').forEach(el => el.classList.remove('selected'));
+        }
+
+        function renderComments(commentsList) {
+            const container = document.getElementById('commentsList');
+            container.innerHTML = '';
+            if (!commentsList || commentsList.length === 0) {
+                container.innerHTML = '<div style="color:#666; font-size:0.85rem;">Nenhum comentário ainda. Seja o primeiro!</div>';
+                return;
+            }
+            commentsList.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'comment-card';
+                div.innerHTML = `<strong>${c.user}:</strong> ${c.text}`;
+                container.appendChild(div);
+            });
+        }
+
+        function postComment() {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (!text || !activeArtId) return;
+
+            playSFX('click');
+            const art = arts.find(a => a.id === activeArtId);
+            if (art) {
+                if (!art.comments) art.comments = [];
+                art.comments.unshift({ user: "PixelKnight", text: text });
+                renderComments(art.comments);
+                input.value = '';
+                addEXP(15); // +15 EXP por comentar!
+                saveState();
+            }
+        }
+
+        /* ==========================================
+           6. SUBMETER NOVA ARTE (UPLOAD)
+           ========================================== */
+        function openUploadModal() {
+            playSFX('click');
+            uploadedImgBase64 = null;
+            document.getElementById('uploadModal').style.display = 'flex';
+        }
+
+        function previewFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImgBase64 = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleArtSubmit(event) {
+            event.preventDefault();
+            playSFX('vote');
+
+            const title = document.getElementById('upTitle').value;
+            const author = document.getElementById('upAuthor').value;
+            const category = document.getElementById('upCategory').value;
+            const rating = document.getElementById('upRating').value;
+            const urlInput = document.getElementById('upImgUrl').value;
+            const desc = document.getElementById('upDesc').value;
+
+            const finalImg = uploadedImgBase64 || urlInput || 'https://picsum.photos/id/1024/600/600';
+
+            const newArt = {
+                id: Date.now(),
+                title: title,
+                author: author,
+                category: category,
+                rating: rating,
+                score: 5.0,
+                votes: 1,
+                views: 10,
+                img: finalImg,
+                desc: desc || "Sem descrição informada.",
+                comments: []
+            };
+
+            arts.unshift(newArt);
+            addEXP(50); // +50 EXP por criar arte!
+            saveState();
+            
+            closeModal('uploadModal');
+            applyFilters();
+            alert('🎨 Fanart publicada com sucesso no Portal!');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function saveState() {
+            localStorage.setItem('ng_arts_data', JSON.stringify(arts));
+            localStorage.setItem('ng_favs', JSON.stringify(favorites));
+            localStorage.setItem('ng_user_data', JSON.stringify(userData));
+        }
+
+        // Clicar fora para fechar modal
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.style.display = 'none';
+            }
+        }
+
+        // INICIALIZAÇÃO DA PÁGINA
+        updateUserUI();
+        applyFilters();
+    </script>
+</body>
+</html>

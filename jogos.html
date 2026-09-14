@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flash Games XP - O Portal de Jogos do Orkut</title>
+  <style>
+    /* --- BASE & ESTILO WINDOWS XP / ORKUT --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tahoma', 'Verdana', Arial, sans-serif;
+    }
+
+    body {
+      background: #e0ecf8; /* Azul claro estilo Orkut/XP */
+      color: #333;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* --- JANELA WINDOWS XP --- */
+    .xp-window {
+      width: 100%;
+      max-width: 980px;
+      background: #ece9d8; /* Cor cinza/bege padrão do Windows XP */
+      border: 3px solid #0055ea;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    /* Barra de Título do Windows XP (Tema Luna) */
+    .xp-titlebar {
+      background: linear-gradient(to bottom, #0058ee 0%, #3a93ff 8%, #0055ea 25%, #0045d8 50%, #0030b7 75%, #0024a5 100%);
+      padding: 4px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+      font-size: 13px;
+      text-shadow: 1px 1px 1px #000;
+    }
+
+    .xp-titlebar-controls {
+      display: flex;
+      gap: 2px;
+    }
+
+    .xp-btn {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #fff;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .xp-btn-close {
+      background: linear-gradient(to bottom, #e7664c, #c01800);
+    }
+
+    /* --- TOPO & LOGO ORKUT STYLE --- */
+    .orkut-header {
+      background-color: #c0d3e8;
+      border-bottom: 2px solid #a2b8d4;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .orkut-logo {
+      font-size: 26px;
+      font-weight: bold;
+      color: #e5007d; /* Rosa Orkut */
+      text-decoration: none;
+      letter-spacing: -1px;
+    }
+
+    .orkut-logo span {
+      color: #0263a2; /* Azul Orkut */
+    }
+
+    .user-badge {
+      background: #ffffff;
+      border: 1px solid #a2b8d4;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 4px;
+      color: #333;
+    }
+
+    /* --- MENU DE NAVEGAÇÃO --- */
+    nav {
+      background: #d4e2f4;
+      border-bottom: 1px solid #a2b8d4;
+      padding: 6px 15px;
+      display: flex;
+      gap: 15px;
+      font-size: 12px;
+    }
+
+    nav a {
+      color: #0263a2;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+      color: #e5007d;
+    }
+
+    .xp-body {
+      padding: 15px;
+    }
+
+    /* --- BANNER ROTATIVO --- */
+    .banner-box {
+      background: #fff;
+      border: 1px solid #b2c9e2;
+      border-radius: 4px;
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+
+    .banner-container {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: #000;
+      overflow: hidden;
+      border: 1px solid #666;
+    }
+
+    .banner-slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .banner-slide.active {
+      display: block;
+    }
+
+    .banner-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .banner-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(2, 99, 162, 0.85); /* Azul Orkut com transparência */
+      border-top: 2px solid #e5007d;
+      color: white;
+      padding: 10px;
+    }
+
+    .banner-caption h2 {
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+
+    .banner-caption p {
+      font-size: 11px;
+    }
+
+    /* Botões estilo XP */
+    .xp-btn-play {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 12px;
+      background: linear-gradient(to bottom, #84e03f 0%, #3fa804 100%);
+      border: 1px solid #236100;
+      border-radius: 3px;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .xp-btn-play:active {
+      background: #3fa804;
+    }
+
+    .banner-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #ece9d8;
+      border: 2px outset #fff;
+      color: #000;
+      font-weight: bold;
+      padding: 5px 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .prev { left: 5px; }
+    .next { right: 5px; }
+
+    /* --- BLOCOS/CAIXAS DE CONTEÚDO (ESTILO ORKUT) --- */
+    .orkut-box {
+      background: #ffffff;
+      border: 1px solid #b2c9e2;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+
+    .orkut-box-header {
+      background: #e4eef9;
+      border-bottom: 1px solid #c2d5e9;
+      padding: 6px 10px;
+      color: #0263a2;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* --- GRID DE JOGOS --- */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .game-card {
+      background: #f5f8fc;
+      border: 1px solid #c8d8ea;
+      border-radius: 4px;
+      padding: 6px;
+      text-decoration: none;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.1s ease;
+    }
+
+    .game-card:hover {
+      background: #e8f2fe;
+      border-color: #e5007d;
+      box-shadow: 0 0 5px rgba(229, 0, 125, 0.3);
+    }
+
+    .game-thumb {
+      width: 100%;
+      height: 105px;
+      object-fit: cover;
+      border: 1px solid #a2b8d4;
+      margin-bottom: 6px;
+    }
+
+    .game-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: #0263a2;
+      text-align: center;
+      margin-bottom: 4px;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .game-stats {
+      font-size: 9px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .btn-play-small {
+      width: 100%;
+      text-align: center;
+      background: linear-gradient(to bottom, #ffffff 0%, #ece9d8 100%);
+      border: 1px solid #7f9db9;
+      border-radius: 3px;
+      padding: 2px 0;
+      font-size: 10px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .game-card:hover .btn-play-small {
+      background: #e5007d;
+      color: #fff;
+      border-color: #a00058;
+    }
+
+    /* --- RODAPÉ --- */
+    footer {
+      background: #d4e2f4;
+      border-top: 1px solid #a2b8d4;
+      padding: 10px;
+      text-align: center;
+      font-size: 10px;
+      color: #555;
+    }
+
+    .stamps {
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .stamp-btn {
+      background: #fff;
+      border: 1px inset #999;
+      padding: 2px 5px;
+      font-family: monospace;
+      font-size: 9px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ESTRUTURA DE JANELA DO WINDOWS XP -->
+  <div class="xp-window">
+    
+    <!-- BARRA DE TÍTULO XP -->
+    <div class="xp-titlebar">
+      <span>Internet Explorer - [ Flash Games Zone 2010 ]</span>
+      <div class="xp-titlebar-controls">
+        <div class="xp-btn">_</div>
+        <div class="xp-btn">□</div>
+        <div class="xp-btn xp-btn-close">X</div>
+      </div>
+    </div>
+
+    <!-- CABEÇALHO TIPO ORKUT -->
+    <div class="orkut-header">
+      <a href="#" class="orkut-logo">orkut <span>games</span></a>
+      <div class="user-badge">
+        <b>Sua conta:</b> Visitante_XP | <a href="#" style="color:#0263a2">Sair</a>
+      </div>
+    </div>
+
+    <!-- NAVEGAÇÃO -->
+    <nav>
+      <a href="#">Início</a> |
+      <a href="#">Meus Jogos</a> |
+      <a href="#">Comunidades</a> |
+      <a href="#">Scraps</a> |
+      <a href="#">Os Mais Jogados</a>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="xp-body">
+
+      <!-- BANNER ROTATIVO (DESTAQUES) -->
+      <div class="banner-box">
+        <div class="banner-container">
+          
+          <!-- Slide 1 -->
+          <div class="banner-slide active">
+            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1000&auto=format&fit=crop&q=80" alt="Space Game">
+            <div class="banner-caption">
+              <h2>★ Destaque: Space Shooter 2010</h2>
+              <p>O jogo em flash mais jogado da comunidade! Derrote os alienígenas e ganhe moedas.</p>
+              <a href="https://exemplo.com/jogo/space" class="xp-btn-play" target="_blank">▶ JOGAR AGORA</a>
+            </div>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="banner-slide">
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1000&auto=format&fit=crop&q=80" alt="Racing Game">
+            <div class="banner-caption">
+              <h2>★ Need for Flash: Tuning</h2>
+              <p>Monte seu carro tunado e dispute corridas contra seus amigos do Orkut.</p>
+              <a href="https://exemplo.com/jogo/corrida" class="xp-btn-play" target="_blank">▶ JOGAR AGORA</a>
+            </div>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="banner-slide">
+            <img src="https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1000&auto=format&fit=crop&q=80" alt="Defense Game">
+            <div class="banner-caption">
+              <h2>★ Defesa do Castelo 3D</h2>
+              <p>Estratégia pura em Flash Player 10! Proteja o reino das hordas de monstros.</p>
+              <a href="https://exemplo.com/jogo/defesa" class="xp-btn-play" target="_blank">▶ JOGAR AGORA</a>
+            </div>
+          </div>
+
+          <!-- Botões do Banner -->
+          <button class="banner-nav prev" onclick="changeSlide(-1)">&lt;</button>
+          <button class="banner-nav next" onclick="changeSlide(1)">&gt;</button>
+        </div>
+      </div>
+
+      <!-- SEÇÃO DE JOGOS (ORKUT STYLE) -->
+      <div class="orkut-box">
+        <div class="orkut-box-header">
+          <span>JOGOS POPULARES DA COMUNIDADE (8)</span>
+          <a href="#" style="color:#0263a2; text-decoration:none;">ver todos &raquo;</a>
+        </div>
+
+        <div class="games-grid">
+
+          <!-- Card 1 -->
+          <a href="https://exemplo.com/jogo1" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Space Invaders">
+            <div class="game-title">Space Invaders XP</div>
+            <div class="game-stats">⭐ 98% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+          <!-- Card 2 -->
+          <a href="https://exemplo.com/jogo2" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Pixel Street">
+            <div class="game-title">Pixel Street Fighter</div>
+            <div class="game-stats">⭐ 95% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+          <!-- Card 3 -->
+          <a href="https://exemplo.com/jogo3" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Rally Flash">
+            <div class="game-title">Rally Flash 2008</div>
+            <div class="game-stats">⭐ 91% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+          <!-- Card 4 -->
+          <a href="https://exemplo.com/jogo4" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Mario World">
+            <div class="game-title">Super Mario Flash</div>
+            <div class="game-stats">⭐ 100% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+          <!-- Card 5 -->
+          <a href="https://exemplo.com/jogo5" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Tower Shield">
+            <div class="game-title">Tower Shield v2</div>
+            <div class="game-stats">⭐ 89% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+          <!-- Card 6 -->
+          <a href="https://exemplo.com/jogo6" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Sinuca 8 Ball">
+            <div class="game-title">Sinuca 8-Ball Pro</div>
+            <div class="game-stats">⭐ 94% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+          <!-- Card 7 -->
+          <a href="https://exemplo.com/jogo7" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Sonic Flash">
+            <div class="game-title">Sonic Ultimate Flash</div>
+            <div class="game-stats">⭐ 97% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+          <!-- Card 8 -->
+          <a href="https://exemplo.com/jogo8" class="game-card" target="_blank">
+            <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300&auto=format&fit=crop&q=80" class="game-thumb" alt="Zombie Arena">
+            <div class="game-title">Zombie Arena 2010</div>
+            <div class="game-stats">⭐ 93% de Fãs</div>
+            <div class="btn-play-small">Jogar</div>
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer>
+      <p>Google © 2010 Orkut - Sobre o Orkut - Centro de Segurança - Termos - Privacidade</p>
+      <div class="stamps">
+        <span class="stamp-btn">IE 6.0 OPTIMIZED</span>
+        <span class="stamp-btn">MACROMEDIA FLASH</span>
+        <span class="stamp-btn">WIN XP STYLE</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT DO BANNER ROTATIVO -->
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.banner-slide');
+    const intervalTime = 3500; // Troca a cada 3.5 segundos
+
+    function showSlide(index) {
+      if (index >= slides.length) currentSlide = 0;
+      else if (index < 0) currentSlide = slides.length - 1;
+      else currentSlide = index;
+
+      slides.forEach(slide => slide.classList.remove('active'));
+      slides[currentSlide].classList.add('active');
+    }
+
+    function changeSlide(direction) {
+      showSlide(currentSlide + direction);
+    }
+
+    // Timer automático
+    setInterval(() => {
+      showSlide(currentSlide + 1);
+    }, intervalTime);
+  </script>
+
+</body>
+</html>

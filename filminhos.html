@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu YouTube Retrô (2008)</title>
+    <style>
+        /* --- ESTILOS GLOBAIS (Web 2.0 / Anos 2000) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            background-color: #f1f1f1;
+            color: #333;
+        }
+
+        a {
+            color: #0033cc;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        a:hover {
+            color: #cc0000;
+        }
+
+        #wrapper {
+            width: 960px;
+            margin: 15px auto;
+            background: #ffffff;
+            border: 1px solid #cccccc;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+
+        /* --- HEADER & BUSCA --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #cccccc;
+            margin-bottom: 10px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: baseline;
+            cursor: pointer;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+            text-decoration: none;
+            letter-spacing: -1.5px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .logo-tube {
+            background: linear-gradient(to bottom, #e62117, #a60e08);
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 6px;
+            margin-left: 2px;
+            font-size: 26px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+
+        .slogan {
+            font-size: 11px;
+            color: #666;
+            margin-left: 10px;
+            font-style: italic;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 5px;
+        }
+
+        .search-bar input[type="text"] {
+            width: 280px;
+            padding: 4px 6px;
+            font-size: 12px;
+            border: 1px solid #7f9db9;
+        }
+
+        .search-bar button {
+            padding: 3px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+            border: 1px solid #999;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background: #ebebe0;
+        }
+
+        /* --- NAVBAR & ABAS --- */
+        .nav-bar {
+            background: #e8e8e8;
+            border: 1px solid #d3d3d3;
+            padding: 6px 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: #0033cc;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 15px;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 2px 6px;
+        }
+
+        .nav-links button.active {
+            background: #0033cc;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 2px;
+        }
+
+        .user-panel {
+            font-size: 11px;
+            color: #444;
+        }
+
+        /* --- ESTRUTURA DAS ABAS --- */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- ABA 1: INÍCIO (Player & Ferramentas Retrô) --- */
+        .main-layout {
+            display: flex;
+            gap: 20px;
+        }
+
+        .video-primary {
+            flex: 2;
+        }
+
+        .video-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .player-container {
+            position: relative;
+            background: #000;
+            border: 1px solid #333;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .player-container video {
+            width: 100%;
+            height: 360px;
+            display: block;
+        }
+
+        /* Anotações Clássicas de Vídeo */
+        .retro-annotation {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 204, 0.92);
+            border: 1px solid #cc9900;
+            color: #000;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            border-radius: 3px;
+            z-index: 10;
+            display: block;
+            max-width: 250px;
+        }
+
+        .retro-annotation .close-ann {
+            float: right;
+            cursor: pointer;
+            margin-left: 8px;
+            color: #999;
+        }
+
+        .retro-annotation .close-ann:hover { color: #000; }
+
+        /* Controles abaixo do Vídeo */
+        .video-toolbar {
+            background: #f2f2f2;
+            border: 1px solid #e0e0e0;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .toolbar-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-retro-tool {
+            background: linear-gradient(to bottom, #ffffff, #e6e6e6);
+            border: 1px solid #b5b5b5;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 2px;
+            color: #333;
+        }
+
+        .btn-retro-tool:hover { background: #dedede; }
+
+        .btn-hq-active {
+            background: #cc0000 !important;
+            color: #fff !important;
+            border-color: #990000 !important;
+        }
+
+        /* Sistema Interativo de Estrelas */
+        .star-rating-box {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stars-interactive {
+            color: #ccc;
+            font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .stars-interactive span {
+            transition: color 0.1s;
+        }
+
+        .stars-interactive span.active {
+            color: #f2b01e;
+        }
+
+        .rating-meta {
+            font-size: 11px;
+            color: #666;
+            margin-left: 4px;
+        }
+
+        /* Caixa de Compartilhamento / Embed */
+        .share-panel {
+            display: none;
+            background: #fafafa;
+            border: 1px solid #dcdcdc;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 11px;
+        }
+
+        .share-row {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .share-row label {
+            width: 90px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .share-row input {
+            flex: 1;
+            padding: 3px 5px;
+            font-size: 11px;
+            border: 1px solid #ccc;
+            background: #fff;
+        }
+
+        .channel-box {
+            background: #f9f9f9;
+            border: 1px solid #dcdcdc;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .channel-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            background: #ccc;
+            border: 1px solid #999;
+        }
+
+        .btn-subscribe {
+            background: linear-gradient(to bottom, #fff066, #ffcc00);
+            border: 1px solid #cca300;
+            color: #000;
+            font-weight: bold;
+            padding: 6px 14px;
+            font-size: 12px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-subscribe:hover { background: #ffe033; }
+
+        .video-description {
+            line-height: 1.5;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        .video-tags {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .video-tags span {
+            background: #eee;
+            padding: 2px 5px;
+            border: 1px solid #ddd;
+            margin-right: 4px;
+            border-radius: 2px;
+        }
+
+        /* Seção de Comentários do Vídeo */
+        .comments-section h3 {
+            font-size: 13px;
+            border-bottom: 2px solid #999;
+            padding-bottom: 3px;
+            margin-bottom: 10px;
+        }
+
+        .add-comment-box {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .add-comment-box input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            font-size: 11px;
+        }
+
+        .add-comment-box input[type="text"] { flex: 1; }
+
+        .add-comment-box button {
+            background: #0033cc;
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .comment-item {
+            border-bottom: 1px dashed #ddd;
+            padding: 8px 0;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .comment-author { font-weight: bold; color: #0033cc; }
+        .comment-date { color: #888; font-size: 10px; margin-left: 5px; }
+        .comment-text { margin-top: 4px; line-height: 1.3; }
+
+        .comment-like-btn {
+            background: none;
+            border: none;
+            color: #0033cc;
+            font-size: 10px;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            flex: 1;
+            border-left: 1px solid #eee;
+            padding-left: 15px;
+        }
+
+        .sidebar-header {
+            font-size: 13px;
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+        }
+
+        .video-card {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 4px;
+            border: 1px solid transparent;
+        }
+
+        .video-card:hover {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+        }
+
+        .thumb {
+            width: 100px;
+            height: 60px;
+            background: #222;
+            position: relative;
+            flex-shrink: 0;
+            border: 1px solid #999;
+        }
+
+        .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .thumb-duration {
+            position: absolute;
+            bottom: 2px; right: 2px;
+            background: #000; color: #fff;
+            font-size: 9px; padding: 1px 3px;
+            font-weight: bold; opacity: 0.8;
+        }
+
+        .card-info .card-title {
+            font-weight: bold;
+            color: #0033cc;
+            font-size: 11px;
+            line-height: 1.3;
+            margin-bottom: 3px;
+        }
+
+        .card-info .card-meta { color: #666; font-size: 10px; }
+
+        /* --- ABA 2: VÍDEOS (GRADE & RESULTADOS) --- */
+        .page-title {
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #666;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .grid-card {
+            border: 1px solid #ddd;
+            padding: 8px;
+            background: #fafafa;
+            cursor: pointer;
+        }
+
+        .grid-card:hover {
+            background: #f0f4f8;
+            border-color: #b4c6dc;
+        }
+
+        .grid-thumb {
+            width: 100%;
+            height: 120px;
+            background: #111;
+            margin-bottom: 6px;
+            border: 1px solid #888;
+            position: relative;
+        }
+
+        .grid-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .grid-title { font-weight: bold; color: #0033cc; font-size: 12px; margin-bottom: 4px; }
+        .grid-meta { font-size: 10px; color: #666; }
+
+        /* --- ABA 3: CANAIS & TEMAS VISUAIS DE 2008 --- */
+        .channel-theme-selector {
+            background: #e0e0e0;
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+        }
+
+        .channel-profile-header {
+            border: 1px solid #ccc;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            transition: background 0.3s, color 0.3s;
+            background: linear-gradient(to right, #e4e4e4, #ffffff);
+        }
+
+        .channel-profile-avatar {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #666;
+            background: #ccc;
+        }
+
+        /* Temas customizados do Canal */
+        .theme-matrix { background: #051505 !important; color: #00ff00 !important; border-color: #00ff00 !important; }
+        .theme-matrix h2, .theme-matrix p { color: #00ff00 !important; }
+        
+        .theme-pink { background: #fff0f5 !important; color: #d81b60 !important; border-color: #ffb6c1 !important; }
+        .theme-pink h2 { color: #c2185b !important; }
+
+        .theme-cyber { background: #0b1d3a !important; color: #80d8ff !important; border-color: #0091ea !important; }
+        .theme-cyber h2, .theme-cyber p { color: #80d8ff !important; }
+
+        /* --- ABA 4: COMUNIDADE --- */
+        .community-form {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+
+        .community-form input, .community-form textarea {
+            width: 100%;
+            padding: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #aaa;
+            font-family: inherit;
+            font-size: 12px;
+        }
+
+        .community-form button {
+            background: #0033cc;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
+        .guestbook-post { border-bottom: 1px solid #e0e0e0; padding: 10px 0; }
+        .guestbook-author { font-weight: bold; color: #0033cc; }
+        .guestbook-time { color: #888; font-size: 10px; margin-left: 5px; }
+        .guestbook-msg { margin-top: 5px; color: #222; }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 12px;
+            text-align: center;
+            color: #666;
+            font-size: 11px;
+        }
+
+        .footer-links a { margin: 0 5px; color: #0033cc; }
+    </style>
+</head>
+<body>
+
+    <div id="wrapper">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo-container" onclick="switchTab('home')">
+                <a class="logo">Uma<span class="logo-tube">Tube</span></a>
+                <span class="slogan">uma_archive.mp4</span>
+            </div>
+
+            <form class="search-bar" onsubmit="handleSearch(event)">
+                <input type="text" id="search-input" placeholder="Pesquisar vídeos...">
+                <button type="submit">Buscar</button>
+            </form>
+        </header>
+
+        <!-- BARRA DE NAVEGAÇÃO -->
+        <nav class="nav-bar">
+            <div class="nav-links">
+                <button id="btn-tab-home" class="active" onclick="switchTab('home')">Início</button>
+                <button id="btn-tab-videos" onclick="switchTab('videos')">Vídeos</button>
+                <button id="btn-tab-channels" onclick="switchTab('channels')">Canais</button>
+                <button id="btn-tab-community" onclick="switchTab('community')">Comunidade</button>
+            </div>
+            <div class="user-panel">
+                <span>Bem-vindo(a)!</span> | <a onclick="alert('Página de upload simulada!')">Enviar Vídeo</a>
+            </div>
+        </nav>
+
+        <!-- ================= ABA 1: INÍCIO (PLAYER) ================= -->
+        <section id="tab-home" class="tab-content active">
+            <div class="main-layout">
+                <main class="video-primary">
+                    <h1 class="video-title" id="current-title">Carregando...</h1>
+
+                    <!-- Player + Overlay de Anotações Retrô -->
+                    <div class="player-container">
+                        <div id="video-annotation" class="retro-annotation">
+                            <span class="close-ann" onclick="toggleAnnotation(false)">✕</span>
+                            <span id="annotation-text">A CLEIDE SEM ANÁLISES/span>
+                        </div>
+                        <video id="main-player" controls poster="https://via.placeholder.com/640x360/000/fff?text=Carregando+Vídeo...">
+                            <source id="video-source" src="" type="video/mp4">
+                        </video>
+                    </div>
+
+                    <!-- Barra de Ferramentas Retrô (Estrelas, HQ, Compartilhar) -->
+                    <div class="video-toolbar">
+                        <div class="toolbar-buttons">
+                            <button class="btn-retro-tool" onclick="toggleSharePanel()">Compartilhar / Embed</button>
+                            <button class="btn-retro-tool" id="btn-hq" onclick="toggleHQ()">Assistir em HQ</button>
+                            <button class="btn-retro-tool" onclick="toggleAnnotation()">Anotações: <span id="ann-status">LIGADO</span></button>
+                            <button class="btn-retro-tool" onclick="addFavorite()">★ Favoritar</button>
+                        </div>
+
+                        <!-- Avaliação Interativa de 5 Estrelas -->
+                        <div class="star-rating-box">
+                            <div class="stars-interactive" id="stars-container" onmouseleave="resetStarHover()">
+                                <span onclick="rateVideo(1)" onmouseover="hoverStar(1)">★</span>
+                                <span onclick="rateVideo(2)" onmouseover="hoverStar(2)">★</span>
+                                <span onclick="rateVideo(3)" onmouseover="hoverStar(3)">★</span>
+                                <span onclick="rateVideo(4)" onmouseover="hoverStar(4)">★</span>
+                                <span onclick="rateVideo(5)" onmouseover="hoverStar(5)">★</span>
+                            </div>
+                            <span class="rating-meta" id="rating-text">(4.9 / 5.0)</span>
+                        </div>
+                    </div>
+
+                    <!-- Painel Expansível de Embed / Compartilhamento -->
+                    <div class="share-panel" id="share-panel">
+                        <div class="share-row">
+                            <label>Link Direto:</label>
+                            <input type="text" id="share-url" readonly onclick="this.select()">
+                        </div>
+                        <div class="share-row">
+                            <label>Incorporar (Embed):</label>
+                            <input type="text" id="share-embed" readonly onclick="this.select()">
+                        </div>
+                        <div class="share-row">
+                            <label>Fórum (BBCode):</label>
+                            <input type="text" id="share-bbcode" readonly onclick="this.select()">
+                        </div>
+                    </div>
+
+                    <!-- Informações do Canal -->
+                    <div class="channel-box">
+                        <div class="channel-info">
+                            <img src="https://via.placeholder.com/48/333/fff?text=Eu" alt="Avatar" class="avatar">
+                            <div>
+                                <div class="channel-name">SeuNome2008</div>
+                                <div class="channel-subs" id="subs-count">124 inscritos</div>
+                            </div>
+                        </div>
+                        <button class="btn-subscribe" onclick="toggleSubscribe(this)">Inscrever-se</button>
+                    </div>
+
+                    <!-- Descrição & Tags -->
+                    <div class="video-description">
+                        <div class="video-date" id="current-date" style="font-weight:bold; color:#666; margin-bottom:4px;">-</div>
+                        <p id="current-desc">-</p>
+                        <div class="video-tags" id="current-tags">
+                            <!-- Tags inseridas via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Comentários do Vídeo Atual -->
+                    <section class="comments-section">
+                        <h3>Comentários do Vídeo (<span id="comments-count">0</span>)</h3>
+
+                        <!-- Form para comentar -->
+                        <form class="add-comment-box" onsubmit="addVideoComment(event)">
+                            <input type="text" id="comment-name-input" placeholder="Seu nome..." required style="width: 120px;">
+                            <input type="text" id="comment-text-input" placeholder="Deixe um comentário..." required>
+                            <button type="submit">Comentar</button>
+                        </form>
+
+                        <div id="video-comments-list">
+                            <!-- Inseridos via JS -->
+                        </div>
+                    </section>
+                </main>
+
+                <!-- Barra Lateral -->
+                <aside class="sidebar">
+                    <div class="sidebar-header">Mais Vídeos Pessoais</div>
+                    <div id="sidebar-list">
+                        <!-- Gerado via JavaScript -->
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- ================= ABA 2: VÍDEOS ================= -->
+        <section id="tab-videos" class="tab-content">
+            <h2 class="page-title" id="videos-page-title">Todos os Vídeos</h2>
+            <div class="video-grid" id="videos-grid-container">
+                <!-- Gerado via JavaScript -->
+            </div>
+        </section>
+
+        <!-- ================= ABA 3: CANAIS ================= -->
+        <section id="tab-channels" class="tab-content">
+            <!-- Seletor de Tema do Perfil -->
+            <div class="channel-theme-selector">
+                <strong>Estilo do Perfil (Customização 2008):</strong>
+                <button class="btn-retro-tool" onclick="changeChannelTheme('default')">Padrão</button>
+                <button class="btn-retro-tool" onclick="changeChannelTheme('matrix')">Matrix</button>
+                <button class="btn-retro-tool" onclick="changeChannelTheme('pink')">Rosa 2007</button>
+                <button class="btn-retro-tool" onclick="changeChannelTheme('cyber')">Azul Cyber</button>
+            </div>
+
+            <div class="channel-profile-header" id="channel-profile-box">
+                <img src="https://via.placeholder.com/80/333/fff?text=Eu" class="channel-profile-avatar" alt="Avatar">
+                <div>
+                    <h2>SeuNome2008</h2>
+                    <p style="margin: 6px 0;">Bem-vindo ao meu canal oficial! Aqui compartilho meus vídeos pessoais, projetos, viagens e momentos gravados entre 2005 e 2010.</p>
+                    <button class="btn-subscribe" onclick="toggleSubscribe(this)">Inscrever-se</button>
+                </div>
+            </div>
+
+            <h3 class="page-title">Envios do Canal</h3>
+            <div class="video-grid" id="channel-videos-grid">
+                <!-- Gerado via JavaScript -->
+            </div>
+        </section>
+
+        <!-- ================= ABA 4: COMUNIDADE ================= -->
+        <section id="tab-community" class="tab-content">
+            <h2 class="page-title">Mural da Comunidade / Recados</h2>
+            
+            <div class="community-form">
+                <h4 style="margin-bottom:8px;">Deixe um recado no meu canal:</h4>
+                <form onsubmit="postCommunityMsg(event)">
+                    <input type="text" id="msg-author" placeholder="Seu nome ou apelido..." required>
+                    <textarea id="msg-text" rows="3" placeholder="Escreva sua mensagem aqui..." required></textarea>
+                    <button type="submit">Postar Recado</button>
+                </form>
+            </div>
+
+            <div id="community-messages-list">
+                <div class="guestbook-post">
+                    <span class="guestbook-author">Visitante007</span>
+                    <span class="guestbook-time">Postado hoje às 14:30</span>
+                    <div class="guestbook-msg">Muito show o seu site retrô! Me lembrou exatamente quando criei minha conta no YouTube em 2008. Parabéns!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-links">
+                <a onclick="switchTab('home')">Início</a> | 
+                <a onclick="switchTab('videos')">Vídeos</a> | 
+                <a onclick="switchTab('channels')">Canais</a> | 
+                <a onclick="switchTab('community')">Comunidade</a>
+            </div>
+            <p style="margin-top: 5px;">Copyright © 2008 YouTube, LLC / Acervo Pessoal Retrô</p>
+        </footer>
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        /* 1. BANCO DE DADOS DE VÍDEOS EXPANDIDO */
+        const videoDatabase = [
+            {
+                id: 1,
+                title: "Meu Primeiro Vídeo Pessoal (2008)",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                thumb: "https://via.placeholder.com/300x180/333333/ffffff?text=Video+1",
+                views: "1.245 visualizações",
+                date: "Enviado em 14 de out. de 2008",
+                duration: "0:15",
+                description: "Este é um vídeo do meu acervo pessoal! Testando essa nova plataforma incrível de vídeos na internet.",
+                annotation: "★ Inscreva-se no canal para mais vídeos antigos! ★",
+                rating: 4.8,
+                votes: 42,
+                tags: ["vlog", "2008", "pessoal", "teste", "antigo"],
+                comments: [
+                    { author: "RetroFan_99", text: "Nossa, muito bom! 5 estrelas pra você!", date: "há 2 dias", likes: 3 },
+                    { author: "UserX2009", text: "Gravado em fita miniDV? Ficou massa!", date: "há 1 semana", likes: 1 }
+                ]
+            },
+            {
+                id: 2,
+                title: "Viagem em Família - Férias de Verão",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+                thumb: "https://via.placeholder.com/300x180/555555/ffffff?text=Video+2",
+                views: "840 visualizações",
+                date: "Enviado em 20 de jan. de 2009",
+                duration: "0:15",
+                description: "Registros das nossas férias na praia. Filmado na câmera de fita!",
+                annotation: "Praia de Itapema - Verão de 2009!",
+                rating: 5.0,
+                votes: 18,
+                tags: ["viagem", "praia", "familia", "ferias"],
+                comments: [
+                    { author: "TiaMaria_08", text: "Que saudades desse dia! Beijos!", date: "há 3 dias", likes: 2 }
+                ]
+            },
+            {
+                id: 3,
+                title: "Aniversário de 2010 (Bastidores)",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+                thumb: "https://via.placeholder.com/300x180/777777/ffffff?text=Video+3",
+                views: "3.102 visualizações",
+                date: "Enviado em 05 de mai. de 2010",
+                duration: "1:00",
+                description: "Festinha de aniversário gravada pelos meus amigos. Momentos inesquecíveis!",
+                annotation: "Aviso: Áudio meio estourado no final kkkk",
+                rating: 4.6,
+                votes: 55,
+                tags: ["festa", "aniversario", "amigos", "2010"],
+                comments: [
+                    { author: "Lucas_Gamer2000", text: "Aquele bolo estava bom demais kkkk", date: "há 5 dias", likes: 4 }
+                ]
+            },
+            {
+                id: 4,
+                title: "Jogando Futebol com a Galera",
+                url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyflights.mp4",
+                thumb: "https://via.placeholder.com/300x180/444444/ffffff?text=Video+4",
+                views: "520 visualizações",
+                date: "Enviado em 11 de nov. de 2009",
+                duration: "0:15",
+                description: "Partida de futebol de domingo no campo do bairro. Bons tempos!",
+                annotation: "Veja esse golaço aos 0:10s!",
+                rating: 4.2,
+                votes: 12,
+                tags: ["futebol", "esporte", "amigos"],
+                comments: []
+            }
+        ];
+
+        let currentVideoObj = null;
+        let isSubscribed = false;
+        let isHQ = false;
+        let showAnnotation = true;
+
+        /* 2. INICIALIZAÇÃO */
+        window.onload = function() {
+            loadVideoIntoPlayer(videoDatabase[0]);
+            renderSidebar();
+            renderGrid('videos-grid-container', videoDatabase);
+            renderGrid('channel-videos-grid', videoDatabase);
+        };
+
+        /* 3. TROCA DE ABAS */
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-links button').forEach(btn => btn.classList.remove('active'));
+
+            const targetTab = document.getElementById('tab-' + tabName);
+            if(targetTab) targetTab.classList.add('active');
+
+            const targetBtn = document.getElementById('btn-tab-' + tabName);
+            if(targetBtn) targetBtn.classList.add('active');
+
+            if(tabName === 'videos') {
+                document.getElementById('videos-page-title').innerText = "Todos os Vídeos";
+                renderGrid('videos-grid-container', videoDatabase);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* 4. CARREGAR VÍDEO NO PLAYER */
+        function playVideoById(id) {
+            const video = videoDatabase.find(v => v.id === id);
+            if(video) {
+                loadVideoIntoPlayer(video);
+                switchTab('home');
+            }
+        }
+
+        function loadVideoIntoPlayer(video) {
+            currentVideoObj = video;
+            const player = document.getElementById('main-player');
+            const source = document.getElementById('video-source');
+
+            source.src = video.url;
+            player.load();
+
+            document.getElementById('current-title').innerText = video.title;
+            document.getElementById('current-date').innerText = video.date;
+            document.getElementById('current-desc').innerText = video.description;
+
+            // Anotações de Vídeo
+            document.getElementById('annotation-text').innerText = video.annotation || "Vídeo do acervo retrô";
+            toggleAnnotation(showAnnotation);
+
+            // Tags
+            const tagsContainer = document.getElementById('current-tags');
+            tagsContainer.innerHTML = '<strong>Tags:</strong> ' + 
+                video.tags.map(t => `<span onclick="searchTag('${t}')">#${t}</span>`).join(' ');
+
+            // Estrelas & Avaliação
+            updateStarDisplay(video.rating);
+            document.getElementById('rating-text').innerText = `(${video.rating.toFixed(1)} de 5.0 - ${video.votes} votos)`;
+
+            // Links de Compartilhamento / Embed
+            const pageUrl = window.location.href.split('#')[0] + `#video=${video.id}`;
+            document.getElementById('share-url').value = pageUrl;
+            document.getElementById('share-embed').value = `<object width="425" height="344"><param name="movie" value="${video.url}"></param><embed src="${video.url}" type="video/mp4" width="425" height="344"></embed></object>`;
+            document.getElementById('share-bbcode').value = `[video]${pageUrl}[/video]`;
+
+            // Renderiza comentários do vídeo
+            renderVideoComments();
+        }
+
+        /* 5. AVALIAÇÃO POR 5 ESTRELAS (INTERATIVO) */
+        function hoverStar(count) {
+            const stars = document.querySelectorAll('#stars-container span');
+            stars.forEach((star, idx) => {
+                if(idx < count) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+        }
+
+        function resetStarHover() {
+            if(currentVideoObj) updateStarDisplay(currentVideoObj.rating);
+        }
+
+        function updateStarDisplay(rating) {
+            const stars = document.querySelectorAll('#stars-container span');
+            const rounded = Math.round(rating);
+            stars.forEach((star, idx) => {
+                if(idx < rounded) star.classList.add('active');
+                else star.classList.remove('active');
+            });
+        }
+
+        function rateVideo(votedStars) {
+            if(!currentVideoObj) return;
+            currentVideoObj.votes += 1;
+            currentVideoObj.rating = ((currentVideoObj.rating * (currentVideoObj.votes - 1)) + votedStars) / currentVideoObj.votes;
+            
+            updateStarDisplay(currentVideoObj.rating);
+            document.getElementById('rating-text').innerText = `(${currentVideoObj.rating.toFixed(1)} de 5.0 - ${currentVideoObj.votes} votos)`;
+            alert(`Obrigado por avaliar com ${votedStars} estrela(s)!`);
+        }
+
+        /* 6. RECURSOS RETRÔ (HQ, ANOTAÇÕES, FAVORITAR, EMBED) */
+        function toggleHQ() {
+            isHQ = !isHQ;
+            const btn = document.getElementById('btn-hq');
+            if(isHQ) {
+                btn.classList.add('btn-hq-active');
+                btn.innerText = "HQ [ATIVADO]";
+                alert("Modo Alta Qualidade (HQ) ativado! Reproduzindo em maior definição.");
+            } else {
+                btn.classList.remove('btn-hq-active');
+                btn.innerText = "Assistir em HQ";
+            }
+        }
+
+        function toggleAnnotation(forceState) {
+            showAnnotation = forceState !== undefined ? forceState : !showAnnotation;
+            const box = document.getElementById('video-annotation');
+            const statusLabel = document.getElementById('ann-status');
+
+            if(showAnnotation) {
+                box.style.display = 'block';
+                statusLabel.innerText = "LIGADO";
+            } else {
+                box.style.display = 'none';
+                statusLabel.innerText = "DESLIGADO";
+            }
+        }
+
+        function toggleSharePanel() {
+            const panel = document.getElementById('share-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function addFavorite() {
+            alert(`O vídeo "${currentVideoObj.title}" foi adicionado aos seus Favoritos!`);
+        }
+
+        function searchTag(tag) {
+            document.getElementById('search-input').value = tag;
+            handleSearch(new Event('submit'));
+        }
+
+        /* 7. COMENTÁRIOS ESPECÍFICOS DO VÍDEO */
+        function renderVideoComments() {
+            const listContainer = document.getElementById('video-comments-list');
+            const countLabel = document.getElementById('comments-count');
+            listContainer.innerHTML = '';
+
+            const comments = currentVideoObj.comments || [];
+            countLabel.innerText = comments.length;
+
+            if(comments.length === 0) {
+                listContainer.innerHTML = '<div style="color:#777; font-style:italic;">Nenhum comentário ainda. Seja o primeiro a comentar!</div>';
+                return;
+            }
+
+            comments.forEach((c, idx) => {
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.innerHTML = `
+                    <div class="comment-header">
+                        <div>
+                            <span class="comment-author">${escapeHtml(c.author)}</span>
+                            <span class="comment-date">${c.date}</span>
+                        </div>
+                    </div>
+                    <div class="comment-text">${escapeHtml(c.text)}</div>
+                    <button class="comment-like-btn" onclick="likeComment(${idx})">👍 Aprovado (+<span>${c.likes || 0}</span>)</button>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        function addVideoComment(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('comment-name-input');
+            const textInput = document.getElementById('comment-text-input');
+
+            currentVideoObj.comments.unshift({
+                author: nameInput.value,
+                text: textInput.value,
+                date: "agora mesmo",
+                likes: 0
+            });
+
+            textInput.value = '';
+            renderVideoComments();
+        }
+
+        function likeComment(idx) {
+            currentVideoObj.comments[idx].likes = (currentVideoObj.comments[idx].likes || 0) + 1;
+            renderVideoComments();
+        }
+
+        /* 8. RENDERIZADORES DE SIDEBAR E GRADE */
+        function renderSidebar() {
+            const container = document.getElementById('sidebar-list');
+            container.innerHTML = '';
+
+            videoDatabase.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = () => playVideoById(video.id);
+                card.innerHTML = `
+                    <div class="thumb">
+                        <img src="${video.thumb}" alt="Thumb">
+                        <span class="thumb-duration">${video.duration}</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="card-title">${video.title}</div>
+                        <div class="card-meta">SeuNome2008</div>
+                        <div class="card-meta">${video.views}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderGrid(containerId, list) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if(list.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1/-1; padding:20px; background:#fff8e7; border:1px solid #ffe399;">Nenhum vídeo encontrado.</div>`;
+                return;
+            }
+
+            list.forEach(video => {
+                const item = document.createElement('div');
+                item.className = 'grid-card';
+                item.onclick = () => playVideoById(video.id);
+                item.innerHTML = `
+                    <div class="grid-thumb">
+                        <img src="${video.thumb}" alt="${video.title}">
+                        <span class="thumb-duration">${video.duration}</span>
+                    </div>
+                    <div class="grid-title">${video.title}</div>
+                    <div class="grid-meta">${video.views} • ${video.date}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        /* 9. PESQUISA */
+        function handleSearch(event) {
+            if(event) event.preventDefault();
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            if(!query) return;
+
+            const results = videoDatabase.filter(video => 
+                video.title.toLowerCase().includes(query) || 
+                video.description.toLowerCase().includes(query) ||
+                video.tags.some(t => t.toLowerCase().includes(query))
+            );
+
+            switchTab('videos');
+            document.getElementById('videos-page-title').innerText = `Resultados da busca por: "${query}"`;
+            renderGrid('videos-grid-container', results);
+        }
+
+        /* 10. MURAL DA COMUNIDADE */
+        function postCommunityMsg(event) {
+            event.preventDefault();
+            const authorInput = document.getElementById('msg-author');
+            const textInput = document.getElementById('msg-text');
+            const list = document.getElementById('community-messages-list');
+
+            const newMsg = document.createElement('div');
+            newMsg.className = 'guestbook-post';
+            newMsg.innerHTML = `
+                <span class="guestbook-author">${escapeHtml(authorInput.value)}</span>
+                <span class="guestbook-time">Postado agora mesmo</span>
+                <div class="guestbook-msg">${escapeHtml(textInput.value)}</div>
+            `;
+
+            list.insertBefore(newMsg, list.firstChild);
+            authorInput.value = '';
+            textInput.value = '';
+            alert('Seu recado foi publicado na comunidade!');
+        }
+
+        /* 11. INSCREVER-SE */
+        function toggleSubscribe(buttonElement) {
+            isSubscribed = !isSubscribed;
+            document.querySelectorAll('.btn-subscribe').forEach(btn => {
+                if(isSubscribed) {
+                    btn.innerText = 'Inscrito!';
+                    btn.style.background = '#e0e0e0';
+                    btn.style.borderColor = '#aaa';
+                } else {
+                    btn.innerText = 'Inscrever-se';
+                    btn.style.background = 'linear-gradient(to bottom, #fff066, #ffcc00)';
+                    btn.style.borderColor = '#cca300';
+                }
+            });
+            document.getElementById('subs-count').innerText = isSubscribed ? '125 inscritos' : '124 inscritos';
+        }
+
+        /* 12. TEMAS DO PERFIL (CUSTOMIZAÇÃO CANAIS 2008) */
+        function changeChannelTheme(theme) {
+            const box = document.getElementById('channel-profile-box');
+            box.className = 'channel-profile-header'; // Reseta
+
+            if(theme === 'matrix') box.classList.add('theme-matrix');
+            else if(theme === 'pink') box.classList.add('theme-pink');
+            else if(theme === 'cyber') box.classList.add('theme-cyber');
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Informações - Windows XP</title>
+    <style>
+        /* Resete básico e fontes clássicas */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tahoma', 'Geneva', sans-serif;
+            font-size: 11px;
+        }
+
+        body {
+            /* Fundo estilo Bliss / Desktop XP */
+            background: linear-gradient(180deg, #3a83d0 0%, #73b3e7 40%, #7dbd38 75%, #428212 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* Área da Área de Trabalho */
+        .desktop {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* Janela Principal do Windows XP */
+        .xp-window {
+            width: 100%;
+            max-width: 1150px;
+            background-color: #ece9d8;
+            border: 3px solid #0055ea;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Barra de Título Azul Luna */
+        .title-bar {
+            background: linear-gradient(to bottom, 
+                #0058ee 0%, 
+                #3593ff 10%, 
+                #288eff 20%, 
+                #0060f0 40%, 
+                #0050e0 60%, 
+                #0040d0 80%, 
+                #0030c0 100%);
+            padding: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 30px;
+            user-select: none;
+        }
+
+        .title-bar-text {
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px #001a80;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .title-bar-controls {
+            display: flex;
+            gap: 3px;
+        }
+
+        .win-btn {
+            width: 21px;
+            height: 21px;
+            border: 1px solid #ffffff;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+        }
+
+        .win-btn.min, .win-btn.max {
+            background: linear-gradient(to bottom, #3c93e6, #0d54c1);
+        }
+
+        .win-btn.close {
+            background: linear-gradient(to bottom, #e76c53, #c92c13);
+        }
+
+        .win-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        /* Menu superior estilo Explorer */
+        .menu-bar {
+            background-color: #ece9d8;
+            display: flex;
+            gap: 12px;
+            padding: 3px 10px;
+            border-bottom: 1px solid #d0ccc0;
+            color: #000;
+        }
+
+        .menu-item {
+            cursor: pointer;
+            padding: 1px 4px;
+        }
+
+        .menu-item:hover {
+            background-color: #316ac5;
+            color: white;
+        }
+
+        /* Barra de Endereço */
+        .address-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px;
+            background-color: #ece9d8;
+            border-bottom: 1px solid #999;
+        }
+
+        .address-input {
+            flex: 1;
+            background: white;
+            border: 1px solid #7f9db9;
+            padding: 3px 8px;
+            font-size: 11px;
+            border-radius: 2px;
+        }
+
+        /* Corpo da Janela */
+        .window-body {
+            display: flex;
+            padding: 12px;
+            gap: 15px;
+            background-color: #ece9d8;
+            min-height: 520px;
+        }
+
+        /* Painel Esquerdo (XP Tasks Sidebar) */
+        .xp-sidebar {
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .xp-box {
+            border: 1px solid #6375d6;
+            border-radius: 4px 4px 0 0;
+            background: white;
+            overflow: hidden;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .xp-box-header {
+            background: linear-gradient(to right, #215dc6 0%, #6375d6 100%);
+            color: white;
+            font-weight: bold;
+            padding: 5px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .xp-box-content {
+            padding: 8px;
+            background-color: #d6dff7;
+        }
+
+        .xp-box-content ul {
+            list-style: none;
+        }
+
+        .xp-box-content li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .xp-box-content a {
+            color: #0022b8;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .xp-box-content a:hover {
+            color: #ff6600;
+        }
+
+        /* Conteúdo Central (Informações) */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .info-card {
+            background: #ffffff;
+            border: 1px solid #7f9db9;
+            border-radius: 3px;
+            padding: 14px;
+            box-shadow: inset 1px 1px 0px #fff;
+        }
+
+        .info-card h2 {
+            color: #0a246a;
+            font-size: 13px;
+            border-bottom: 2px solid #b5c7de;
+            padding-bottom: 4px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 8px 12px;
+            line-height: 1.5;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e1e9f8;
+            border: 1px solid #7f9db9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+            font-size: 10px;
+        }
+
+        /* Área do Personagem 2D na Direita */
+        .character-column {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .character-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            /* Fundo suave com leve degradê de marca d'água */
+            background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(214,223,247,0.9) 100%);
+            border: 1px dashed #7f9db9;
+            border-radius: 6px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Imagem PNG do seu Personagem */
+        .character-img {
+            max-width: 100%;
+            max-height: 500px;
+            height: auto;
+            object-fit: contain;
+            /* Sombra suave para o personagem destacar do fundo */
+            filter: drop-shadow(5px 5px 8px rgba(0, 0, 0, 0.35));
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .character-img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Caixa de fala / balão estilo XP */
+        .speech-bubble {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            background: #ffffcc;
+            border: 1px solid #000;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #000;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 30px;
+            border-width: 8px 8px 0 0;
+            border-style: solid;
+            border-color: #ffffcc transparent;
+            display: block;
+            width: 0;
+        }
+
+        /* Barra de Status no Rodapé da Janela */
+        .status-bar {
+            background-color: #ece9d8;
+            border-top: 1px solid #aca899;
+            padding: 3px 10px;
+            display: flex;
+            justify-content: space-between;
+            color: #555;
+            font-size: 10px;
+        }
+
+        /* Barra de Tarefas do Windows XP (Rodapé da Tela) */
+        .taskbar {
+            height: 30px;
+            background: linear-gradient(to bottom, 
+                #1f2f86 0%, 
+                #3168d4 10%, 
+                #1950c7 20%, 
+                #1941a5 50%, 
+                #133182 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            z-index: 1000;
+            border-top: 1px solid #447cf0;
+            user-select: none;
+        }
+
+        .start-btn {
+            background: linear-gradient(to bottom, #388e3c 0%, #4caf50 20%, #2e7d32 80%, #1b5e20 100%);
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding: 2px 16px 2px 10px;
+            color: white;
+            font-weight: bold;
+            font-style: italic;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            height: 100%;
+            border-right: 1px solid #1b5e20;
+            text-shadow: 1px 1px 1px #000;
+        }
+
+        .start-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .taskbar-items {
+            display: flex;
+            flex: 1;
+            padding: 0 8px;
+            gap: 4px;
+        }
+
+        .task-item {
+            background: linear-gradient(to bottom, #3c93e6, #0d54c1);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 3px;
+            border: 1px solid #0a3070;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 220px;
+            font-size: 11px;
+            box-shadow: inset 1px 1px 1px rgba(255,255,255,0.4);
+        }
+
+        .system-tray {
+            background: linear-gradient(to bottom, #0c82e9, #095bc4);
+            height: 100%;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            border-left: 1px solid #09479b;
+            box-shadow: inset 1px 0 2px rgba(0,0,0,0.2);
+            font-size: 11px;
+        }
+
+        /* Adaptatividade para telas menores */
+        @media (max-width: 900px) {
+            .window-body {
+                flex-direction: column;
+            }
+            .xp-sidebar {
+                width: 100%;
+            }
+            .character-column {
+                width: 100%;
+            }
+            .character-img {
+                max-height: 380px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Área de Trabalho / Desktop -->
+    <div class="desktop">
+        
+        <!-- Janela do Windows XP -->
+        <div class="xp-window">
+            
+            <!-- Barra de Título -->
+            <div class="title-bar">
+                <div class="title-bar-text">
+                    💻 Página de Informações - [Nome do Personagem / Seu Nome]
+                </div>
+                <div class="title-bar-controls">
+                    <button class="win-btn min" title="Minimizar">_</button>
+                    <button class="win-btn max" title="Maximizar">□</button>
+                    <button class="win-btn close" title="Fechar">X</button>
+                </div>
+            </div>
+
+            <!-- Menu de Opções -->
+            <div class="menu-bar">
+                <span class="menu-item">Arquivo</span>
+                <span class="menu-item">Editar</span>
+                <span class="menu-item">Exibir</span>
+                <span class="menu-item">Favoritos</span>
+                <span class="menu-item">Ferramentas</span>
+                <span class="menu-item">Ajuda</span>
+            </div>
+
+            <!-- Barra de Endereço -->
+            <div class="address-bar">
+                <span style="color: #666;">Endereço:</span>
+                <input type="text" class="address-input" value="C:\Meus Documentos\Informacoes_Personagem.html" readonly>
+            </div>
+
+            <!-- Corpo Principal da Janela -->
+            <div class="window-body">
+
+                <!-- 1. Painel Esquerdo (Menu de Tarefas XP) -->
+                <aside class="xp-sidebar">
+                    <div class="xp-box">
+                        <div class="xp-box-header">
+                            <span>Tarefas de Informação</span>
+                            <span>▲</span>
+                        </div>
+                        <div class="xp-box-content">
+                            <ul>
+                                <li>📂 <a href="#sobre">Sobre Mim</a></li>
+                                <li>📊 <a href="#status">Status & Atributos</a></li>
+                                <li>🎒 <a href="#inventario">Inventário / Habilidades</a></li>
+                                <li>🎨 <a href="#galeria">Galeria & Links</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="xp-box">
+                        <div class="xp-box-header">
+                            <span>Outros Locais</span>
+                            <span>▲</span>
+                        </div>
+                        <div class="xp-box-content">
+                            <ul>
+                                <li>📁 <a href="#">Meus Arquivos</a></li>
+                                <li>🌐 <a href="#">Redes Sociais</a></li>
+                                <li>✉️ <a href="#">Enviar Mensagem</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- 2. Área Central (Cartões de Informações) -->
+                <main class="content-area">
+
+                    <!-- Cartão: Sobre -->
+                    <section class="info-card" id="sobre">
+                        <h2>👤 Informações Básicas</h2>
+                        <div class="info-grid">
+                            <span class="info-label">Nome:</span>
+                            <span>Seu Personagem Aqui</span>
+
+                            <span class="info-label">Classe/Função:</span>
+                            <span>Mago / Designer / Artista 2D</span>
+
+                            <span class="info-label">Idade:</span>
+                            <span>19 anos</span>
+
+                            <span class="info-label">Gostos:</span>
+                            <span>Jogos retrô, pixels, chá de camomila, criar artes 2D.</span>
+
+                            <span class="info-label">Bio / História:</span>
+                            <span>Escreva aqui um breve resumo sobre a história, personalidade ou conceito do seu personagem!</span>
+                        </div>
+                    </section>
+
+                    <!-- Cartão: Status / Habilidades -->
+                    <section class="info-card" id="status">
+                        <h2>⚡ Status & Habilidades</h2>
+                        <div class="info-grid">
+                            <span class="info-label">Poder Principal:</span>
+                            <span>Manipulação de Elementos 2D</span>
+
+                            <span class="info-label">Tags:</span>
+                            <div>
+                                <span class="tag">#OriginalCharacter</span>
+                                <span class="tag">#2Dart</span>
+                                <span class="tag">#WindowsXP</span>
+                                <span class="tag">#RetroVibes</span>
+                            </div>
+
+                            <span class="info-label">Estado Atual:</span>
+                            <span style="color: green; font-weight: bold;">● Online e Criando</span>
+                        </div>
+                    </section>
+
+                    <!-- Cartão: Notas / Avisos -->
+                    <section class="info-card" id="inventario">
+                        <h2>📝 Notas do Criador</h2>
+                        <p style="line-height: 1.6;">
+                            Você pode personalizar facilmente todo este texto alterando diretamente o arquivo HTML. Altere os atributos, adicione novas caixas e coloque seus links favoritos!
+                        </p>
+                    </section>
+
+                </main>
+
+                <!-- 3. LADO DIREITO: ÁREA DO PERSONAGEM 2D PNG -->
+                <aside class="character-column">
+                    <div class="character-wrapper">
+                        
+                        <!-- Balão de fala do personagem (Opcional) -->
+                        <div class="speech-bubble">
+                            "Olá! Bem-vindo à minha página estilo Windows XP!"
+                        </div>
+
+                        <!-- SUAS INSTRUÇÕES PARA A IMAGEM: 
+                             Substitua 'personagem.png' pelo caminho/nome do arquivo PNG do seu personagem. 
+                             Certifique-se de que o fundo do PNG seja transparente para um visual perfeito!
+                        -->
+                        <img src="personagem.png" 
+                             alt="Seu Personagem 2D" 
+                             class="character-img"
+                             onerror="this.style.display='none'; document.getElementById('placeholder-msg').style.display='flex';">
+
+                        <!-- Mensagem exibida caso a imagem ainda não exista na pasta -->
+                        <div id="placeholder-msg" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 350px; text-align: center; border: 2px dashed #999; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 6px;">
+                            <span style="font-size: 30px;">🎨</span>
+                            <strong style="margin-top: 10px; font-size: 12px; color: #333;">Seu Personagem 2D Aqui</strong>
+                            <p style="font-size: 10px; color: #666; margin-top: 6px;">
+                                Salve a imagem do seu personagem como <code>personagem.png</code> na mesma pasta deste arquivo HTML.
+                            </p>
+                        </div>
+
+                    </div>
+                </aside>
+
+            </div>
+
+            <!-- Barra de Status do Rodapé da Janela -->
+            <div class="status-bar">
+                <span>Pronto</span>
+                <span>Computador | Modo Local</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Barra de Tarefas do Windows XP -->
+    <div class="taskbar">
+        <div class="start-btn">
+            <span style="font-size: 16px;">❖</span> iniciar
+        </div>
+        <div class="taskbar-items">
+            <div class="task-item">
+                💻 Página de Informações...
+            </div>
+        </div>
+        <div class="system-tray">
+            <span>🔊</span>
+            <span id="clock">12:00</span>
+        </div>
+    </div>
+
+    <!-- Script simples para o relógio da barra de tarefas -->
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>

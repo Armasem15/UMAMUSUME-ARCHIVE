@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uma_Archive - Homepage</title>
+  <style>
+    /* =======================================================
+       1. ESTILOS DE SISTEMA & BACKGROUND (WINDOWS XP GREEN)
+       ======================================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      /* Fundo estilo Wallpaper do Windows XP em tons verdes escuros */
+      background: #0a240f linear-gradient(180deg, #0d3013 0%, #051408 60%, #020a04 100%) no-repeat fixed;
+      font-family: 'Tahoma', 'MS Sans Serif', Segoe UI, sans-serif;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px 10px;
+      user-select: none;
+    }
+
+    /* Container Principal da Página */
+    .desktop-container {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* =======================================================
+       2. BARRA SUPERIOR (HEADER ESTILO BARRA DE TAREFAS XP)
+       ======================================================= */
+    .xp-top-bar {
+      background: linear-gradient(180deg, #1e5a27 0%, #113a17 12%, #195222 50%, #0c2d11 100%);
+      border: 1px solid #2e8b39;
+      border-radius: 5px 5px 0 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .xp-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .xp-start-icon {
+      width: 24px;
+      height: 24px;
+      background: #33a843;
+      border: 1px solid #ffffff;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      box-shadow: inset 1px 1px 2px rgba(255,255,255,0.8), 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .xp-site-title {
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 18px;
+      text-shadow: 1px 1px 2px #000;
+      letter-spacing: 0.5px;
+    }
+
+    .xp-address-box {
+      background: #ffffff;
+      border: 1px solid #7f9db9;
+      border-radius: 2px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: #444;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* =======================================================
+       3. JANELA DO BANNER ROTATIVO (5 BANNERS)
+       ======================================================= */
+    .xp-banner-window {
+      background-color: #ece9d8;
+      border: 3px solid #1a5223;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 3px 5px 12px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+
+    /* Barra de Título Luna XP Verde */
+    .xp-titlebar {
+      background: linear-gradient(180deg, #389e47 0%, #1b5c25 40%, #13471b 100%);
+      height: 28px;
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 12px;
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+    }
+
+    .xp-title-text {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Botões de controle da janela (Minimizar, Maximizar, Fechar) */
+    .xp-window-controls {
+      display: flex;
+      gap: 2px;
+    }
+
+    .xp-control-btn {
+      width: 21px;
+      height: 21px;
+      border-radius: 3px;
+      border: 1px solid #ffffff;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      box-shadow: inset 0px 1px 0px rgba(255,255,255,0.5);
+    }
+
+    .xp-btn-min, .xp-btn-max {
+      background: linear-gradient(180deg, #3c9d4b 0%, #1a5723 100%);
+      border-color: #52c262;
+    }
+
+    .xp-btn-close {
+      background: linear-gradient(180deg, #e76236 0%, #b92b00 100%);
+      border-color: #fca787;
+      font-family: Arial, sans-serif;
+    }
+
+    .xp-btn-close:hover {
+      background: #dc3500;
+    }
+
+    /* Frame do Banner */
+    .banner-frame {
+      background-color: #111;
+      position: relative;
+      height: 200px;
+      border: 2px inset #d0c8a9;
+      margin: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .banner-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.3s ease;
+    }
+
+    .banner-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      color: #52e86b;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 1px solid #52e86b;
+      border-radius: 2px;
+    }
+
+    /* =======================================================
+       4. BARRA DE STATUS / TICKER (10 TEXTOS COLORIDOS)
+       ======================================================= */
+    .xp-status-bar {
+      background: #ece9d8;
+      border: 2px inset #ffffff;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 1px 1px 2px #707070;
+      border-radius: 3px;
+      min-height: 36px;
+    }
+
+    .ticker-text {
+      font-size: 12px;
+      font-weight: bold;
+      text-shadow: 1px 1px 0px #000;
+      transition: opacity 0.3s ease;
+    }
+
+    /* =======================================================
+       5. JANELA DE NAVEGAÇÃO PRINCIPAL
+       ======================================================= */
+    .xp-menubar {
+      background-color: #ece9d8;
+      display: flex;
+      gap: 12px;
+      padding: 3px 8px;
+      font-size: 11px;
+      border-bottom: 1px solid #d0c8a9;
+      color: #000;
+    }
+
+    .xp-menu-item {
+      cursor: pointer;
+      padding: 1px 4px;
+    }
+
+    .xp-menu-item:hover {
+      background-color: #165220;
+      color: #fff;
+    }
+
+    .xp-window-body {
+      background: #f1efe2;
+      padding: 16px;
+      border-top: 1px solid #fff;
+    }
+
+    .xp-fieldset {
+      border: 1px solid #b5b29d;
+      border-radius: 4px;
+      padding: 16px;
+      background-color: #f8f7f0;
+    }
+
+    .xp-legend {
+      font-size: 11px;
+      font-weight: bold;
+      color: #13471b;
+      padding: 0 6px;
+    }
+
+    /* Grid de Botões */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 5px;
+    }
+
+    /* =======================================================
+       6. BOTÕES RETRÔ WINDOWS XP (VERDE MAIS CLARO / SEM EMOJIS)
+       ======================================================= */
+    .xp-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 42px;
+      /* Gradiente em tom de verde mais claro e suave */
+      background: linear-gradient(180deg, #7ad689 0%, #4cb85d 45%, #339c43 85%, #238032 100%);
+      border: 1px solid #13471b;
+      border-radius: 3px;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.3px;
+      text-shadow: 1px 1px 1px #0a2d10;
+      box-shadow: inset 1px 1px 0px #a2f2af, inset -1px -1px 0px #1a5c25;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    /* Destaque ao passar o mouse */
+    .xp-button:hover {
+      background: linear-gradient(180deg, #8fe09d 0%, #5ec76f 45%, #42ad53 85%, #2e913d 100%);
+      border-color: #0b3311;
+      box-shadow: inset 0 0 0 1px #c8fcd0, inset 1px 1px 0px #ffffff;
+    }
+
+    /* Efeito de clique no botão */
+    .xp-button:active {
+      background: linear-gradient(180deg, #238032 0%, #339c43 100%);
+      box-shadow: inset 1px 1px 3px #0a2d10;
+      transform: translate(1px, 1px);
+    }
+
+    /* Rodapé Retrô */
+    .xp-footer {
+      text-align: center;
+      font-size: 11px;
+      color: #79a882;
+      margin-top: 8px;
+      text-shadow: 1px 1px 1px #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="desktop-container">
+
+    <!-- 1. BARRA SUPERIOR DA PÁGINA -->
+    <header class="xp-top-bar">
+      <div class="xp-brand">
+        <div class="xp-start-icon"></div>
+        <h1 class="xp-site-title">Uma_Archive</h1>
+      </div>
+      <div class="xp-address-box">
+        <span>http://www.uma-archive.net/index.html</span>
+      </div>
+    </header>
+
+    <!-- 2. JANELA DO BANNER ROTATIVO (5 BANNERS) -->
+    <div class="xp-banner-window">
+      <div class="xp-titlebar">
+        <div class="xp-title-text">
+          Carlinhos.net
+        </div>
+        <div class="xp-window-controls">
+          <div class="xp-control-btn xp-btn-min">0</div>
+          <div class="xp-control-btn xp-btn-max">1</div>
+          <div class="xp-control-btn xp-btn-close">r</div>
+        </div>
+      </div>
+      
+      <div class="banner-frame">
+        <img id="banner-image" class="banner-img" src="https://via.placeholder.com/800x200/13471b/ffffff?text=Banner+Uma_Archive+1" alt="Banner do Site">
+        <div id="banner-badge" class="banner-badge">BANNER 1 / 5</div>
+      </div>
+    </div>
+
+    <!-- 3. BARRA DE STATUS / TICKER (10 TEXTOS COLORIDOS) -->
+    <div class="xp-status-bar">
+      <span id="ticker-text" class="ticker-text">Iniciando o sistema Uma_Archive...</span>
+    </div>
+
+    <!-- 4. JANELA DE NAVEGAÇÃO PRINCIPAL (10 BOTÕES) -->
+    <div class="xp-banner-window">
+      <div class="xp-titlebar">
+        <div class="xp-title-text">
+          Uma_Archive
+        </div>
+        <div class="xp-window-controls">
+          <div class="xp-control-btn xp-btn-min">0</div>
+          <div class="xp-control-btn xp-btn-max">1</div>
+          <div class="xp-control-btn xp-btn-close">r</div>
+        </div>
+      </div>
+
+      <!-- Barra de Menus estilo Windows -->
+      <div class="xp-menubar">
+        <span class="xp-menu-item"><u>A</u>rquivo</span>
+        <span class="xp-menu-item"><u>E</u>ditar</span>
+        <span class="xp-menu-item">E<u>x</u>ibir</span>
+        <span class="xp-menu-item"><u>F</u>avoritos</span>
+        <span class="xp-menu-item">A<u>j</u>uda</span>
+      </div>
+
+      <!-- Conteúdo Interno da Janela -->
+      <div class="xp-window-body">
+        <fieldset class="xp-fieldset">
+          <legend class="xp-legend">carlinhos.net</legend>
+          
+          <div class="nav-grid">
+            <a href="wiki.html" class="xp-button">Wiki</a>
+            <a href="jogos.html" class="xp-button">Jogos</a>
+            <a href="atualizacoes.html" class="xp-button">Atualizações</a>
+            <a href="memes.html" class="xp-button">Memes</a>
+            <a href="fanarts.html" class="xp-button">Fanart</a>
+            <a href="filminhos.html" class="xp-button">Vídeos</a>
+            <a href="extra1.html" class="xp-button">Extra 1</a>
+            <a href="extra2.html" class="xp-button">Extra 2</a>
+            <a href="extra3.html" class="xp-button">Extra 3</a>
+            <a href="fundo.html" class="xp-button">Info</a>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="xp-footer">
+      Microsoft Windows XP [Versão 5.1.2600] • Uma_Archive © Todos os Direitos Reservados.
+    </div>
+
+  </div>
+
+  <!-- =======================================================
+       LÓGICA JAVASCRIPT (TROCA DE BANNERS E TEXTOS)
+       ======================================================= -->
+  <script>
+    // -----------------------------------------------------
+    // 1. ROTAÇÃO DOS 5 BANNERS
+    // -----------------------------------------------------
+    const banners = [
+      
+      "https://i.pinimg.com/736x/fd/5d/d3/fd5dd3f0d9fbd23d8f3402996244ee98.jpg",
+      "https://i.pinimg.com/736x/fd/5d/d3/fd5dd3f0d9fbd23d8f3402996244ee98.jpg",
+      "https://via.placeholder.com/800x200/1e5a27/ffffff?text=Banner+Uma_Archive+3",
+      "https://via.placeholder.com/800x200/051408/ffff00?text=Banner+Uma_Archive+4",
+      "https://via.placeholder.com/800x200/2e8b39/000000?text=Banner+Uma_Archive+5"
+    ];
+
+    let currentBanner = 0;
+    const bannerImg = document.getElementById('banner-image');
+    const bannerBadge = document.getElementById('banner-badge');
+
+    function changeBanner() {
+      currentBanner = (currentBanner + 1) % banners.length;
+      bannerImg.style.opacity = '0.1';
+      
+      setTimeout(() => {
+        bannerImg.src = banners[currentBanner];
+        bannerBadge.textContent = `BANNER ${currentBanner + 1} / ${banners.length}`;
+        bannerImg.style.opacity = '1';
+      }, 200);
+    }
+
+    // Troca o banner a cada 4 segundos
+    setInterval(changeBanner, 4000);
+
+
+    // -----------------------------------------------------
+    // 2. ROTAÇÃO DOS 10 TEXTOS COLORIDOS
+    // -----------------------------------------------------
+    const messages = [
+      { text: "★ Bem-vindo ao portal Uma_Archive! Sinta lá ESSÊNCIA! ★", color: "#00ffcc" },
+      { text: "✦ Novas postagens e brincadeiras foram adicionadas, confira! ✦", color: "#ff007f" },
+      { text: " Memes de alta qualidade selecionados a dedo pela auto copetências dos ADMs Venha conferir! ", color: "#ffff00" },
+      { text: "★ Carlinhos vai bater o recorde mundial da steel ball run! ★", color: "#33ff33" },
+      { text: "🎨 Compartilhe sua arte! Detalhes na seção de Info do site! 🎨", color: "#ff9900" },
+      { text: "📖 A Wiki do Uma_Archive recebeu dezenas de novos artigos! 📖", color: "#00bfff" },
+      { text: "✦ cuidado com os pombos espiões robôs do governo. ✦", color: "#ff66cc" },
+      { text: "✨ Pressione (Ctrl + D) para adicionar o Uma_Archive aos Favoritos! ✨", color: "#00ff66" },
+      { text: "🚀 Descubra segredos e conteúdos bônus nos botões Extras! 🚀", color: "#ff3333" },
+      { text: "💾 Obrigado por navegar no Uma_Archive! Divirta-se muito! 💾", color: "#ffffff" }
+    ];
+
+    let currentMsg = 0;
+    const tickerElem = document.getElementById('ticker-text');
+
+    function changeText() {
+      tickerElem.style.opacity = '0';
+      
+      setTimeout(() => {
+        currentMsg = (currentMsg + 1) % messages.length;
+        tickerElem.textContent = messages[currentMsg].text;
+        tickerElem.style.color = messages[currentMsg].color;
+        tickerElem.style.opacity = '1';
+      }, 200);
+    }
+
+    // Primeira mensagem ao carregar
+    tickerElem.textContent = messages[0].text;
+    tickerElem.style.color = messages[0].color;
+
+    // Troca de texto a cada 3 segundos
+    setInterval(changeText, 3000);
+  </script>
+</body>
+</html>

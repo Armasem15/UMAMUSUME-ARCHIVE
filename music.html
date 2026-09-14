@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro MP3 Player Portable</title>
+  <!-- Fonte retro tipo LCD / Monospaced -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset e Estilo Geral da Página */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: #12131C;
+      background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0),
+        linear-gradient(135deg, #0d0e15 0%, #1a1c29 100%);
+      background-size: 24px 24px, 100% 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Share Tech Mono', monospace;
+      color: #fff;
+    }
+
+    /* O Aparelho MP3 Player */
+    .mp3-player {
+      width: 360px;
+      background: linear-gradient(145deg, #3a3d46, #1f2127);
+      border: 3px solid #525663;
+      border-radius: 35px;
+      padding: 25px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.8),
+        inset 0 2px 3px rgba(255, 255, 255, 0.3),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    /* Marca / Logo no aparelho */
+    .brand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 0 10px;
+    }
+
+    .brand-name {
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: #a0a5b5;
+      text-shadow: 0 1px 1px #000;
+    }
+
+    .power-led {
+      width: 10px;
+      height: 10px;
+      background-color: #330000;
+      border-radius: 50%;
+      border: 1px solid #111;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.8);
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .power-led.active {
+      background-color: #ff3333;
+      box-shadow: 0 0 8px #ff3333, inset 0 1px 1px rgba(255,255,255,0.5);
+    }
+
+    /* Telinha LCD Retro */
+    .lcd-screen {
+      background-color: #081b1e;
+      border: 4px solid #141619;
+      border-radius: 10px;
+      padding: 12px;
+      color: #00f3ff;
+      text-shadow: 0 0 4px rgba(0, 243, 255, 0.7);
+      box-shadow: 
+        inset 0 0 10px rgba(0, 0, 0, 0.9),
+        0 2px 4px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      height: 210px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Efeito de linhas de varredura (Scanlines da tela LCD) */
+    .lcd-screen::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+      background-size: 100% 4px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    /* Topo do LCD (Status, Volume, Bateria) */
+    .lcd-top-bar {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      border-bottom: 1px dashed rgba(0, 243, 255, 0.3);
+      padding-bottom: 4px;
+    }
+
+    /* Equalizador animado */
+    .eq-container {
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      height: 12px;
+    }
+
+    .eq-bar {
+      width: 3px;
+      height: 2px;
+      background-color: #00f3ff;
+      transition: height 0.1s ease;
+    }
+
+    .playing .eq-bar {
+      animation: eqBounce 0.4s infinite alternate ease-in-out;
+    }
+
+    .playing .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+    .playing .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+    .playing .eq-bar:nth-child(3) { animation-delay: 0.2s; }
+    .playing .eq-bar:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes eqBounce {
+      0% { height: 2px; }
+      100% { height: 12px; }
+    }
+
+    /* Info da Música Atual */
+    .lcd-now-playing {
+      margin: 6px 0;
+    }
+
+    .track-title {
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: bold;
+    }
+
+    .track-time-container {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* Barra de Progresso LCD */
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: #040d0f;
+      border: 1px solid #00f3ff;
+      margin-top: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background-color: #00f3ff;
+      box-shadow: 0 0 6px #00f3ff;
+    }
+
+    /* Lista de Músicas na Telinha */
+    .lcd-playlist {
+      flex-grow: 1;
+      margin-top: 8px;
+      border-top: 1px dashed rgba(0, 243, 255, 0.3);
+      padding-top: 4px;
+      overflow-y: auto;
+      max-height: 85px;
+      font-size: 11px;
+    }
+
+    /* Custom Scrollbar para LCD */
+    .lcd-playlist::-webkit-scrollbar {
+      width: 4px;
+    }
+    .lcd-playlist::-webkit-scrollbar-thumb {
+      background: #00f3ff;
+    }
+
+    .playlist-item {
+      padding: 2px 0;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.7;
+    }
+
+    .playlist-item:hover {
+      opacity: 1;
+    }
+
+    .playlist-item.active {
+      opacity: 1;
+      font-weight: bold;
+      background: rgba(0, 243, 255, 0.15);
+    }
+
+    .playlist-item.active::before {
+      content: "► ";
+    }
+
+    /* Controles do Player (Botões Físicos) */
+    .controls {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .main-btn-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+    }
+
+    /* Estilo de Botão Plástico/Metal Retro */
+    .btn {
+      background: linear-gradient(145deg, #4c505c, #2b2e36);
+      border: 1px solid #686d7c;
+      color: #d1d5db;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 
+        0 4px 6px rgba(0,0,0,0.5),
+        inset 0 1px 1px rgba(255,255,255,0.4);
+      transition: all 0.1s ease;
+      font-size: 14px;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: 
+        0 1px 2px rgba(0,0,0,0.5),
+        inset 0 2px 4px rgba(0,0,0,0.8);
+      background: linear-gradient(145deg, #2b2e36, #4c505c);
+    }
+
+    .btn-play {
+      width: 58px;
+      height: 58px;
+      font-size: 18px;
+      background: linear-gradient(145deg, #008b94, #004f54);
+      border-color: #00ffff;
+      color: #fff;
+    }
+
+    .btn-play:active {
+      background: linear-gradient(145deg, #004f54, #008b94);
+    }
+
+    /* Botões Auxiliares e Carregar */
+    .secondary-controls {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 10px;
+    }
+
+    .file-upload-label {
+      background: linear-gradient(145deg, #3a3d46, #22242b);
+      border: 1px solid #525663;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.4);
+      color: #a0a5b5;
+      display: inline-block;
+    }
+
+    .file-upload-label:hover {
+      color: #fff;
+      border-color: #00f3ff;
+    }
+
+    .file-upload-label:active {
+      transform: translateY(1px);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .volume-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: #a0a5b5;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      width: 70px;
+      height: 4px;
+      border-radius: 2px;
+      background: #141619;
+      outline: none;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00f3ff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MP3 Player Container -->
+  <div class="mp3-player">
+    
+    <!-- Topo / Marca -->
+    <div class="brand-header">
+      <span class="brand-name">CYBER-SOUND 256MB</span>
+      <div class="power-led" id="power-led"></div>
+    </div>
+
+    <!-- Telinha LCD -->
+    <div class="lcd-screen" id="lcd-screen">
+      
+      <!-- Top Bar da Tela -->
+      <div class="lcd-top-bar">
+        <span id="lcd-status">PARADO</span>
+        
+        <!-- Equalizador visual -->
+        <div class="eq-container">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+
+        <span>VOL: <span id="vol-display">80%</span></span>
+        <span>[III]</span>
+      </div>
+
+      <!-- Info Músicas -->
+      <div class="lcd-now-playing">
+        <div class="track-title" id="track-title">NENHUMA MÚSICA...</div>
+        
+        <div class="progress-container" id="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="track-time-container">
+          <span id="current-time">00:00</span>
+          <span id="duration">00:00</span>
+        </div>
+      </div>
+
+      <!-- Playlist na Tela LCD -->
+      <div class="lcd-playlist" id="playlist-container">
+        <!-- As músicas inseridas pelo usuário vão aparecer aqui -->
+        <div style="text-align: center; opacity: 0.5; margin-top: 15px;">
+          SELECIONE MÚSICAS ABAIXO
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Controles / Botões Físicos -->
+    <div class="controls">
+      
+      <div class="main-btn-row">
+        <button class="btn" id="btn-prev" title="Anterior">◄◄</button>
+        <button class="btn btn-play" id="btn-play" title="Tocar/Pausar">►❚❚</button>
+        <button class="btn" id="btn-stop" title="Parar">■</button>
+        <button class="btn" id="btn-next" title="Próxima">►►</button>
+      </div>
+
+      <div class="secondary-controls">
+        <!-- Botão para carregar arquivos locais -->
+        <label class="file-upload-label">
+          CARREGAR MP3
+          <input type="file" id="file-input" accept="audio/*" multiple>
+        </label>
+
+        <!-- Controle de Volume -->
+        <div class="volume-container">
+          <span>VOL</span>
+          <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.05" value="0.8">
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Elemento de Áudio HTML5 OCULTO -->
+  <audio id="audio-element"></audio>
+
+  <!-- Script JavaScript -->
+  <script>
+    // Elementos do DOM
+    const audioElement = document.getElementById('audio-element');
+    const fileInput = document.getElementById('file-input');
+    const playBtn = document.getElementById('btn-play');
+    const stopBtn = document.getElementById('btn-stop');
+    const prevBtn = document.getElementById('btn-prev');
+    const nextBtn = document.getElementById('btn-next');
+    const volumeSlider = document.getElementById('volume-slider');
+    const volDisplay = document.getElementById('vol-display');
+    
+    // Elementos do LCD
+    const lcdScreen = document.getElementById('lcd-screen');
+    const lcdStatus = document.getElementById('lcd-status');
+    const trackTitle = document.getElementById('track-title');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+    const progressBar = document.getElementById('progress-bar');
+    const progressContainer = document.getElementById('progress-container');
+    const playlistContainer = document.getElementById('playlist-container');
+    const powerLed = document.getElementById('power-led');
+
+    // Estado da Playlist
+    let playlist = [];
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+
+    // --- CARREGAR ARQUIVOS MP3 ---
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      // Adiciona novos arquivos à lista
+      files.forEach(file => {
+        playlist.push({
+          name: file.name.replace(/\.[^/.]+$/, ""), // Remove a extensão do arquivo
+          url: URL.createObjectURL(file)
+        });
+      });
+
+      renderPlaylist();
+
+      // Se for a primeira vez carregando, prepara a primeira música
+      if (!isPlaying && playlist.length === files.length) {
+        loadTrack(0);
+      }
+    });
+
+    // Renderiza a lista na telinha LCD
+    function renderPlaylist() {
+      playlistContainer.innerHTML = '';
+      
+      playlist.forEach((track, index) => {
+        const item = document.createElement('div');
+        item.classList.add('playlist-item');
+        if (index === currentTrackIndex) {
+          item.classList.add('active');
+        }
+        item.innerText = `${index + 1}. ${track.name}`;
+        
+        // Clique direto na música da lista na tela
+        item.addEventListener('click', () => {
+          currentTrackIndex = index;
+          loadTrack(currentTrackIndex);
+          playAudio();
+        });
+
+        playlistContainer.appendChild(item);
+      });
+    }
+
+    // Carrega uma música pelo Índice
+    function loadTrack(index) {
+      if (playlist.length === 0) return;
+
+      currentTrackIndex = index;
+      audioElement.src = playlist[currentTrackIndex].url;
+      trackTitle.innerText = playlist[currentTrackIndex].name;
+      
+      renderPlaylist();
+      
+      // Auto scroll na lista na tela para manter a música ativa visível
+      const activeItem = playlistContainer.querySelector('.active');
+      if (activeItem) {
+        activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    // Tocar / Pausar
+    function togglePlay() {
+      if (playlist.length === 0) return;
+
+      if (isPlaying) {
+        pauseAudio();
+      } else {
+        playAudio();
+      }
+    }
+
+    function playAudio() {
+      if (playlist.length === 0) return;
+      
+      audioElement.play();
+      isPlaying = true;
+      lcdStatus.innerText = "TOCANDO";
+      lcdScreen.classList.add('playing');
+      powerLed.classList.add('active');
+    }
+
+    function pauseAudio() {
+      audioElement.pause();
+      isPlaying = false;
+      lcdStatus.innerText = "PAUSA";
+      lcdScreen.classList.remove('playing');
+      powerLed.classList.remove('active');
+    }
+
+    function stopAudio() {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      isPlaying = false;
+      lcdStatus.innerText = "PARADO";
+      lcdScreen.classList.remove('playing');
+      powerLed.classList.remove('active');
+    }
+
+    function nextTrack() {
+      if (playlist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+      loadTrack(currentTrackIndex);
+      if (isPlaying) playAudio();
+    }
+
+    function prevTrack() {
+      if (playlist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+      loadTrack(currentTrackIndex);
+      if (isPlaying) playAudio();
+    }
+
+    // Atualizar Barra de Progresso e Tempo
+    audioElement.addEventListener('timeupdate', () => {
+      const { currentTime, duration } = audioElement;
+      
+      if (isNaN(duration)) return;
+
+      // Porcentagem da Barra
+      const progressPercent = (currentTime / duration) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      // Formatação dos Minutos e Segundos
+      currentTimeEl.innerText = formatTime(currentTime);
+      durationEl.innerText = formatTime(duration);
+    });
+
+    // Mudar posição da música ao clicar na barra de progresso do LCD
+    progressContainer.addEventListener('click', (e) => {
+      if (playlist.length === 0) return;
+      const width = progressContainer.clientWidth;
+      const clickX = e.offsetX;
+      const duration = audioElement.duration;
+
+      audioElement.currentTime = (clickX / width) * duration;
+    });
+
+    // Quando a música termina, avança para a próxima
+    audioElement.addEventListener('ended', () => {
+      nextTrack();
+    });
+
+    // Utilitário para formatar 00:00
+    function formatTime(seconds) {
+      const min = Math.floor(seconds / 60);
+      const sec = Math.floor(seconds % 60);
+      return `${min < 10 ? '0' : ''}${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+
+    // Controle de Volume
+    volumeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      audioElement.volume = val;
+      volDisplay.innerText = `${Math.round(val * 100)}%`;
+    });
+
+    // Eventos dos Botões Físicos
+    playBtn.addEventListener('click', togglePlay);
+    stopBtn.addEventListener('click', stopAudio);
+    nextBtn.addEventListener('click', nextTrack);
+    prevBtn.addEventListener('click', prevTrack);
+
+  </script>
+</body>
+</html>
