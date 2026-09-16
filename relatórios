@@ -1,0 +1,40 @@
+base do relatório
+
+título:
+data:
+seu nome:
+
+-o que mudou? 
+-onde mudou?
+-Deu erro?
+-Concertou erro?
+-Adiciou o que?
+-obs
+
+
+
+título: primeiro patch inicial 
+data: 16/09
+seu nome: Marcos Moacir 
+
+-o que mudou? 
+Finalmente a wiki base de personagem foi finalizada, junto com o perfil da Goldship.
+
+
+-onde mudou?
+Wiki_base.html
+Wiki_Goldship.html
+Wiki.html
+
+-Deu erro?
+Na Wiki.html pode haver um erro gráfico quando tiver muitos personagens no meno
+o erro visual é de proporções das janelas da página. 
+
+-Concertou erro?
+...
+
+-Adiciou o que?
+Wiki da Goldship (wiki_Goldship.html)
+
+-obs
+Tachyon é do adm

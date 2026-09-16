@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UmaWiki</title>
+  <title>Wiki Orkut - Kaelen, o Mago de Fogo</title>
   <style>
     /* Reset e Configurações Globais estilo Orkut */
     * {
@@ -18,7 +18,7 @@
       color: #333333;
     }
     a {
-      color: #983b8c;
+      color: #3B5998;
       text-decoration: none;
     }
     a:hover {
@@ -27,14 +27,14 @@
 
     /* Barra Superior (Header) */
     .orkut-header {
-      background-color: #b46d9c;
+      background-color: #6D84B4;
       height: 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
       color: white;
-      border-bottom: 2px solid #983b77;
+      border-bottom: 2px solid #3B5998;
     }
     .orkut-logo {
       font-size: 22px;
@@ -47,7 +47,7 @@
       letter-spacing: -1px;
     }
     .orkut-logo span {
-      color: #b46dae;
+      color: #6D84B4;
     }
     .nav-menu a {
       color: white;
@@ -73,21 +73,21 @@
     /* Componente de Caixa Orkut */
     .box {
       background-color: #FFFFFF;
-      border: 1px solid #ffc3fb;
+      border: 1px solid #C3D9FF;
       border-radius: 4px;
       padding: 10px;
       margin-bottom: 12px;
     }
     .box-header {
-      background-color: #f1d4ef;
-      color: #983b87;
+      background-color: #D4E6F1;
+      color: #3B5998;
       font-weight: bold;
       font-size: 11px;
       padding: 5px 8px;
       margin: -10px -10px 10px -10px;
       border-top-left-radius: 3px;
       border-top-right-radius: 3px;
-      border-bottom: 1px solid #ffc3f4;
+      border-bottom: 1px solid #C3D9FF;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -98,7 +98,7 @@
       width: 100%;
       height: auto;
       border-radius: 3px;
-      border: 1px solid #ffc3f4;
+      border: 1px solid #C3D9FF;
     }
     .action-list {
       list-style: none;
@@ -113,13 +113,13 @@
 
     /* Cabeçalho do Personagem */
     .char-header {
-      border-bottom: 1px solid #ffc3f4;
+      border-bottom: 1px solid #C3D9FF;
       padding-bottom: 8px;
       margin-bottom: 10px;
     }
     .char-name {
       font-size: 20px;
-      color: #983b7e;
+      color: #3B5998;
       font-weight: bold;
     }
     .char-status {
@@ -142,7 +142,7 @@
       border: 1px solid #C3D9FF;
       border-radius: 4px 4px 0 0;
       font-weight: bold;
-      color: #983b87;
+      color: #3B5998;
       cursor: pointer;
       user-select: none;
     }
@@ -256,7 +256,7 @@
       justify-content: space-between;
     }
     .skill-type {
-      background: #b46da3;
+      background: #6D84B4;
       color: white;
       font-size: 9px;
       padding: 2px 5px;
@@ -279,7 +279,7 @@
     .stat-name {
       width: 90px;
       font-weight: bold;
-      color: #983b85;
+      color: #3B5998;
     }
     .stat-bg {
       flex: 1;
@@ -297,7 +297,7 @@
     /* ABA 4: DEPOIMENTOS */
     .testimonial-item {
       background: #F9FAFC;
-      border: 1px dashed #ffc3f8;
+      border: 1px dashed #C3D9FF;
       padding: 10px;
       margin-bottom: 10px;
       border-radius: 4px;
@@ -316,7 +316,7 @@
     }
     .testimonial-author {
       font-weight: bold;
-      color: #983b85;
+      color: #3B5998;
       font-size: 11px;
       margin-bottom: 4px;
       display: flex;
@@ -332,13 +332,13 @@
       margin-top: 15px;
       background: #F4F7FC;
       padding: 10px;
-      border: 1px solid #ffc3f4;
+      border: 1px solid #C3D9FF;
       border-radius: 4px;
     }
     .depo-form textarea {
       width: 100%;
       height: 60px;
-      border: 1px solid #ffc3f3;
+      border: 1px solid #C3D9FF;
       border-radius: 3px;
       padding: 5px;
       font-family: Arial, sans-serif;
@@ -348,7 +348,7 @@
     }
     .btn-orkut {
       background: #ECE9D8;
-      border: 1px solid #b97fb0;
+      border: 1px solid #7F9DB9;
       padding: 3px 12px;
       font-size: 11px;
       font-weight: bold;
@@ -372,7 +372,7 @@
       width: 100%;
       height: 55px;
       object-fit: cover;
-      border: 1px solid #ffc3fa;
+      border: 1px solid #C3D9FF;
       border-radius: 2px;
     }
     .grid-card span {
@@ -395,9 +395,9 @@
 
   <!-- BARRA SUPERIOR DA REDE -->
   <header class="orkut-header">
-    <div class="orkut-logo">Uma <span>wiki</span></div>
+    <div class="orkut-logo">orkut <span>wiki</span></div>
     <nav class="nav-menu">
-      <a href="wiki.html">Início</a>
+      <a href="#">Início</a>
       <a href="#">Personagens</a>
       <a href="#">Guildas/Comunidades</a>
       <a href="#">Lutas/Episódios</a>
@@ -410,7 +410,7 @@
     <!-- COLUNA ESQUERDA: FOTO E MENU DO PERSONAGEM -->
     <aside class="col-left">
       <div class="box">
-        <img class="profile-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Avatar do Personagem">
+        <img class="profile-avatar" src="https://picsum.photos/id/1025/300/350" alt="Avatar do Personagem">
         
         <ul class="action-list">
           <li>✏️ <a href="#">Editar Wiki</a></li>
@@ -422,10 +422,10 @@
 
       <!-- Estatísticas -->
       <div class="box">
-        <div class="box-header">Aparições na mídia</div>
-        <p><strong>Anime:</strong> ...</p>
-        <p><strong>Mangá:</strong> ...</p>
-        <p><strong>Outros:</strong> <span style="color: green; font-weight: bold;">...</span></p>
+        <div class="box-header">Estatísticas Wiki</div>
+        <p><strong>Visualizações:</strong> 12.450</p>
+        <p><strong>Contribuintes:</strong> 42 leitores</p>
+        <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Canon</span></p>
       </div>
     </aside>
 
@@ -437,7 +437,7 @@
       <div class="orkut-tabs">
         <div class="tab active" onclick="switchTab(event, 'tab-perfil')">Perfil</div>
         <div class="tab" onclick="switchTab(event, 'tab-galeria')">Galeria de Fotos (6)</div>
-        <div class="tab" onclick="switchTab(event, 'tab-poderes')">ficha técnica</div>
+        <div class="tab" onclick="switchTab(event, 'tab-poderes')">Poderes & Golpes</div>
         <div class="tab" onclick="switchTab(event, 'tab-depoimentos')">Depoimentos (3)</div>
       </div>
 
@@ -446,8 +446,8 @@
 
         <!-- CABEÇALHO DO PERSONAGEM (Aparece em todas as abas) -->
         <div class="char-header">
-          <h1 class="char-name">nome</h1>
-          <div class="char-status">texto</div>
+          <h1 class="char-name">Kaelen, o Mago de Fogo 🔥</h1>
+          <div class="char-status">"Queimando os inimigos com a chama da justiça!" | Solteiro | Reino de Eldoria</div>
         </div>
 
         <!-- ================= ABA 1: PERFIL ================= -->
@@ -456,15 +456,15 @@
           <div class="ratings-bar">
             <div class="rating-item">
               <span>Confiável:</span>
-              <span>★ ★ ★</span>
+              <span>😃😃😃</span>
             </div>
             <div class="rating-item">
               <span>Legal:</span>
-              <span>☺ ☺ ☺</span>
+              <span>👍👍👍</span>
             </div>
             <div class="rating-item">
-              <span>beleza:</span>
-              <span>❤ ❤ ❤</span>
+              <span>Sexy:</span>
+              <span>❤️❤️🤍</span>
             </div>
           </div>
 
@@ -472,74 +472,74 @@
           <table class="info-table">
             <tr>
               <td class="label">Nome Completo:</td>
-              <td class="value">nome</td>
+              <td class="value">Kaelen Ignis Valerius</td>
             </tr>
             <tr>
-              <td class="label">aniversário:</td>
-              <td class="value">xx/xx/xxxx</td>
+              <td class="label">Idade / Niver:</td>
+              <td class="value">24 anos (15 de Outubro)</td>
             </tr>
             <tr>
-              <td class="label">espécie:</td>
-              <td class="value">cavalo</td>
+              <td class="label">Classe:</td>
+              <td class="value">Mago Elemental / Arquimago</td>
             </tr>
             <tr>
               <td class="label">Afiliação:</td>
-              <td class="value"><a href="#">...</a></td>
+              <td class="value"><a href="#">Guardiões da LUZ</a></td>
             </tr>
             <tr>
-              <td class="label">ocupação:</td>
-              <td class="value">corredora</td>
+              <td class="label">Nível de Poder:</td>
+              <td class="value">Classe-S (9.500 MP)</td>
             </tr>
             <tr>
               <td class="label">Gosta de:</td>
-              <td class="value">...</td>
+              <td class="value">Grimórios antigos, poções de mana, treinar explosões, comer lámen.</td>
             </tr>
           </table>
 
           <div class="box-header">Quem sou eu (Biografia)</div>
           <div class="bio-text">
-            <p>apresentação (o que elas colocaram no perfil dela?)</p>
+            <p>Nascido nas montanhas vulcânicas do Sul, Kaelen descobriu sua afinidade com o elemento fogo aos 7 anos. Após ser treinado no Grande Templo Arcano, tornou-se o mais jovem mago a alcançar a patente de Arquimago.</p>
             <br>
-            <p>..</p>
+            <p>Atualmente viaja pelo continente ao lado de seus aliados para conter a ameaça das sombras e impedir o despertar do Dragão Ancião.</p>
           </div>
         </div>
 
         <!-- ================= ABA 2: GALERIA DE FOTOS ================= -->
         <div id="tab-galeria" class="tab-content">
           <div class="box-header">
-            <span>Álbum: Fotos </span>
+            <span>Álbum: Fotos de Batalha & Aventuras</span>
             <span>6 Fotos</span>
           </div>
 
           <div class="photo-gallery">
             <div class="photo-card">
-              <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Foto 1">
-              <div class="photo-caption">text</div>
+              <img src="https://picsum.photos/id/1018/200/150" alt="Foto 1">
+              <div class="photo-caption">Treino no Templo</div>
               <div class="photo-date">Enviada em 12/04</div>
             </div>
             <div class="photo-card">
-              <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Foto 2">
-              <div class="photo-caption">text</div>
+              <img src="https://picsum.photos/id/1015/200/150" alt="Foto 2">
+              <div class="photo-caption">Vale do Dragão</div>
               <div class="photo-date">Enviada em 18/04</div>
             </div>
             <div class="photo-card">
-              <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Foto 3">
-              <div class="photo-caption">text</div>
+              <img src="https://picsum.photos/id/1043/200/150" alt="Foto 3">
+              <div class="photo-caption">Com a Guilda!</div>
               <div class="photo-date">Enviada em 02/05</div>
             </div>
             <div class="photo-card">
-              <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Foto 4">
-              <div class="photo-caption">text</div>
+              <img src="https://picsum.photos/id/1058/200/150" alt="Foto 4">
+              <div class="photo-caption">Invocação de Fogo</div>
               <div class="photo-date">Enviada em 10/05</div>
             </div>
             <div class="photo-card">
-              <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Foto 5">
-              <div class="photo-caption">text</div>
+              <img src="https://picsum.photos/id/1067/200/150" alt="Foto 5">
+              <div class="photo-caption">Torneio Arcano</div>
               <div class="photo-date">Enviada em 22/05</div>
             </div>
             <div class="photo-card">
-              <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Foto 6">
-              <div class="photo-caption"></div>
+              <img src="https://picsum.photos/id/1039/200/150" alt="Foto 6">
+              <div class="photo-caption">Descanso na Taverna</div>
               <div class="photo-date">Enviada em 30/05</div>
             </div>
           </div>
@@ -547,60 +547,60 @@
 
         <!-- ================= ABA 3: PODERES E GOLPES ================= -->
         <div id="tab-poderes" class="tab-content">
-          <div class="box-header">Estatísticas de Corrida</div>
+          <div class="box-header">Estatísticas de Combate</div>
           
           <div class="stat-bar-container">
             <div class="stat-row">
-              <span class="stat-name">inteligencia:</span>
-              <div class="stat-bg"><div class="stat-fill" style="width: 10%;"></div></div>
+              <span class="stat-name">Poder Mágico:</span>
+              <div class="stat-bg"><div class="stat-fill" style="width: 95%;"></div></div>
             </div>
             <div class="stat-row">
-              <span class="stat-name">stamina:</span>
-              <div class="stat-bg"><div class="stat-fill" style="width: 10%;"></div></div>
+              <span class="stat-name">Ataque Físico:</span>
+              <div class="stat-bg"><div class="stat-fill" style="width: 35%;"></div></div>
             </div>
             <div class="stat-row">
-              <span class="stat-name">estomago:</span>
-              <div class="stat-bg"><div class="stat-fill" style="width: 10%;"></div></div>
+              <span class="stat-name">Defesa:</span>
+              <div class="stat-bg"><div class="stat-fill" style="width: 60%;"></div></div>
             </div>
             <div class="stat-row">
               <span class="stat-name">Velocidade:</span>
-              <div class="stat-bg"><div class="stat-fill" style="width: 10%;"></div></div>
+              <div class="stat-bg"><div class="stat-fill" style="width: 80%;"></div></div>
             </div>
           </div>
 
-          <div class="box-header">Lista de Habilidades</div>
+          <div class="box-header">Lista de Habilidades & Magias</div>
           <div class="skill-list">
             
             <div class="skill-card">
               <div class="skill-title">
-                <span>sla</span>
-                <span class="skill-type">xxx</span>
+                <span>🔥 Explosão Incandescente</span>
+                <span class="skill-type">Ofensiva</span>
               </div>
-              <div class="skill-desc">...</div>
+              <div class="skill-desc">Concentra mana de fogo em uma esfera concentrada e lança contra o alvo, causando imenso dano em área.</div>
             </div>
 
             <div class="skill-card">
               <div class="skill-title">
-                <span>sla</span>
-                <span class="skill-type">xxx</span>
+                <span>🛡️ Escudo de Chamas</span>
+                <span class="skill-type">Defensiva</span>
               </div>
-              <div class="skill-desc">...</div>
+              <div class="skill-desc">Cria uma barreira de calor ao redor do conjurador que reduz danos de ataques físicos e queima inimigos próximos.</div>
             </div>
 
             <div class="skill-card">
               <div class="skill-title">
-                <span>sla</span>
-                <span class="skill-type">xxx</span>
+                <span>🦅 Asas da Fênix</span>
+                <span class="skill-type">Suporte / Voo</span>
               </div>
-              <div class="skill-desc">...</div>
+              <div class="skill-desc">Gera asas feitas de fogo puro, permitindo ao personagem voar em alta velocidade por tempo limitado.</div>
             </div>
 
             <div class="skill-card">
               <div class="skill-title">
-                <span>sla</span>
-                <span class="skill-type">xxx</span>
+                <span>⚡ Lança de Plasma (Golpe Supremo)</span>
+                <span class="skill-type">Ultimate</span>
               </div>
-              <div class="skill-desc">...</div>
+              <div class="skill-desc">Comprime as chamas até o estado plasmático, perfurando qualquer escudo mágico ou armadura pesada existente.</div>
             </div>
 
           </div>
@@ -615,13 +615,13 @@
 
           <!-- Depoimento 1 -->
           <div class="testimonial-item">
-            <img class="testimonial-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="DEPOIMENTO">
+            <img class="testimonial-avatar" src="https://picsum.photos/id/1012/100/100" alt="Lyra">
             <div class="testimonial-body">
               <div class="testimonial-author">
-                <span><a href="#">DEPOIMENTO</a> diz:</span>
+                <span><a href="#">Lyra, a Arqueira</a> diz:</span>
                 <span style="color: #999; font-weight: normal;">14/05/2026</span>
               </div>
-              <p>"depoimento, seja criativo"</p>
+              <p>"O Kaelen é um excelente companheiro de equipe! Embora às vezes ele exagere nas explosões e quase queime nossa comida na fogueira kkkkk! Cara 100% confiável e legal!"</p>
               <div class="testimonial-actions">
                 <a href="#">Responder</a> | <a href="#">Excluir depoimento</a>
               </div>
@@ -630,13 +630,13 @@
 
           <!-- Depoimento 2 -->
           <div class="testimonial-item">
-            <img class="testimonial-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="DEPOIMENTO">
+            <img class="testimonial-avatar" src="https://picsum.photos/id/1027/100/100" alt="Mestre Thorne">
             <div class="testimonial-body">
               <div class="testimonial-author">
-                <span><a href="#">DEPOIMENTO</a> diz:</span>
+                <span><a href="#">Mestre Thorne</a> diz:</span>
                 <span style="color: #999; font-weight: normal;">02/04/2026</span>
               </div>
-              <p>"depoimento, seja criativo"</p>
+              <p>"Treinei este garoto desde o seu primeiro feitiço de faísca. Tem um coração puro e um poder devastador. Cuidado para não irritá-lo no campo de batalha!"</p>
               <div class="testimonial-actions">
                 <a href="#">Responder</a> | <a href="#">Excluir depoimento</a>
               </div>
@@ -645,13 +645,13 @@
 
           <!-- Depoimento 3 -->
           <div class="testimonial-item">
-            <img class="testimonial-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="DEPOIMENTO">
+            <img class="testimonial-avatar" src="https://picsum.photos/id/1005/100/100" alt="Aria">
             <div class="testimonial-body">
               <div class="testimonial-author">
-                <span><a href="#">DEPOIMENTO</a> diz:</span>
+                <span><a href="#">Aria Mística</a> diz:</span>
                 <span style="color: #999; font-weight: normal;">20/03/2026</span>
               </div>
-              <p>"depoimento, seja criativo"</p>
+              <p>"Mago incrível! Salvou nossa vila contra os Orcs na semana passada. Te devo essa, Kaelen! S2"</p>
               <div class="testimonial-actions">
                 <a href="#">Responder</a> | <a href="#">Excluir depoimento</a>
               </div>
@@ -660,7 +660,7 @@
 
           <!-- Formulário para Escrever Depoimento -->
           <div class="depo-form">
-            <strong style="color: #983b82;">Deixar um depoimento:</strong>
+            <strong style="color: #3B5998;">Deixar um depoimento para Kaelen:</strong>
             <p style="color: #666; font-size: 10px; margin-top: 2px;">
               <i>Atenção: Seu depoimento só aparecerá no perfil depois que o dono aceitar!</i>
             </p>
@@ -682,28 +682,28 @@
         </div>
         <div class="grid-3x3">
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="contato">
-            <span>contato</span>
+            <img src="https://picsum.photos/id/1012/100/100" alt="Lyra">
+            <span>Lyra</span>
           </div>
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="contato">
-            <span>contato</span>
+            <img src="https://picsum.photos/id/1027/100/100" alt="Thorne">
+            <span>Mestre Thorne</span>
           </div>
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="contato">
-            <span>contato</span>
+            <img src="https://picsum.photos/id/1005/100/100" alt="Aria">
+            <span>Aria Mística</span>
           </div>
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="contato">
-            <span>contato</span>
+            <img src="https://picsum.photos/id/1062/100/100" alt="Garrick">
+            <span>Garrick</span>
           </div>
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="contato">
-            <span>contato</span>
+            <img src="https://picsum.photos/id/1074/100/100" alt="Zephyr">
+            <span>Zephyr</span>
           </div>
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="contato">
-            <span>contato</span>
+            <img src="https://picsum.photos/id/1069/100/100" alt="Elden">
+            <span>Elden</span>
           </div>
         </div>
       </div>
@@ -715,16 +715,16 @@
         </div>
         <div class="grid-3x3">
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="clube">
-            <span>Clube</span>
+            <img src="https://picsum.photos/id/1040/100/100" alt="Guilda">
+            <span>Eu Amo Magia</span>
           </div>
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="cliube">
-            <span>clube</span>
+            <img src="https://picsum.photos/id/1043/100/100" alt="Eldoria">
+            <span>Defensores</span>
           </div>
           <div class="grid-card">
-            <img src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="clube">
-            <span>clube</span>
+            <img src="https://picsum.photos/id/1050/100/100" alt="Lamen">
+            <span>Lámen Mania</span>
           </div>
         </div>
       </div>
