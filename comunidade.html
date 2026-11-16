@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UmaWiki - Comunidade</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #E5ECF9;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333333;
+    }
+    a { color: #983b8c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .orkut-header {
+      background-color: #b46d9c;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: white;
+      border-bottom: 2px solid #983b77;
+    }
+    .orkut-logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-style: italic;
+      color: #E41A82;
+      background-color: #FFFFFF;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: -1px;
+    }
+    .orkut-logo span { color: #b46dae; }
+    .nav-menu a { color: white; margin-left: 15px; font-weight: bold; font-size: 11px; }
+
+    .main-container {
+      max-width: 980px;
+      margin: 15px auto;
+      display: flex;
+      gap: 12px;
+      padding: 0 10px;
+    }
+    .col-left { width: 200px; flex-shrink: 0; }
+    .col-center { flex: 1; }
+    .col-right { width: 240px; flex-shrink: 0; }
+
+    .box {
+      background-color: #FFFFFF;
+      border: 1px solid #ffc3fb;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    .box-header {
+      background-color: #f1d4ef;
+      color: #983b87;
+      font-weight: bold;
+      font-size: 11px;
+      padding: 5px 8px;
+      margin: -10px -10px 10px -10px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border-bottom: 1px solid #ffc3f4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comm-avatar {
+      width: 100%;
+      height: auto;
+      border-radius: 3px;
+      border: 1px solid #ffc3f4;
+    }
+    .action-list { list-style: none; margin-top: 10px; }
+    .action-list li { margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+
+    .comm-header-title { font-size: 20px; color: #983b7e; font-weight: bold; margin-bottom: 4px; }
+    .comm-header-desc { color: #555; line-height: 1.4; background: #F9FAFC; padding: 8px; border: 1px solid #E5ECF9; border-radius: 4px; margin-bottom: 12px; }
+
+    /* Caixa de Nova Postagem (RPG / Fórum) */
+    .post-composer {
+      background: #F4F7FC;
+      border: 1px solid #ffc3f4;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .composer-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    select, input[type="text"], textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ffc3f0;
+      border-radius: 3px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      background: #FFF;
+    }
+    textarea { height: 70px; resize: vertical; margin-bottom: 8px; }
+
+    .btn-orkut {
+      background: #ECE9D8;
+      border: 1px solid #b97fb0;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    .btn-orkut:hover { background: #F0EFE2; }
+
+    /* Feed de Mensagens / Tópicos */
+    .forum-post {
+      background: #FFFFFF;
+      border: 1px solid #E5ECF9;
+      border-left: 3px solid #b46d9c;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    .forum-post:nth-child(even) { background: #FAFBFD; }
+    .post-author-col {
+      width: 75px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .post-author-col img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border: 1px solid #ffc3f4;
+      border-radius: 3px;
+    }
+    .post-author-name {
+      display: block;
+      font-weight: bold;
+      font-size: 11px;
+      margin-top: 4px;
+      word-break: break-word;
+    }
+    .post-content-col { flex: 1; }
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #E5ECF9;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      font-size: 10px;
+      color: #888;
+    }
+    .post-subject { font-weight: bold; color: #E41A82; font-size: 12px; }
+    .post-text { line-height: 1.5; color: #333; white-space: pre-line; }
+    .post-attached-img {
+      margin-top: 8px;
+      max-width: 100%;
+      max-height: 280px;
+      border-radius: 4px;
+      border: 1px solid #C3D9FF;
+      display: block;
+    }
+
+    /* Grid de Membros (Coluna Direita) */
+    .grid-3x3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .grid-card { position: relative; }
+    .grid-card img {
+      width: 100%;
+      height: 55px;
+      object-fit: cover;
+      border: 1px solid #ffc3fa;
+      border-radius: 2px;
+    }
+    .grid-card span {
+      display: block;
+      font-size: 10px;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .remove-member-btn {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(200, 0, 0, 0.8);
+      color: white;
+      border: none;
+      font-size: 9px;
+      width: 15px;
+      height: 15px;
+      border-radius: 2px;
+      cursor: pointer;
+      display: none;
+    }
+    .grid-card:hover .remove-member-btn { display: block; }
+
+    .add-member-box {
+      background: #F4F7FC;
+      padding: 8px;
+      border: 1px dashed #ffc3f0;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .main-container { flex-direction: column; }
+      .col-left, .col-right { width: 100%; }
+      .composer-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="orkut-header">
+    <div class="orkut-logo">Uma <span>wiki</span></div>
+    <nav class="nav-menu">
+      <a href="wiki.html">Início</a>
+      <a href="wiki.html">Personagens</a>
+      <a href="comunidades.html">Comunidades</a>
+      <a href="criar.html">+ Novo Perfil</a>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <!-- COLUNA ESQUERDA: INFO DO GRUPO -->
+    <aside class="col-left">
+      <div class="box">
+        <img id="commAvatar" class="comm-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Comunidade">
+        <ul class="action-list">
+          <li>🔙 <a href="comunidades.html">Todas as Comunidades</a></li>
+          <li>🏠 <a href="wiki.html">Página Inicial</a></li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <div class="box-header">Informações</div>
+        <p><strong>Categoria:</strong> <span id="commCategoria">-</span></p>
+        <p><strong>Membros:</strong> <span id="commTotalMembros">0</span></p>
+        <p><strong>Tipo:</strong> Pública</p>
+      </div>
+    </aside>
+
+    <!-- COLUNA CENTRAL: FÓRUM / CHAT DOS PERSONAGENS -->
+    <main class="col-center">
+      <div class="box">
+        <h1 class="comm-header-title" id="commNome">Carregando comunidade...</h1>
+        <div class="comm-header-desc" id="commDesc">...</div>
+
+        <!-- COMPOSITOR DE MENSAGEM -->
+        <div class="post-composer">
+          <div style="font-weight: bold; color: #983b82; margin-bottom: 6px;">
+            💬 Escrever no Fórum da Comunidade:
+          </div>
+          
+          <div class="composer-row">
+            <select id="selectAutor" style="flex: 1.2;">
+              <option value="">-- Escolha qual personagem vai falar --</option>
+            </select>
+            <input type="text" id="postAssunto" placeholder="Assunto / Tópico (opcional)" style="flex: 1.5;">
+          </div>
+
+          <textarea id="postTexto" placeholder="O que este personagem quer dizer no grupo?"></textarea>
+
+          <div class="composer-row" style="margin-bottom: 0; align-items: center;">
+            <input type="text" id="postImgUrl" placeholder="🖼️ URL de foto/meme para anexar (opcional)" style="flex: 1;">
+            <button type="button" class="btn-orkut" onclick="enviarMensagem()">Postar Mensagem</button>
+          </div>
+        </div>
+
+        <!-- LISTA DE POSTAGENS -->
+        <div class="box-header">
+          <span id="postsCount">Mensagens no Tópico (0)</span>
+          <span style="font-weight: normal; font-size: 10px;">Mais recentes primeiro</span>
+        </div>
+
+        <div id="postsFeed">
+          <p style="color:#666; padding: 10px;">Carregando mensagens...</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- COLUNA DIREITA: MEMBROS DO GRUPO -->
+    <aside class="col-right">
+      <div class="box">
+        <div class="box-header">
+          <span id="membrosHeader">Membros (0)</span>
+        </div>
+
+        <div class="grid-3x3" id="membrosGrid"></div>
+
+        <!-- Adicionar Personagem Existente ao Grupo -->
+        <div class="add-member-box">
+          <label style="font-weight: bold; color: #983b87; display: block; margin-bottom: 4px; font-size: 11px;">
+            ➕ Adicionar Personagem ao Grupo:
+          </label>
+          <select id="selectNovoMembro" style="margin-bottom: 6px;">
+            <option value="">Carregando personagens...</option>
+          </select>
+          <button type="button" class="btn-orkut" style="width: 100%;" onclick="adicionarMembro()">Entrar no Grupo</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+    
+    let comunidadeAtual = null;
+    let todosPersonagens = []; // Mapa completo dos personagens do banco
+
+    async function iniciar() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      // 1. Busca todos os personagens cadastrados na Wiki
+      const { data: chars } = await supabaseClient
+        .from('personagens')
+        .select('id, nome, avatar_url, ocupacao')
+        .order('nome', { ascending: true });
+      
+      todosPersonagens = chars || [];
+
+      // 2. Busca os dados da comunidade
+      let query = supabaseClient.from('comunidades').select('*');
+      query = id ? query.eq('id', id).single() : query.limit(1).single();
+      
+      const { data: comm, error } = await query;
+      if (error || !comm) {
+        document.getElementById('commNome').innerText = 'Comunidade não encontrada';
+        return;
+      }
+
+      comunidadeAtual = comm;
+      renderizarComunidade();
+      await carregarMensagens();
+    }
+
+    function renderizarComunidade() {
+      document.title = `UmaWiki - ${comunidadeAtual.nome}`;
+      document.getElementById('commNome').innerText = comunidadeAtual.nome;
+      document.getElementById('commDesc').innerText = comunidadeAtual.descricao || 'Bem-vindo à comunidade!';
+      document.getElementById('commCategoria').innerText = comunidadeAtual.categoria || 'Geral';
+      document.getElementById('commAvatar').src = comunidadeAtual.imagem_url || DEFAULT_AVATAR;
+
+      const membrosIds = Array.isArray(comunidadeAtual.membros_ids) ? comunidadeAtual.membros_ids.map(Number) : [];
+      const membros = todosPersonagens.filter(p => membrosIds.includes(p.id));
+      const naoMembros = todosPersonagens.filter(p => !membrosIds.includes(p.id));
+
+      document.getElementById('commTotalMembros').innerText = membros.length;
+      document.getElementById('membrosHeader').innerText = `Membros (${membros.length})`;
+
+      // Grid de Membros (Coluna Direita)
+      const grid = document.getElementById('membrosGrid');
+      grid.innerHTML = membros.length ? membros.map(m => `
+        <div class="grid-card">
+          <button class="remove-member-btn" title="Remover do grupo" onclick="removerMembro(${m.id})">x</button>
+          <a href="perfil.html?id=${m.id}">
+            <img src="${m.avatar_url || DEFAULT_AVATAR}" alt="${m.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+            <span>${m.nome}</span>
+          </a>
+        </div>
+      `).join('') : '<p style="grid-column: 1/-1; color:#777; font-size:11px;">Nenhum membro ainda. Adicione abaixo!</p>';
+
+      // Dropdown para adicionar novos membros
+      const selectNovo = document.getElementById('selectNovoMembro');
+      selectNovo.innerHTML = naoMembros.length
+        ? naoMembros.map(p => `<option value="${p.id}">${p.nome}</option>`).join('')
+        : '<option value="">Todos já são membros!</option>';
+
+      // Dropdown de quem vai escrever a mensagem (só membros do grupo!)
+      const selectAutor = document.getElementById('selectAutor');
+      selectAutor.innerHTML = membros.length
+        ? membros.map(m => `<option value="${m.id}">💬 Falar como: ${m.nome}</option>`).join('')
+        : '<option value="">⚠️ Adicione um personagem ao grupo primeiro!</option>';
+    }
+
+    async function adicionarMembro() {
+      const novoId = parseInt(document.getElementById('selectNovoMembro').value);
+      if (!novoId || !comunidadeAtual) return;
+
+      const atuais = Array.isArray(comunidadeAtual.membros_ids) ? comunidadeAtual.membros_ids.map(Number) : [];
+      if (atuais.includes(novoId)) return;
+
+      const atualizados = [...atuais, novoId];
+
+      const { error } = await supabaseClient
+        .from('comunidades')
+        .update({ membros_ids: atualizados })
+        .eq('id', comunidadeAtual.id);
+
+      if (error) {
+        alert('Erro ao adicionar membro: ' + error.message);
+        return;
+      }
+
+      comunidadeAtual.membros_ids = atualizados;
+      renderizarComunidade();
+    }
+
+    async function removerMembro(idRemover) {
+      if (!comunidadeAtual) return;
+      const atuais = Array.isArray(comunidadeAtual.membros_ids) ? comunidadeAtual.membros_ids.map(Number) : [];
+      const atualizados = atuais.filter(id => id !== idRemover);
+
+      const { error } = await supabaseClient
+        .from('comunidades')
+        .update({ membros_ids: atualizados })
+        .eq('id', comunidadeAtual.id);
+
+      if (!error) {
+        comunidadeAtual.membros_ids = atualizados;
+        renderizarComunidade();
+      }
+    }
+
+    async function carregarMensagens() {
+      const { data: msgs, error } = await supabaseClient
+        .from('comunidade_mensagens')
+        .select('*')
+        .eq('comunidade_id', comunidadeAtual.id)
+        .order('created_at', { ascending: false });
+
+      const feed = document.getElementById('postsFeed');
+      if (error) {
+        feed.innerHTML = '<p style="color:red;">Erro ao carregar mensagens.</p>';
+        return;
+      }
+
+      const lista = msgs || [];
+      document.getElementById('postsCount').innerText = `Mensagens no Tópico (${lista.length})`;
+
+      if (lista.length === 0) {
+        feed.innerHTML = '<p style="color:#666; padding:10px;">Nenhuma mensagem neste grupo ainda. Escolha um personagem acima e comece a conversa!</p>';
+        return;
+      }
+
+      feed.innerHTML = lista.map(m => {
+        const autor = todosPersonagens.find(p => p.id === m.personagem_id) || { nome: 'Desconhecido', avatar_url: DEFAULT_AVATAR };
+        const dataFormatada = new Date(m.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+
+        return `
+          <div class="forum-post">
+            <div class="post-author-col">
+              <a href="perfil.html?id=${autor.id}">
+                <img src="${autor.avatar_url || DEFAULT_AVATAR}" alt="${autor.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+                <span class="post-author-name">${autor.nome}</span>
+              </a>
+            </div>
+            <div class="post-content-col">
+              <div class="post-meta">
+                <span class="post-subject">${m.assunto || 'Sem assunto'}</span>
+                <span>${dataFormatada}</span>
+              </div>
+              <div class="post-text">${m.mensagem}</div>
+              ${m.imagem_url ? `<img class="post-attached-img" src="${m.imagem_url}" alt="Anexo" onerror="this.style.display='none'">` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function enviarMensagem() {
+      const personagemId = parseInt(document.getElementById('selectAutor').value);
+      const assunto = document.getElementById('postAssunto').value.trim();
+      const mensagem = document.getElementById('postTexto').value.trim();
+      const imagemUrl = document.getElementById('postImgUrl').value.trim();
+
+      if (!personagemId) {
+        alert('Adicione pelo menos um personagem na coluna "Membros" à direita antes de postar!');
+        return;
+      }
+      if (!mensagem) {
+        alert('Escreva uma mensagem antes de postar!');
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from('comunidade_mensagens')
+        .insert([{
+          comunidade_id: comunidadeAtual.id,
+          personagem_id: personagemId,
+          assunto: assunto,
+          mensagem: mensagem,
+          imagem_url: imagemUrl
+        }]);
+
+      if (error) {
+        alert('Erro ao enviar mensagem: ' + error.message);
+        return;
+      }
+
+      document.getElementById('postAssunto').value = '';
+      document.getElementById('postTexto').value = '';
+      document.getElementById('postImgUrl').value = '';
+      await carregarMensagens();
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>

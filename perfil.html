@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UmaWiki - Perfil</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #E5ECF9;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333333;
+    }
+    a { color: #983b8c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .orkut-header {
+      background-color: #b46d9c;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: white;
+      border-bottom: 2px solid #983b77;
+    }
+    .orkut-logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-style: italic;
+      color: #E41A82;
+      background-color: #FFFFFF;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: -1px;
+    }
+    .orkut-logo span { color: #b46dae; }
+    .nav-menu a { color: white; margin-left: 15px; font-weight: bold; font-size: 11px; }
+
+    .main-container {
+      max-width: 980px;
+      margin: 15px auto;
+      display: flex;
+      gap: 12px;
+      padding: 0 10px;
+    }
+    .col-left { width: 200px; flex-shrink: 0; }
+    .col-center { flex: 1; }
+    .col-right { width: 230px; flex-shrink: 0; }
+
+    .box {
+      background-color: #FFFFFF;
+      border: 1px solid #ffc3fb;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+    .box-header {
+      background-color: #f1d4ef;
+      color: #983b87;
+      font-weight: bold;
+      font-size: 11px;
+      padding: 5px 8px;
+      margin: -10px -10px 10px -10px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border-bottom: 1px solid #ffc3f4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .profile-avatar {
+      width: 100%;
+      height: auto;
+      border-radius: 3px;
+      border: 1px solid #ffc3f4;
+    }
+    .action-list { list-style: none; margin-top: 10px; }
+    .action-list li { margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+
+    .char-header { border-bottom: 1px solid #ffc3f4; padding-bottom: 8px; margin-bottom: 10px; }
+    .char-name { font-size: 20px; color: #983b7e; font-weight: bold; }
+    .char-status { color: #666; font-size: 11px; margin-top: 2px; }
+
+    .orkut-tabs { display: flex; gap: 4px; margin-bottom: -1px; position: relative; z-index: 10; }
+    .tab {
+      padding: 6px 12px;
+      background: #E5ECF9;
+      border: 1px solid #C3D9FF;
+      border-radius: 4px 4px 0 0;
+      font-weight: bold;
+      color: #983b87;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tab:hover { background: #D4E6F1; }
+    .tab.active { background: #FFFFFF; border-bottom: 1px solid #FFFFFF; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .ratings-bar {
+      background-color: #F4F7FC;
+      border: 1px solid #E5ECF9;
+      padding: 8px;
+      border-radius: 4px;
+      display: flex;
+      gap: 20px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .rating-item { display: flex; align-items: center; gap: 4px; }
+
+    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+    .info-table td { padding: 4px 0; vertical-align: top; }
+    .info-table .label {
+      color: #666666;
+      width: 130px;
+      font-weight: bold;
+      text-align: right;
+      padding-right: 12px;
+    }
+
+    .bio-text {
+      line-height: 1.5;
+      color: #444;
+      background: #FAFAFA;
+      padding: 10px;
+      border: 1px solid #E5ECF9;
+      border-radius: 4px;
+      white-space: pre-line;
+    }
+
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .photo-card {
+      background: #FAFAFA;
+      border: 1px solid #C3D9FF;
+      padding: 6px;
+      text-align: center;
+      border-radius: 3px;
+    }
+    .photo-card img { width: 100%; height: 110px; object-fit: cover; border: 1px solid #E5ECF9; }
+    .photo-caption { font-size: 11px; color: #333; margin-top: 5px; font-weight: bold; }
+    .photo-date { font-size: 9px; color: #888; }
+
+    .skill-list { margin-top: 10px; }
+    .skill-card {
+      border: 1px solid #E5ECF9;
+      background: #F9FAFC;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .skill-title { font-weight: bold; color: #E41A82; font-size: 12px; display: flex; justify-content: space-between; }
+    .skill-type { background: #b46da3; color: white; font-size: 9px; padding: 2px 5px; border-radius: 3px; }
+    .skill-desc { margin-top: 4px; color: #555; }
+
+    .stat-bar-container { margin-bottom: 15px; }
+    .stat-row { display: flex; align-items: center; margin-bottom: 6px; }
+    .stat-name { width: 90px; font-weight: bold; color: #983b85; }
+    .stat-bg {
+      flex: 1;
+      height: 12px;
+      background: #E5ECF9;
+      border: 1px solid #C3D9FF;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .stat-fill { height: 100%; background: linear-gradient(90deg, #FF7B00, #E41A82); }
+
+    .testimonial-item {
+      background: #F9FAFC;
+      border: 1px dashed #ffc3f8;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      display: flex;
+      gap: 10px;
+    }
+    .testimonial-avatar {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #C3D9FF;
+      border-radius: 3px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .testimonial-body { flex: 1; }
+    .testimonial-author {
+      font-weight: bold;
+      color: #983b85;
+      font-size: 11px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .depo-form {
+      margin-top: 15px;
+      background: #F4F7FC;
+      padding: 10px;
+      border: 1px solid #ffc3f4;
+      border-radius: 4px;
+    }
+    .depo-form input, .depo-form textarea {
+      width: 100%;
+      border: 1px solid #ffc3f3;
+      border-radius: 3px;
+      padding: 5px;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+    .depo-form textarea { height: 60px; resize: vertical; }
+    .btn-orkut {
+      background: #ECE9D8;
+      border: 1px solid #b97fb0;
+      padding: 3px 12px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      border-radius: 2px;
+      margin-top: 5px;
+    }
+    .btn-orkut:hover { background: #F0EFE2; }
+
+    .grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+    .grid-card img { width: 100%; height: 55px; object-fit: cover; border: 1px solid #ffc3fa; border-radius: 2px; }
+    .grid-card span {
+      display: block;
+      font-size: 10px;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 768px) {
+      .main-container { flex-direction: column; }
+      .col-left, .col-right { width: 100%; }
+      .photo-gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="orkut-header">
+    <div class="orkut-logo">Uma <span>wiki</span></div>
+    <nav class="nav-menu">
+      <a href="wiki.html">Início</a>
+      <a href="wiki.html">Personagens</a>
+      <a href="criar.html">+ Criar Perfil</a>
+    </nav>
+  </header>
+
+  <div class="main-container">
+    <!-- COLUNA ESQUERDA -->
+    <aside class="col-left">
+      <div class="box">
+        <img id="charAvatar" class="profile-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Avatar">
+        
+        <ul class="action-list">
+          <li>🏠 <a href="wiki.html">Voltar ao Início</a></li>
+          <li>⭐ <a href="javascript:void(0)" onclick="alert('Adicionado aos favoritos!')">Adicionar aos Favoritos</a></li>
+          <li>💬 <a href="javascript:void(0)" onclick="openTab('tab-depoimentos', 3)">Deixar Depoimento</a></li>
+        </ul>
+      </div>
+
+      <div class="box">
+        <div class="box-header">Aparições na mídia</div>
+        <p><strong>Anime:</strong> <span id="midiaAnime">...</span></p>
+        <p><strong>Mangá:</strong> <span id="midiaManga">...</span></p>
+        <p><strong>Outros:</strong> <span id="midiaOutros" style="color: green; font-weight: bold;">...</span></p>
+      </div>
+    </aside>
+
+    <!-- COLUNA CENTRAL -->
+    <main class="col-center">
+      <div class="orkut-tabs">
+        <div class="tab active" onclick="switchTab(event, 'tab-perfil')">Perfil</div>
+        <div class="tab" id="tabBtnFotos" onclick="switchTab(event, 'tab-galeria')">Galeria de Fotos (0)</div>
+        <div class="tab" onclick="switchTab(event, 'tab-poderes')">Ficha Técnica</div>
+        <div class="tab" id="tabBtnDepos" onclick="switchTab(event, 'tab-depoimentos')">Depoimentos (0)</div>
+      </div>
+
+      <div class="box">
+        <div class="char-header">
+          <h1 class="char-name" id="charName">Carregando...</h1>
+          <div class="char-status" id="charStatus">...</div>
+        </div>
+
+        <!-- ABA 1: PERFIL -->
+        <div id="tab-perfil" class="tab-content active">
+          <div class="ratings-bar">
+            <div class="rating-item">
+              <span>Confiável:</span>
+              <span id="avalConfiavel" style="font-weight: bold;">★ ★ ★</span>
+            </div>
+            <div class="rating-item">
+              <span>Legal:</span>
+              <span id="avalLegal">☺ ☺ ☺</span>
+            </div>
+            <div class="rating-item">
+              <span>Beleza/Sexy:</span>
+              <span id="avalBeleza">❤ ❤ ❤</span>
+            </div>
+          </div>
+
+          <table class="info-table">
+            <tr>
+              <td class="label">Nome Completo:</td>
+              <td class="value" id="infoNomeCompleto">-</td>
+            </tr>
+            <tr>
+              <td class="label">Aniversário:</td>
+              <td class="value" id="infoAniversario">-</td>
+            </tr>
+            <tr>
+              <td class="label">Espécie:</td>
+              <td class="value" id="infoEspecie">-</td>
+            </tr>
+            <tr>
+              <td class="label">Afiliação:</td>
+              <td class="value"><a href="wiki.html" id="infoAfiliacao">-</a></td>
+            </tr>
+            <tr>
+              <td class="label">Ocupação:</td>
+              <td class="value" id="infoOcupacao">-</td>
+            </tr>
+            <tr>
+              <td class="label">Gosta de:</td>
+              <td class="value" id="infoGostaDe">-</td>
+            </tr>
+          </table>
+
+          <div class="box-header">Quem sou eu (Biografia)</div>
+          <div class="bio-text" id="infoBiografia">Carregando biografia...</div>
+        </div>
+
+        <!-- ABA 2: GALERIA DE FOTOS -->
+        <div id="tab-galeria" class="tab-content">
+          <div class="box-header">
+            <span>Álbum: Fotos</span>
+            <span id="albumCount">0 Fotos</span>
+          </div>
+          <div class="photo-gallery" id="photoGallery"></div>
+        </div>
+
+        <!-- ABA 3: FICHA TÉCNICA -->
+        <div id="tab-poderes" class="tab-content">
+          <div class="box-header">Estatísticas de Corrida</div>
+          
+          <div class="stat-bar-container">
+            <div class="stat-row">
+              <span class="stat-name">Inteligência:</span>
+              <div class="stat-bg"><div id="barInteligencia" class="stat-fill" style="width: 0%;"></div></div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">Stamina:</span>
+              <div class="stat-bg"><div id="barStamina" class="stat-fill" style="width: 0%;"></div></div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">Estômago:</span>
+              <div class="stat-bg"><div id="barEstomago" class="stat-fill" style="width: 0%;"></div></div>
+            </div>
+            <div class="stat-row">
+              <span class="stat-name">Velocidade:</span>
+              <div class="stat-bg"><div id="barVelocidade" class="stat-fill" style="width: 0%;"></div></div>
+            </div>
+          </div>
+
+          <div class="box-header">Lista de Habilidades</div>
+          <div class="skill-list" id="skillList"></div>
+        </div>
+
+        <!-- ABA 4: DEPOIMENTOS -->
+        <div id="tab-depoimentos" class="tab-content">
+          <div class="box-header">
+            <span id="depoHeaderCount">Depoimentos Aprovados (0)</span>
+            <span style="font-weight: normal; font-size: 10px;">Exibindo todos os depoimentos</span>
+          </div>
+
+          <div id="testimonialsList"></div>
+
+          <div class="depo-form">
+            <strong style="color: #983b82;">Deixar um depoimento:</strong>
+            <input type="text" id="depoAutor" placeholder="Seu nome ou nome do personagem (ex: Mejiro McQueen)">
+            <input type="text" id="depoAvatar" placeholder="URL do seu avatar (opcional)">
+            <textarea id="depoTexto" placeholder="Escreva aqui seu depoimento..."></textarea>
+            <button class="btn-orkut" onclick="enviarDepoimento()">Enviar Depoimento</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- COLUNA DIREITA -->
+    <aside class="col-right">
+      <div class="box">
+        <div class="box-header">
+          <span id="aliadosCount">Aliados (0)</span>
+          <a href="wiki.html">ver todos</a>
+        </div>
+        <div class="grid-3x3" id="aliadosGrid"></div>
+      </div>
+
+      <div class="box">
+        <div class="box-header">
+          <span id="comunidadesCount">Comunidades (0)</span>
+          <a href="#">ver todas</a>
+        </div>
+        <div class="grid-3x3" id="comunidadesGrid"></div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+    let personagemAtual = null;
+
+    async function carregarPerfil() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      let query = supabaseClient.from('personagens').select('*');
+      if (id) {
+        query = query.eq('id', id).single();
+      } else {
+        query = query.limit(1).single();
+      }
+
+      const { data, error } = await query;
+
+      if (error || !data) {
+        document.getElementById('charName').innerText = 'Personagem não encontrado';
+        document.getElementById('infoBiografia').innerText = 'Verifique se o personagem existe no banco de dados.';
+        return;
+      }
+
+      personagemAtual = data;
+      preencherTela(data);
+    }
+
+    function preencherTela(p) {
+      document.title = `UmaWiki - ${p.nome}`;
+      document.getElementById('charName').innerText = p.nome;
+      document.getElementById('charStatus').innerText = p.status || '';
+      document.getElementById('charAvatar').src = p.avatar_url || DEFAULT_AVATAR;
+
+      // Mídia
+      document.getElementById('midiaAnime').innerText = p.midia_anime || '...';
+      document.getElementById('midiaManga').innerText = p.midia_manga || '...';
+      document.getElementById('midiaOutros').innerText = p.midia_outros || '...';
+
+      // Avaliações
+      document.getElementById('avalConfiavel').innerText = p.aval_confiavel || '★ ★ ★';
+      document.getElementById('avalLegal').innerText = p.aval_legal || '☺ ☺ ☺';
+      document.getElementById('avalBeleza').innerText = p.aval_beleza || '❤ ❤ ❤';
+
+      // Dados Gerais
+      document.getElementById('infoNomeCompleto').innerText = p.nome_completo || p.nome;
+      document.getElementById('infoAniversario').innerText = p.aniversario || 'Desconhecido';
+      document.getElementById('infoEspecie').innerText = p.especie || 'Cavalo';
+      document.getElementById('infoAfiliacao').innerText = p.afiliacao || 'Nenhuma';
+      document.getElementById('infoOcupacao').innerText = p.ocupacao || 'Corredora';
+      document.getElementById('infoGostaDe').innerText = p.gosta_de || '...';
+      document.getElementById('infoBiografia').innerText = p.biografia || 'Sem biografia cadastrada.';
+
+      // Barras de Status
+      document.getElementById('barInteligencia').style.width = `${p.stat_inteligencia || 10}%`;
+      document.getElementById('barStamina').style.width = `${p.stat_stamina || 10}%`;
+      document.getElementById('barEstomago').style.width = `${p.stat_estomago || 10}%`;
+      document.getElementById('barVelocidade').style.width = `${p.stat_velocidade || 10}%`;
+
+      // Galeria de Fotos
+      const fotos = Array.isArray(p.fotos) ? p.fotos : [];
+      document.getElementById('tabBtnFotos').innerText = `Galeria de Fotos (${fotos.length})`;
+      document.getElementById('albumCount').innerText = `${fotos.length} Fotos`;
+      document.getElementById('photoGallery').innerHTML = fotos.length ? fotos.map((f, idx) => `
+        <div class="photo-card">
+          <img src="${f.url}" alt="Foto ${idx + 1}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <div class="photo-caption">${f.legenda || ''}</div>
+          <div class="photo-date">${f.data ? 'Enviada em ' + f.data : ''}</div>
+        </div>
+      `).join('') : '<p style="color:#666;">Nenhuma foto na galeria.</p>';
+
+      // Habilidades
+      const skills = Array.isArray(p.habilidades) ? p.habilidades : [];
+      document.getElementById('skillList').innerHTML = skills.length ? skills.map(s => `
+        <div class="skill-card">
+          <div class="skill-title">
+            <span>${s.titulo}</span>
+            <span class="skill-type">${s.tipo || 'habilidade'}</span>
+          </div>
+          <div class="skill-desc">${s.descricao || ''}</div>
+        </div>
+      `).join('') : '<p style="color:#666;">Nenhuma habilidade cadastrada.</p>';
+
+      // Depoimentos
+      renderizarDepoimentos(p.depoimentos || []);
+
+      // Aliados
+      const aliados = Array.isArray(p.aliados) ? p.aliados : [];
+      document.getElementById('aliadosCount').innerText = `Aliados (${aliados.length})`;
+      document.getElementById('aliadosGrid').innerHTML = aliados.map(a => `
+        <div class="grid-card">
+          <img src="${a.avatar || DEFAULT_AVATAR}" alt="${a.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <span>${a.nome}</span>
+        </div>
+      `).join('');
+
+      // Comunidades
+      const comunidades = Array.isArray(p.comunidades) ? p.comunidades : [];
+      document.getElementById('comunidadesCount').innerText = `Comunidades (${comunidades.length})`;
+      document.getElementById('comunidadesGrid').innerHTML = comunidades.map(c => `
+        <div class="grid-card">
+          <img src="${c.avatar || DEFAULT_AVATAR}" alt="${c.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <span>${c.nome}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderizarDepoimentos(lista) {
+      const depos = Array.isArray(lista) ? lista : [];
+      document.getElementById('tabBtnDepos').innerText = `Depoimentos (${depos.length})`;
+      document.getElementById('depoHeaderCount').innerText = `Depoimentos Aprovados (${depos.length})`;
+
+      document.getElementById('testimonialsList').innerHTML = depos.length ? depos.map(d => `
+        <div class="testimonial-item">
+          <img class="testimonial-avatar" src="${d.avatar || DEFAULT_AVATAR}" alt="${d.autor}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <div class="testimonial-body">
+            <div class="testimonial-author">
+              <span><a href="#">${d.autor}</a> diz:</span>
+              <span style="color: #999; font-weight: normal;">${d.data || ''}</span>
+            </div>
+            <p>"${d.texto}"</p>
+          </div>
+        </div>
+      `).join('') : '<p style="color:#666; margin-bottom:10px;">Nenhum depoimento ainda. Seja o primeiro!</p>';
+    }
+
+    async function enviarDepoimento() {
+      if (!personagemAtual) return;
+      const autor = document.getElementById('depoAutor').value.trim();
+      const avatar = document.getElementById('depoAvatar').value.trim() || DEFAULT_AVATAR;
+      const texto = document.getElementById('depoTexto').value.trim();
+
+      if (!autor || !texto) {
+        alert('Preencha seu nome e o texto do depoimento!');
+        return;
+      }
+
+      const hoje = new Date().toLocaleDateString('pt-BR');
+      const novosDepos = [...(personagemAtual.depoimentos || []), { autor, avatar, data: hoje, texto }];
+
+      const { error } = await supabaseClient
+        .from('personagens')
+        .update({ depoimentos: novosDepos })
+        .eq('id', personagemAtual.id);
+
+      if (error) {
+        alert('Erro ao salvar depoimento!');
+        console.error(error);
+        return;
+      }
+
+      personagemAtual.depoimentos = novosDepos;
+      renderizarDepoimentos(novosDepos);
+      document.getElementById('depoAutor').value = '';
+      document.getElementById('depoAvatar').value = '';
+      document.getElementById('depoTexto').value = '';
+      alert('Depoimento publicado com sucesso!');
+    }
+
+    function switchTab(event, tabId) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+      }
+    }
+
+    function openTab(tabId, tabIndex) {
+      const tabs = document.querySelectorAll('.tab');
+      switchTab(null, tabId);
+      if (tabs[tabIndex]) tabs[tabIndex].classList.add('active');
+    }
+
+    carregarPerfil();
+  </script>
+</body>
+</html>

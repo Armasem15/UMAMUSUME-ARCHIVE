@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UmaWiki - Criar Novo Perfil</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Reset e Configurações Globais estilo Orkut */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #E5ECF9;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333333;
+    }
+    a { color: #983b8c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    .orkut-header {
+      background-color: #b46d9c;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: white;
+      border-bottom: 2px solid #983b77;
+    }
+    .orkut-logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-style: italic;
+      color: #E41A82;
+      background-color: #FFFFFF;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: -1px;
+    }
+    .orkut-logo span { color: #b46dae; }
+    .nav-menu a { color: white; margin-left: 15px; font-weight: bold; font-size: 11px; }
+
+    /* Container */
+    .container { max-width: 850px; margin: 18px auto; padding: 0 10px; }
+
+    /* Caixas Orkut */
+    .box {
+      background-color: #FFFFFF;
+      border: 1px solid #ffc3fb;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 14px;
+    }
+    .box-header {
+      background-color: #f1d4ef;
+      color: #983b87;
+      font-weight: bold;
+      font-size: 12px;
+      padding: 6px 10px;
+      margin: -15px -15px 15px -15px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border-bottom: 1px solid #ffc3f4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Topo com Preview do Avatar */
+    .top-profile-setup {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+    }
+    .avatar-preview-box {
+      width: 140px;
+      flex-shrink: 0;
+      text-align: center;
+      background: #F9FAFC;
+      border: 1px solid #ffc3f4;
+      padding: 6px;
+      border-radius: 4px;
+    }
+    .avatar-preview-box img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 3px;
+      border: 1px solid #E5ECF9;
+    }
+    .avatar-preview-box span {
+      display: block;
+      font-size: 10px;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    /* Inputs e Grids */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      flex: 1;
+    }
+    .form-group { margin-bottom: 8px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      display: block;
+      font-weight: bold;
+      color: #666;
+      margin-bottom: 3px;
+      font-size: 11px;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ffc3f0;
+      border-radius: 3px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      background: #FFF;
+    }
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: #E41A82;
+      background: #FFF9FD;
+    }
+    textarea { height: 90px; resize: vertical; line-height: 1.4; }
+
+    /* Sliders de Status */
+    .stat-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      background: #F9FAFC;
+      padding: 6px 10px;
+      border: 1px solid #E5ECF9;
+      border-radius: 4px;
+    }
+    .stat-input-row label {
+      width: 95px;
+      margin: 0;
+      color: #983b85;
+    }
+    .stat-input-row input[type="range"] {
+      flex: 1;
+      accent-color: #E41A82;
+      cursor: pointer;
+    }
+    .stat-val {
+      width: 40px;
+      text-align: right;
+      font-weight: bold;
+      color: #E41A82;
+    }
+
+    /* Linhas Dinâmicas (Fotos, Habilidades, Aliados, etc.) */
+    .dynamic-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      align-items: center;
+      background: #F9FAFC;
+      padding: 8px;
+      border: 1px dashed #ffc3f0;
+      border-radius: 4px;
+    }
+
+    /* Botões Estilo Orkut */
+    .btn-orkut {
+      background: #ECE9D8;
+      border: 1px solid #b97fb0;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+    .btn-orkut:hover { background: #F0EFE2; }
+
+    .btn-remove {
+      background: #ffe5e5;
+      border: 1px solid #e09999;
+      color: #a00;
+      padding: 5px 9px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    .btn-remove:hover { background: #ffcccc; }
+
+    .btn-save {
+      background: linear-gradient(180deg, #f23898, #c91270);
+      color: white;
+      border: 1px solid #8a0c4d;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .btn-save:hover { background: linear-gradient(180deg, #ff47a6, #d6187a); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .helper-bar {
+      background: #FFF8DC;
+      border: 1px solid #E6DB55;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 650px) {
+      .top-profile-setup { flex-direction: column; }
+      .avatar-preview-box { width: 100%; }
+      .avatar-preview-box img { width: 140px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .dynamic-row { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="orkut-header">
+    <div class="orkut-logo">Uma <span>wiki</span></div>
+    <nav class="nav-menu">
+      <a href="wiki.html">Início</a>
+      <a href="wiki.html">Personagens</a>
+      <a href="criar.html">+ Novo Perfil</a>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- Barra rápida para testar ou voltar -->
+    <div class="helper-bar">
+      <span>✨ Preencha os dados abaixo para gerar automaticamente o perfil na <strong>UmaWiki</strong>.</span>
+      <button type="button" class="btn-orkut" onclick="preencherExemplo()">Preencher Exemplo (Goldship)</button>
+    </div>
+
+    <form id="createForm" onsubmit="salvarPersonagem(event)">
+      
+      <!-- 1. CABEÇALHO E DADOS DO PERFIL -->
+      <div class="box">
+        <div class="box-header">1. Identidade e Perfil Principal</div>
+        
+        <div class="top-profile-setup">
+          <div class="avatar-preview-box">
+            <img id="avatarPreview" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Preview">
+            <span>Prévia da Foto</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nome de Exibição (Título) *</label>
+              <input type="text" id="nome" required placeholder="Ex: Goldship">
+            </div>
+            <div class="form-group">
+              <label>Subtítulo / Status do MSN</label>
+              <input type="text" id="status" placeholder="Ex: A maior encrenqueira de Tracen">
+            </div>
+            <div class="form-group full">
+              <label>URL da Foto de Perfil (Avatar)</label>
+              <input type="text" id="avatar_url" placeholder="Cole o link da imagem aqui (https://...)" oninput="atualizarPreview(this.value)">
+            </div>
+            <div class="form-group">
+              <label>Nome Completo</label>
+              <input type="text" id="nome_completo" placeholder="Ex: Goldship">
+            </div>
+            <div class="form-group">
+              <label>Aniversário</label>
+              <input type="text" id="aniversario" placeholder="Ex: 6 de março de 2009">
+            </div>
+            <div class="form-group">
+              <label>Espécie</label>
+              <input type="text" id="especie" value="cavalo">
+            </div>
+            <div class="form-group">
+              <label>Afiliação / Academia</label>
+              <input type="text" id="afiliacao" placeholder="Ex: Tracen Academy">
+            </div>
+            <div class="form-group">
+              <label>Ocupação</label>
+              <input type="text" id="ocupacao" value="corredora">
+            </div>
+            <div class="form-group">
+              <label>Gosta de</label>
+              <input type="text" id="gosta_de" placeholder="Ex: Movimento dos músculos faciais">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full" style="margin-top: 10px;">
+          <label>Quem sou eu (Biografia)</label>
+          <textarea id="biografia" placeholder="Escreva a apresentação do personagem..."></textarea>
+        </div>
+      </div>
+
+      <!-- 2. AVALIAÇÕES ORKUT E APARIÇÕES NA MÍDIA -->
+      <div class="box">
+        <div class="box-header">2. Avaliações Estilo Orkut & Aparições na Mídia</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Confiável (ex: ★ ★ ★ ou NEM UM POUCO)</label>
+            <input type="text" id="aval_confiavel" value="★ ★ ★">
+          </div>
+          <div class="form-group">
+            <label>Legal (ex: 👍👍👍 ou ☺ ☺ ☺)</label>
+            <input type="text" id="aval_legal" value="👍👍👍">
+          </div>
+          <div class="form-group">
+            <label>Beleza / Sexy (ex: ❤️❤️❤️)</label>
+            <input type="text" id="aval_beleza" value="❤️❤️❤️">
+          </div>
+          <div class="form-group">
+            <label>Aparições - Anime</label>
+            <input type="text" id="midia_anime" placeholder="Ex: Temporadas 1, 2 e 3">
+          </div>
+          <div class="form-group">
+            <label>Aparições - Mangá</label>
+            <input type="text" id="midia_manga" placeholder="Ex: Cinderella Gray">
+          </div>
+          <div class="form-group">
+            <label>Aparições - Outros</label>
+            <input type="text" id="midia_outros" placeholder="Ex: Jogo Pretty Derby">
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. FICHA TÉCNICA (ESTATÍSTICAS E HABILIDADES) -->
+      <div class="box">
+        <div class="box-header">3. Ficha Técnica - Estatísticas de Corrida</div>
+        
+        <div class="stat-input-row">
+          <label>Inteligência:</label>
+          <input type="range" id="stat_inteligencia" min="0" max="100" value="50" oninput="document.getElementById('val_int').innerText = this.value + '%'">
+          <span class="stat-val" id="val_int">50%</span>
+        </div>
+        <div class="stat-input-row">
+          <label>Stamina:</label>
+          <input type="range" id="stat_stamina" min="0" max="100" value="50" oninput="document.getElementById('val_sta').innerText = this.value + '%'">
+          <span class="stat-val" id="val_sta">50%</span>
+        </div>
+        <div class="stat-input-row">
+          <label>Estômago:</label>
+          <input type="range" id="stat_estomago" min="0" max="100" value="50" oninput="document.getElementById('val_est').innerText = this.value + '%'">
+          <span class="stat-val" id="val_est">50%</span>
+        </div>
+        <div class="stat-input-row">
+          <label>Velocidade:</label>
+          <input type="range" id="stat_velocidade" min="0" max="100" value="50" oninput="document.getElementById('val_vel').innerText = this.value + '%'">
+          <span class="stat-val" id="val_vel">50%</span>
+        </div>
+
+        <div class="box-header" style="margin-top: 15px;">
+          <span>Lista de Habilidades / Golpes</span>
+          <button type="button" class="btn-orkut" onclick="addSkill()">+ Adicionar Habilidade</button>
+        </div>
+        <div id="skillsContainer"></div>
+      </div>
+
+      <!-- 4. GALERIA DE FOTOS -->
+      <div class="box">
+        <div class="box-header">
+          <span>4. Álbum: Galeria de Fotos</span>
+          <button type="button" class="btn-orkut" onclick="addFoto()">+ Adicionar Foto</button>
+        </div>
+        <div id="fotosContainer"></div>
+      </div>
+
+      <!-- 5. ALIADOS E COMUNIDADES -->
+      <div class="box">
+        <div class="box-header">
+          <span>5. Aliados (Coluna Direita)</span>
+          <button type="button" class="btn-orkut" onclick="addAliado()">+ Adicionar Aliado</button>
+        </div>
+        <div id="aliadosContainer"></div>
+
+        <div class="box-header" style="margin-top: 15px;">
+          <span>Comunidades / Clubes (Coluna Direita)</span>
+          <button type="button" class="btn-orkut" onclick="addComunidade()">+ Adicionar Comunidade</button>
+        </div>
+        <div id="comunidadesContainer"></div>
+      </div>
+
+      <!-- 6. DEPOIMENTOS INICIAIS -->
+      <div class="box">
+        <div class="box-header">
+          <span>6. Depoimentos Iniciais (Opcional - outros podem enviar depois)</span>
+          <button type="button" class="btn-orkut" onclick="addDepoimento()">+ Adicionar Depoimento</button>
+        </div>
+        <div id="deposContainer"></div>
+      </div>
+
+      <button type="submit" class="btn-save" id="btnSubmit">💾 Salvar e Publicar Perfil na UmaWiki</button>
+    </form>
+  </div>
+
+  <script>
+    // ==========================================
+    // CONFIGURAÇÃO DO SUPABASE
+    // ==========================================
+    const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+
+    function atualizarPreview(url) {
+      const img = document.getElementById('avatarPreview');
+      img.src = url.trim() ? url.trim() : DEFAULT_AVATAR;
+      img.onerror = () => { img.src = DEFAULT_AVATAR; };
+    }
+
+    // Funções para adicionar linhas dinâmicas
+    function addSkill(titulo = '', tipo = '', descricao = '') {
+      const div = document.createElement('div');
+      div.className = 'dynamic-row skill-item';
+      div.innerHTML = `
+        <input type="text" placeholder="Nome da habilidade" class="s-titulo" value="${titulo}" style="flex:2">
+        <input type="text" placeholder="Tag (ex: cool, perigoso)" class="s-tipo" value="${tipo}" style="flex:1">
+        <input type="text" placeholder="Descrição da habilidade" class="s-desc" value="${descricao}" style="flex:3">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+      `;
+      document.getElementById('skillsContainer').appendChild(div);
+    }
+
+    function addFoto(url = '', legenda = '', data = '') {
+      const div = document.createElement('div');
+      div.className = 'dynamic-row foto-item';
+      div.innerHTML = `
+        <input type="text" placeholder="URL da foto (https://...)" class="f-url" value="${url}" style="flex:3">
+        <input type="text" placeholder="Legenda da foto" class="f-legenda" value="${legenda}" style="flex:2">
+        <input type="text" placeholder="Data (ex: 12/04)" class="f-data" value="${data}" style="flex:1">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+      `;
+      document.getElementById('fotosContainer').appendChild(div);
+    }
+
+    function addAliado(nome = '', avatar = '') {
+      const div = document.createElement('div');
+      div.className = 'dynamic-row aliado-item';
+      div.innerHTML = `
+        <input type="text" placeholder="Nome do aliado" class="a-nome" value="${nome}" style="flex:2">
+        <input type="text" placeholder="URL do avatar" class="a-avatar" value="${avatar}" style="flex:3">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+      `;
+      document.getElementById('aliadosContainer').appendChild(div);
+    }
+
+    function addComunidade(nome = '', avatar = '') {
+      const div = document.createElement('div');
+      div.className = 'dynamic-row com-item';
+      div.innerHTML = `
+        <input type="text" placeholder="Nome da comunidade" class="c-nome" value="${nome}" style="flex:2">
+        <input type="text" placeholder="URL da imagem" class="c-avatar" value="${avatar}" style="flex:3">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+      `;
+      document.getElementById('comunidadesContainer').appendChild(div);
+    }
+
+    function addDepoimento(autor = '', avatar = '', texto = '', data = '') {
+      const div = document.createElement('div');
+      div.className = 'dynamic-row depo-item';
+      div.innerHTML = `
+        <input type="text" placeholder="Quem enviou" class="d-autor" value="${autor}" style="flex:1.5">
+        <input type="text" placeholder="URL Avatar" class="d-avatar" value="${avatar}" style="flex:2">
+        <input type="text" placeholder="Mensagem do depoimento" class="d-texto" value="${texto}" style="flex:3">
+        <input type="text" placeholder="Data" class="d-data" value="${data || new Date().toLocaleDateString('pt-BR')}" style="flex:1">
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+      `;
+      document.getElementById('deposContainer').appendChild(div);
+    }
+
+    // Preenche automaticamente com os dados do seu arquivo wiki_Goldship.html para teste
+    function preencherExemplo() {
+      document.getElementById('nome').value = 'Goldship';
+      document.getElementById('status').value = 'A maior encrenqueira de Tracen';
+      const avatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTofgRnlahN2X24WmrgIg4Y3Vel3REX15P4os683IiMAOKdp7sM9CKdeOE&s=10';
+      document.getElementById('avatar_url').value = avatar;
+      atualizarPreview(avatar);
+
+      document.getElementById('nome_completo').value = 'Goldship';
+      document.getElementById('aniversario').value = '6 de março de 2009';
+      document.getElementById('especie').value = 'cavalo';
+      document.getElementById('afiliacao').value = 'Tracen Academy';
+      document.getElementById('ocupacao').value = 'corredora';
+      document.getElementById('gosta_de').value = 'Movimento dos músculos faciais';
+      document.getElementById('biografia').value = 'Selvagem e imprevisível, este corredor dourado é diferente de qualquer outro!\n\nUma pessoa imprevisível e impetuosa, nascida com uma dose extra de espírito livre. Ela é propensa a mudanças drásticas de humor e motivação — num momento pode estar preparando uma piada elaborada, e no seguinte seria difícil fazê-la se mexer.';
+
+      document.getElementById('aval_confiavel').value = 'NEM UM POUCO';
+      document.getElementById('aval_legal').value = '👍👍👍';
+      document.getElementById('aval_beleza').value = '❤️❤️❤️';
+
+      // Status
+      document.getElementById('stat_inteligencia').value = 95;
+      document.getElementById('val_int').innerText = '95%';
+      document.getElementById('stat_stamina').value = 70;
+      document.getElementById('val_sta').innerText = '70%';
+      document.getElementById('stat_estomago').value = 60;
+      document.getElementById('val_est').innerText = '60%';
+      document.getElementById('stat_velocidade').value = 80;
+      document.getElementById('val_vel').innerText = '80%';
+
+      // Limpa e preenche listas
+      document.getElementById('skillsContainer').innerHTML = '';
+      addSkill('Boa em quizzes de curiosidades', 'cool', 'Sabe curiosidades aleatórias.');
+      addSkill('Coices Surpresas', 'perigoso', 'Goldship gosta de dar coices no seu treinador quando está muito feliz (fé nas malucas)');
+
+      document.getElementById('fotosContainer').innerHTML = '';
+      addFoto('https://i.pinimg.com/1200x/b0/fa/47/b0fa4722e8e05ae83e70ec092c4219c0.jpg', '', '12/04');
+      addFoto('https://i.pinimg.com/736x/b4/2b/31/b42b311b8f3456116eb6d2d2bcbe8c98.jpg', 'eu não sei ler', '18/04');
+      addFoto('https://i.pinimg.com/736x/94/4c/30/944c3052b431b4a66a107aee1a36f666.jpg', 'eu e meu bro', '22/05');
+
+      document.getElementById('aliadosContainer').innerHTML = '';
+      addAliado('Mejiro McQueen', 'https://preview.redd.it/mejiro-mcqueen-v0-7cqlkv4tn7pf1.jpeg?width=1080&format=pjpg&auto=webp&s=c6058bdfbb01d890ca064db06ef0b552575dd62a');
+      addAliado('Vodka', 'https://i.pinimg.com/736x/e8/8c/90/e88c9026a30c32f2a2ff588d59baf30e.jpg');
+      addAliado('Daiwa Scarlet', 'https://i.pinimg.com/736x/8b/42/20/8b4220c7be622fd2a60a44774570dda8.jpg');
+
+      document.getElementById('comunidadesContainer').innerHTML = '';
+      addComunidade('Equipe Spica', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTS5eqVoNGyVDQ5Xo4w5CpRvU2elAv2-yU3QyYTHkrJFrntnlj7EdDldEQ1&s=10');
+      addComunidade('TakarazukaKinem2015', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlGQgPI7SKjI9KhOjtqEkeFE-vG4vpCe7CtC5jweXub1VV5xwwwmrFXLU&s=10');
+      addComunidade('Yakisoba', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6iw7XFds2zqQz-S6IsAlMNzWN0TDkBU7hg5GSDqzYuK44mo6vbpnwiK8&s=10');
+
+      document.getElementById('deposContainer').innerHTML = '';
+      addDepoimento('Treinador da Goldship', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS29_syD-Z8MEb45X1Ln3nYQIUELRRKMk89UQVnwaq9IA&s=10', 'Ah... ela é boa, porém ela me deu um coice do nada quando vencemos a corrida :/', '14/05/2026');
+      addDepoimento('Mejiro McQueen', 'https://preview.redd.it/mejiro-mcqueen-v0-7cqlkv4tn7pf1.jpeg?width=1080&format=pjpg&auto=webp&s=c6058bdfbb01d890ca064db06ef0b552575dd62a', 'Goldship, você não é o Everson Zoio. Apenas pare, por obséquio.', '02/04/2026');
+    }
+
+    // Envia para o Supabase
+    async function salvarPersonagem(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = 'Salvando no Supabase...';
+
+      const habilidades = Array.from(document.querySelectorAll('.skill-item')).map(el => ({
+        titulo: el.querySelector('.s-titulo').value.trim(),
+        tipo: el.querySelector('.s-tipo').value.trim(),
+        descricao: el.querySelector('.s-desc').value.trim()
+      })).filter(x => x.titulo);
+
+      const fotos = Array.from(document.querySelectorAll('.foto-item')).map(el => ({
+        url: el.querySelector('.f-url').value.trim(),
+        legenda: el.querySelector('.f-legenda').value.trim(),
+        data: el.querySelector('.f-data').value.trim()
+      })).filter(x => x.url);
+
+      const aliados = Array.from(document.querySelectorAll('.aliado-item')).map(el => ({
+        nome: el.querySelector('.a-nome').value.trim(),
+        avatar: el.querySelector('.a-avatar').value.trim()
+      })).filter(x => x.nome);
+
+      const comunidades = Array.from(document.querySelectorAll('.com-item')).map(el => ({
+        nome: el.querySelector('.c-nome').value.trim(),
+        avatar: el.querySelector('.c-avatar').value.trim()
+      })).filter(x => x.nome);
+
+      const depoimentos = Array.from(document.querySelectorAll('.depo-item')).map(el => ({
+        autor: el.querySelector('.d-autor').value.trim(),
+        avatar: el.querySelector('.d-avatar').value.trim(),
+        texto: el.querySelector('.d-texto').value.trim(),
+        data: el.querySelector('.d-data').value.trim()
+      })).filter(x => x.autor && x.texto);
+
+      const novoPersonagem = {
+        nome: document.getElementById('nome').value.trim(),
+        status: document.getElementById('status').value.trim(),
+        avatar_url: document.getElementById('avatar_url').value.trim(),
+        nome_completo: document.getElementById('nome_completo').value.trim() || document.getElementById('nome').value.trim(),
+        aniversario: document.getElementById('aniversario').value.trim(),
+        especie: document.getElementById('especie').value.trim(),
+        afiliacao: document.getElementById('afiliacao').value.trim(),
+        ocupacao: document.getElementById('ocupacao').value.trim(),
+        gosta_de: document.getElementById('gosta_de').value.trim(),
+        biografia: document.getElementById('biografia').value.trim(),
+        aval_confiavel: document.getElementById('aval_confiavel').value.trim(),
+        aval_legal: document.getElementById('aval_legal').value.trim(),
+        aval_beleza: document.getElementById('aval_beleza').value.trim(),
+        midia_anime: document.getElementById('midia_anime').value.trim(),
+        midia_manga: document.getElementById('midia_manga').value.trim(),
+        midia_outros: document.getElementById('midia_outros').value.trim(),
+        stat_inteligencia: parseInt(document.getElementById('stat_inteligencia').value),
+        stat_stamina: parseInt(document.getElementById('stat_stamina').value),
+        stat_estomago: parseInt(document.getElementById('stat_estomago').value),
+        stat_velocidade: parseInt(document.getElementById('stat_velocidade').value),
+        habilidades,
+        fotos,
+        aliados,
+        comunidades,
+        depoimentos
+      };
+
+      const { data, error } = await supabaseClient
+        .from('personagens')
+        .insert([novoPersonagem])
+        .select()
+        .single();
+
+      if (error) {
+        alert('Erro ao salvar no Supabase: ' + error.message);
+        btn.disabled = false;
+        btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki';
+        return;
+      }
+
+      // Redireciona direto para o perfil recém-criado!
+      window.location.href = `perfil.html?id=${data.id}`;
+    }
+
+    // Inicia o formulário com 1 linha vazia em cada seção
+    addSkill();
+    addFoto();
+    addAliado();
+    addComunidade();
+  </script>
+</body>
+</html>

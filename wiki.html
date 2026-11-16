@@ -4,31 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uma_Wiki - Página Inicial dos Personagens</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Reset e Configurações Globais estilo Orkut */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background-color: #c1b2ba; /* Azul clássico Orkut */
+      background-color: #c1b2ba;
       font-family: Arial, Helvetica, sans-serif;
       font-size: 12px;
       color: #333333;
     }
-    a {
-      color: #983b8c;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
+    a { color: #983b8c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    /* Barra Superior (Header) */
     .orkut-header {
       background-color: #b46db4;
-      height: px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -40,23 +30,15 @@
       font-size: 22px;
       font-weight: bold;
       font-style: italic;
-      color: #E41A82; /* Rosa Orkut */
+      color: #E41A82;
       background-color: #FFFFFF;
       padding: 2px 10px;
       border-radius: 4px;
       letter-spacing: -1px;
     }
-    .orkut-logo span {
-      color: #b46da9;
-    }
-    .nav-menu a {
-      color: white;
-      margin-left: 15px;
-      font-weight: bold;
-      font-size: 11px;
-    }
+    .orkut-logo span { color: #b46da9; }
+    .nav-menu a { color: white; margin-left: 15px; font-weight: bold; font-size: 11px; }
 
-    /* Estrutura Principal de Colunas */
     .main-container {
       max-width: 980px;
       margin: 15px auto;
@@ -64,13 +46,10 @@
       gap: 12px;
       padding: 0 10px;
     }
-
-    /* Configuração das Colunas */
     .col-left { width: 190px; flex-shrink: 0; }
     .col-center { flex: 1; }
-    .col-right { width: 220px; flex-shrink: 0; }
+    .col-right { width: 230px; flex-shrink: 0; }
 
-    /* Componente de Caixa Orkut */
     .box {
       background-color: #FFFFFF;
       border: 1px solid #ffc3ff;
@@ -93,25 +72,11 @@
       align-items: center;
     }
 
-    /* Menu Lateral */
-    .side-menu {
-      list-style: none;
-    }
-    .side-menu li {
-      padding: 5px 0;
-      border-bottom: 1px solid #E5ECF9;
-    }
-    .side-menu li:last-child {
-      border-bottom: none;
-    }
-    .side-menu a {
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .side-menu { list-style: none; }
+    .side-menu li { padding: 5px 0; border-bottom: 1px solid #E5ECF9; }
+    .side-menu li:last-child { border-bottom: none; }
+    .side-menu a { font-weight: bold; display: flex; align-items: center; gap: 6px; }
 
-    /* Caixa de Busca de Personagens */
     .search-box {
       background: #F4F7FC;
       border: 1px solid #ffc3f7;
@@ -139,31 +104,25 @@
       cursor: pointer;
       border-radius: 2px;
     }
-    .btn-orkut:hover {
-      background: #F0EFE2;
-    }
+    .btn-orkut:hover { background: #F0EFE2; }
 
-    /* Banner de Boas-Vindas */
     .welcome-banner {
       background: linear-gradient(135deg, #b46da0, #a82d9a);
       color: white;
       padding: 12px;
       border-radius: 4px;
       margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .welcome-banner h2 {
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
+    .welcome-banner h2 { font-size: 16px; margin-bottom: 4px; }
 
-    /* Grid de Personagens */
     .character-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
     }
-
-    /* Card do Personagem */
     .char-card {
       background: #FAFAFA;
       border: 1px solid #ffc3f5;
@@ -192,16 +151,8 @@
       flex-direction: column;
       justify-content: space-between;
     }
-    .char-title {
-      font-size: 13px;
-      font-weight: bold;
-      color: #a82d9c;
-    }
-    .char-class {
-      color: #666;
-      font-size: 10px;
-      margin-top: 2px;
-    }
+    .char-title { font-size: 13px; font-weight: bold; color: #a82d9c; }
+    .char-class { color: #666; font-size: 10px; margin-top: 2px; }
     .char-badge {
       display: inline-block;
       background: #E41A82;
@@ -212,11 +163,6 @@
       font-weight: bold;
       width: fit-content;
       margin-top: 3px;
-    }
-    .char-ratings {
-      font-size: 10px;
-      color: #888;
-      margin-top: 4px;
     }
     .btn-view-profile {
       align-self: flex-start;
@@ -229,15 +175,9 @@
       font-size: 10px;
       font-weight: bold;
     }
-    .char-card:hover .btn-view-profile {
-      background: #983b96;
-      color: white;
-    }
+    .char-card:hover .btn-view-profile { background: #983b96; color: white; }
 
-    /* Lista Lateral (Em Alta / Atualizações) */
-    .top-list {
-      list-style: none;
-    }
+    .top-list { list-style: none; }
     .top-list li {
       display: flex;
       align-items: center;
@@ -246,6 +186,7 @@
       border-bottom: 1px dashed #f9e5f2;
       padding-bottom: 6px;
     }
+    .top-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
     .top-list img {
       width: 32px;
       height: 32px;
@@ -253,17 +194,32 @@
       border: 1px solid #ffc3f1;
       object-fit: cover;
     }
-    .top-list-text strong {
-      display: block;
-      color: #983b7e;
-      font-size: 11px;
+    .top-list-text strong { display: block; color: #983b7e; font-size: 11px; }
+    .top-list-text span { font-size: 9px; color: #777; }
+
+    /* Grade 3x3 para a janelinha de Comunidades */
+    .grid-3x3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
     }
-    .top-list-text span {
-      font-size: 9px;
-      color: #777;
+    .grid-card img {
+      width: 100%;
+      height: 55px;
+      object-fit: cover;
+      border: 1px solid #ffc3fa;
+      border-radius: 2px;
+    }
+    .grid-card span {
+      display: block;
+      font-size: 10px;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* Responsividade */
     @media (max-width: 768px) {
       .main-container { flex-direction: column; }
       .col-left, .col-right { width: 100%; }
@@ -273,190 +229,231 @@
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR (HEADER) -->
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
-      <a href="inicio.html">Início</a>
-      <a href="#">Personagens</a>
-      <a href="#">Guildas</a>
-      <a href="#">Episódios</a>
+      <a href="wiki.html">Início</a>
+      <a href="wiki.html">Personagens</a>
+      <a href="comunidades.html">Comunidades</a>
+      <a href="criar.html">+ Novo Personagem</a>
     </nav>
   </header>
 
-  <!-- CONTAINER PRINCIPAL -->
   <div class="main-container">
-
-    <!-- COLUNA ESQUERDA: MENU DE NAVEGAÇÃO -->
+    <!-- COLUNA ESQUERDA -->
     <aside class="col-left">
       <div class="box">
         <div class="box-header">Navegação Wiki</div>
         <ul class="side-menu">
-          <li><a href="#">🏠 Página Inicial</a></li>
-          <li><a href="#">👥 Todos os Personagens</a></li>
-          <li><a href="#">⚔️ Classes & Profissões</a></li>
-          <li><a href="#">🔮 Elementos & Magias</a></li>
-          <li><a href="#">📜 Guildas & Facções</a></li>
-          <li><a href="#">➕ Criar Novo Personagem</a></li>
+          <li><a href="wiki.html">🏠 Página Inicial</a></li>
+          <li><a href="wiki.html">👥 Todos os Personagens</a></li>
+          <li><a href="comunidades.html">💬 Comunidades</a></li>
+          <li><a href="criar.html">➕ Criar seu perfil</a></li>
         </ul>
       </div>
 
       <div class="box">
         <div class="box-header">Academias Populares</div>
-        <ul class="side-menu">
-          <li><a href="#">Kasamatsu (0)</a></li>
-          <li><a href="#">Tracen (0)</a></li>
-          <li><a href="#"> ... (0)</a></li>
-          <li><a href="#"> ... (0)</a></li>
+        <ul class="side-menu" id="academiasList">
+          <li><a href="#">Carregando...</a></li>
         </ul>
       </div>
     </aside>
 
-
-    <!-- COLUNA CENTRAL: CATALOGO DE PERSONAGENS -->
+    <!-- COLUNA CENTRAL -->
     <main class="col-center">
-
-      <!-- BANNER DE BOAS VINDAS -->
       <div class="welcome-banner">
-        <h2>Bem-vindo à Orkut Wiki de Personagens! ⚡</h2>
-        <p>Explore as fichas completas, habilidades, aliados e depoimentos dos heróis e vilões do nosso universo.</p>
+        <div>
+          <h2>Bem-vindo à UmaWiki</h2>
+          <p>Explore as resenhas dos perfis das Umas.</p>
+        </div>
+        <a href="criar.html" class="btn-orkut" style="text-decoration: none;">+ Criar Perfil</a>
       </div>
 
-      <!-- BARRA DE BUSCA EM TEMPO REAL -->
       <div class="search-box">
         <span style="font-weight: bold; color: #983b7f;">Buscar:</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Digite o nome, classe ou elemento..." onkeyup="filterCharacters()">
-        <button class="btn-orkut">Pesquisar</button>
+        <input type="text" id="searchInput" class="search-input" placeholder="Digite o nome, afiliação ou ocupação..." onkeyup="filterCharacters()">
+        <button class="btn-orkut" onclick="filterCharacters()">Pesquisar</button>
       </div>
 
       <div class="box">
         <div class="box-header">
           <span>Personagens Cadastrados</span>
-          <span style="font-size: 10px; font-weight: normal;">Mostrando 6 de 6</span>
+          <span id="charCount" style="font-size: 10px; font-weight: normal;">Carregando...</span>
         </div>
 
-        <!-- GRID DE CARDS DE PERSONAGENS -->
         <div class="character-grid" id="characterGrid">
-
-          <!-- CARD 1: Goldship (Redireciona para Goldship.html) -->
-          <a href="Wiki_Goldship.html" style="text-decoration: none;">
-            <div class="char-card" data-search="Goldship">
-              <img class="char-thumb" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTofgRnlahN2X24WmrgIg4Y3Vel3REX15P4os683IiMAOKdp7sM9CKdeOE&s=10" alt="Goldship">
-              <div class="char-info">
-                <div>
-                  <div class="char-title">Goldship</div>
-                </div>
-                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
-              </div>
-            </div>
-          </a>
-
-          <!-- CARD 2: Mejiro Mcqueen -->
-          <div class="character-grid" id="characterGrid">
-
-          <!-- CARD 1: Mejiro Mcqueen (Redireciona para Mejiro_Mcqueen.html) -->
-          <a href="Wiki_Mejiromcqueen.html" style="text-decoration: none;">
-            <div class="char-card" data-search="Goldship">
-              <img class="char-thumb" src="https://preview.redd.it/mejiro-mcqueen-v0-7cqlkv4tn7pf1.jpeg?width=1080&format=pjpg&auto=webp&s=c6058bdfbb01d890ca064db06ef0b552575dd62a" alt="Mejiro Mcqueen">
-              <div class="char-info">
-                <div>
-                  <div class="char-title">Mejiro Mcqueen</div>
-                </div>
-                <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
-              </div>
-            </div>
-          </a>
-
-          <!-- CARD 2: 1111 -->
-          <div class="character-grid" id="characterGrid">
-
-          <!-- CARD 1: 111111 (Redireciona para 111.html) -->
-          <a href="wiki_base copy.html" style="text-decoration: none;">
-            <div class="char-card" data-search="Goldship">
-              <img class="char-thumb" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="111111">
-              <div class="char-info">
-                <div>
-                  <div class="char-title">111111</div>
-                </div>
-                <span class="btn-view-profile">111111;</span>
-              </div>
-            </div>
-          </a>
+          <p style="padding: 10px; color: #666;">Buscando personagens no banco de dados...</p>
+        </div>
+      </div>
     </main>
 
-    <!-- COLUNA DIREITA: ESTATÍSTICAS E EM ALTA -->
+    <!-- COLUNA DIREITA -->
     <aside class="col-right">
-      
-      <!-- Em Alta -->
+      <!-- Personagens Recentes -->
       <div class="box">
-        <div class="box-header">🔥 Personagens em Alta</div>
-        <ul class="top-list">
-          <li>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTofgRnlahN2X24WmrgIg4Y3Vel3REX15P4os683IiMAOKdp7sM9CKdeOE&s=10" alt="Goldship">
-            <div class="top-list-text">
-              <strong><a href="wiki_base copy.html">Goldship</a></strong>
-              <span>12.450 km</span>
-            </div>
-          </li>
-          <li>
-            <img src="https://picsum.photos/id/1012/80/80" alt="Lyra">
-            <div class="top-list-text">
-              <strong>Lyra</strong>
-              <span>8.920 visualizações</span>
-            </div>
-          </li>
-          <li>
-            <img src="https://picsum.photos/id/1005/80/80" alt="Aria">
-            <div class="top-list-text">
-              <strong>Aria Mística</strong>
-              <span>6.110 visualizações</span>
-            </div>
-          </li>
+        <div class="box-header">Personagens Recentes</div>
+        <ul class="top-list" id="recentList">
+          <li><span>Carregando...</span></li>
         </ul>
       </div>
 
-      <!-- Comunidades Orkut Wiki -->
+      <!-- JANELA DE COMUNIDADES (ESTILO ORKUT) -->
       <div class="box">
-        <div class="box-header">clubes</div>
-        <p style="margin-bottom: 8px;">Participe das discussões:</p>
-        <ul class="side-menu">
-          <li><a href="#">Clube do café</a></li>
-          <li><a href="#">...</a></li>
-          <li><a href="#">...</a></li>
-        </ul>
+        <div class="box-header">
+          <span id="commBoxTitle">Comunidades (0)</span>
+          <a href="comunidades.html">ver todas</a>
+        </div>
+        <div class="grid-3x3" id="miniCommGrid">
+          <p style="grid-column: 1/-1; color: #777; font-size: 11px;">Carregando...</p>
+        </div>
+        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #f1d4ef; text-align: center;">
+          <a href="comunidades.html" style="font-size: 10px; font-weight: bold;">+ Criar ou entrar em grupos &raquo;</a>
+        </div>
       </div>
 
-      <!-- Estatísticas Globais -->
+      <!-- Estatísticas do Site -->
       <div class="box">
         <div class="box-header">Estatísticas do Site</div>
-        <p><strong>Total de Fichas:</strong> 48</p>
-        <p><strong>Editores Ativos:</strong> 156</p>
-        <p><strong>Depoimentos Enviados:</strong> 890</p>
+        <p><strong>Total de Fichas:</strong> <span id="statTotalFichas">0</span></p>
+        <p><strong>Comunidades:</strong> <span id="statTotalComms">0</span></p>
+        <p><strong>Depoimentos Enviados:</strong> <span id="statTotalDepos">0</span></p>
       </div>
-
     </aside>
-
   </div>
 
-  <!-- JAVASCRIPT PARA A BARRA DE BUSCA EM TEMPO REAL -->
   <script>
-    function filterCharacters() {
-      const input = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.querySelectorAll('.char-card');
+    const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      cards.forEach(card => {
-        const searchText = card.getAttribute('data-search').toLowerCase();
-        const cardTitle = card.querySelector('.char-title').innerText.toLowerCase();
+    const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+    let todosPersonagens = [];
 
-        // Se o texto de busca bater com o título ou tags do card, mostra, senão esconde
-        if (searchText.includes(input) || cardTitle.includes(input)) {
-          card.parentElement.style.display = "block"; // mostra o link que envelopa o card
-        } else {
-          card.parentElement.style.display = "none";  // esconde
+    async function carregarTudo() {
+      // Busca personagens e comunidades em paralelo
+      const [resChars, resComms] = await Promise.all([
+        supabaseClient.from('personagens').select('*').order('created_at', { ascending: false }),
+        supabaseClient.from('comunidades').select('*').order('created_at', { ascending: false })
+      ]);
+
+      if (resChars.error) {
+        console.error('Erro ao buscar personagens:', resChars.error);
+        document.getElementById('characterGrid').innerHTML = '<p style="color:red;">Erro ao conectar com o Supabase. Verifique a URL e a Key.</p>';
+      } else {
+        todosPersonagens = resChars.data || [];
+        renderizarGrid(todosPersonagens);
+        atualizarEstatisticas(todosPersonagens);
+      }
+
+      if (!resComms.error) {
+        renderizarMiniComunidades(resComms.data || []);
+      }
+    }
+
+    function renderizarMiniComunidades(comunidades) {
+      document.getElementById('commBoxTitle').innerText = `Comunidades (${comunidades.length})`;
+      document.getElementById('statTotalComms').innerText = comunidades.length;
+
+      const grid = document.getElementById('miniCommGrid');
+      if (comunidades.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; color:#777; font-size:10px;">Nenhuma comunidade ainda.</p>';
+        return;
+      }
+
+      // Mostra até 6 comunidades na grade 3x3
+      grid.innerHTML = comunidades.slice(0, 6).map(c => {
+        const qtdMembros = Array.isArray(c.membros_ids) ? c.membros_ids.length : 0;
+        return `
+          <div class="grid-card" title="${c.nome} (${qtdMembros} membros)">
+            <a href="comunidade.html?id=${c.id}">
+              <img src="${c.imagem_url || DEFAULT_AVATAR}" alt="${c.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <span>${c.nome}</span>
+            </a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderizarGrid(lista) {
+      const grid = document.getElementById('characterGrid');
+      const countLabel = document.getElementById('charCount');
+      
+      countLabel.innerText = `Mostrando ${lista.length} de ${todosPersonagens.length}`;
+
+      if (lista.length === 0) {
+        grid.innerHTML = '<p style="padding: 10px; color: #666;">Nenhum personagem encontrado. <a href="criar.html">Clique aqui para criar o primeiro!</a></p>';
+        return;
+      }
+
+      grid.innerHTML = lista.map(char => `
+        <a href="perfil.html?id=${char.id}" style="text-decoration: none;">
+          <div class="char-card">
+            <img class="char-thumb" src="${char.avatar_url || DEFAULT_AVATAR}" alt="${char.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+            <div class="char-info">
+              <div>
+                <div class="char-title">${char.nome}</div>
+                <div class="char-class">${char.ocupacao || 'Corredora'}</div>
+                ${char.afiliacao ? `<span class="char-badge">${char.afiliacao}</span>` : ''}
+              </div>
+              <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
+            </div>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    function atualizarEstatisticas(lista) {
+      document.getElementById('statTotalFichas').innerText = lista.length;
+      const totalDepos = lista.reduce((acc, c) => acc + (Array.isArray(c.depoimentos) ? c.depoimentos.length : 0), 0);
+      document.getElementById('statTotalDepos').innerText = totalDepos;
+
+      const recentList = document.getElementById('recentList');
+      recentList.innerHTML = lista.slice(0, 4).map(char => `
+        <li>
+          <img src="${char.avatar_url || DEFAULT_AVATAR}" alt="${char.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <div class="top-list-text">
+            <strong><a href="perfil.html?id=${char.id}">${char.nome}</a></strong>
+            <span>${char.afiliacao || 'UmaWiki'}</span>
+          </div>
+        </li>
+      `).join('');
+
+      const academias = {};
+      lista.forEach(c => {
+        if (c.afiliacao) {
+          academias[c.afiliacao] = (academias[c.afiliacao] || 0) + 1;
         }
       });
-    }
-  </script>
 
+      const academiasList = document.getElementById('academiasList');
+      const entradas = Object.entries(academias);
+      if (entradas.length > 0) {
+        academiasList.innerHTML = entradas.map(([nome, qtd]) => `
+          <li><a href="javascript:void(0)" onclick="filtrarPorAcademia('${nome}')">${nome} (${qtd})</a></li>
+        `).join('');
+      } else {
+        academiasList.innerHTML = '<li><a href="#">Tracen (0)</a></li>';
+      }
+    }
+
+    function filtrarPorAcademia(academia) {
+      document.getElementById('searchInput').value = academia;
+      filterCharacters();
+    }
+
+    function filterCharacters() {
+      const termo = document.getElementById('searchInput').value.toLowerCase();
+      const filtrados = todosPersonagens.filter(char => {
+        const nome = (char.nome || '').toLowerCase();
+        const afiliacao = (char.afiliacao || '').toLowerCase();
+        const ocupacao = (char.ocupacao || '').toLowerCase();
+        return nome.includes(termo) || afiliacao.includes(termo) || ocupacao.includes(termo);
+      });
+      renderizarGrid(filtrados);
+    }
+
+    carregarTudo();
+  </script>
 </body>
 </html>
