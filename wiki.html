@@ -286,6 +286,34 @@
       display: block;
     }
 
+    /* Players de Vídeo (YouTube & MP4) */
+    .fy-video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* Proporção 16:9 */
+      height: 0;
+      overflow: hidden;
+      border-radius: 4px;
+      border: 1px solid #E5ECF9;
+      margin-bottom: 8px;
+      background: #000;
+    }
+    .fy-video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .fy-video {
+      width: 100%;
+      max-height: 360px;
+      border-radius: 4px;
+      border: 1px solid #E5ECF9;
+      margin-bottom: 8px;
+      background: #000;
+      display: block;
+    }
+
     .fy-actions {
       display: flex;
       gap: 8px;
@@ -360,7 +388,7 @@
     .top-list-text strong { display: block; color: #983b7e; font-size: 11px; }
     .top-list-text span { font-size: 9px; color: #777; }
 
-    /* Grade 3x3 corrigida para nunca vazar a caixa */
+    /* Grade 3x3 corrigida */
     .grid-3x3 {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -407,11 +435,11 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
-      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
       <a href="javascript:void(0)" onclick="ativarAba('tab-foryou', 1)">For You</a>
       <a href="comunidades.html">Comunidades</a>
-      <a href="criar.html">+ Novo Personagem</a>
+      <a href="criar.html">+ Novo Perfil</a>
+      <a href="editar.html">✏️ Editar Perfis</a>
     </nav>
   </header>
 
@@ -425,6 +453,7 @@
           <li><a href="javascript:void(0)" onclick="ativarAba('tab-foryou', 1)">🔥 Feed For You</a></li>
           <li><a href="comunidades.html">💬 Comunidades</a></li>
           <li><a href="criar.html">➕ Criar seu perfil</a></li>
+          <li><a href="editar.html">✏️ Editar perfis</a></li>
         </ul>
       </div>
 
@@ -484,10 +513,10 @@
             <textarea id="fyPostTexto" placeholder="Escreva um post estilo Twitter / Fakebook antigo..."></textarea>
             
             <div class="fy-composer-controls">
-              <select id="fySelectAutor" class="retro-select" style="flex: 1.2;">
+              <select id="fySelectAutor" class="retro-select" style="flex: 1.1;">
                 <option value="">Postar como...</option>
               </select>
-              <input type="text" id="fyPostImg" class="retro-input" placeholder="🖼️ URL de foto (opcional)" style="flex: 1.5;">
+              <input type="text" id="fyPostImg" class="retro-input" placeholder="🎬/🖼️ URL de foto ou vídeo (YouTube, MP4...)" style="flex: 1.7;">
               <button type="button" class="btn-orkut" onclick="criarPostForYou()">Publicar</button>
             </div>
           </div>
@@ -587,6 +616,63 @@
         : '<option value="">Crie um personagem primeiro</option>';
     }
 
+    // ==========================================
+    // DETECTOR E RENDERIZADOR DE FOTO OU VÍDEO
+    // ==========================================
+    function isUrlVideo(url) {
+      if (!url) return false;
+      const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      return ytRegex.test(url) || /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+    }
+
+    function renderizarMidia(url) {
+      if (!url) return '';
+      const cleanUrl = url.trim();
+
+      // 1. YouTube (watch, youtu.be, shorts, embed)
+      const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const ytMatch = cleanUrl.match(ytRegex);
+      if (ytMatch && ytMatch[1]) {
+        const videoId = ytMatch[1];
+
+        // Se estiver aberto como arquivo local (file://), evita o Erro 153 mostrando a capa clicável
+        if (window.location.protocol === 'file:') {
+          return `
+            <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" style="display:block; position:relative; margin-bottom:8px; text-decoration:none;">
+              <img class="fy-photo" src="https://img.youtube.com/vi/${videoId}/hqdefault.jpg" alt="Vídeo do YouTube" style="margin-bottom:0;">
+              <div style="position:absolute; inset:0; background:rgba(0,0,0,0.35); display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; border-radius:4px;">
+                <span style="background:#FF0000; padding:8px 16px; border-radius:6px; font-weight:bold; font-size:13px;">▶ Assistir no YouTube</span>
+                <span style="font-size:10px; margin-top:6px; background:rgba(0,0,0,0.7); padding:2px 6px; border-radius:3px;">Abra via Live Server (http://) para tocar aqui dentro</span>
+              </div>
+            </a>
+          `;
+        }
+
+        return `
+          <div class="fy-video-wrapper">
+            <iframe src="https://www.youtube.com/embed/${videoId}?rel=0" 
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+            </iframe>
+          </div>
+        `;
+      }
+
+      // 2. Arquivos de vídeo direto (.mp4, .webm, .ogg, .mov)
+      if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(cleanUrl)) {
+        return `
+          <video class="fy-video" controls preload="metadata" playsinline>
+            <source src="${cleanUrl}">
+            Seu navegador não suporta a reprodução deste vídeo.
+          </video>
+        `;
+      }
+
+      // 3. Imagem padrão
+      return `<img class="fy-photo" src="${cleanUrl}" alt="Post" onerror="this.style.display='none'">`;
+    }
     // ==========================================
     // LÓGICA DA FOR YOU COM INFINITE SCROLL
     // ==========================================
@@ -711,7 +797,13 @@
       const opcoesAutores = todosPersonagens.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
       const autor = todosPersonagens.find(p => p.id === item.personagem_id) || { nome: 'Uma Desconhecida', avatar_url: DEFAULT_AVATAR };
       const arroba = '@' + autor.nome.toLowerCase().replace(/\s+/g, '_');
-      const badgeTipo = item.tipo === 'foto_galeria' ? '📸 Foto do Álbum' : '🐦 Status';
+      
+      let badgeTipo = '🐦 Status';
+      if (item.tipo === 'foto_galeria') {
+        badgeTipo = '📸 Foto do Álbum';
+      } else if (isUrlVideo(item.imagem_url)) {
+        badgeTipo = '🎬 Vídeo';
+      }
 
       const comentariosHtml = item.comentarios.map(c => {
         const cAutor = todosPersonagens.find(p => p.id === c.personagem_id) || { nome: c.autor_nome || 'Alguém', avatar_url: DEFAULT_AVATAR };
@@ -739,7 +831,7 @@
           </div>
 
           ${item.texto ? `<div class="fy-text">${item.texto}</div>` : ''}
-          ${item.imagem_url ? `<img class="fy-photo" src="${item.imagem_url}" alt="Post" onerror="this.style.display='none'">` : ''}
+          ${renderizarMidia(item.imagem_url)}
 
           <div class="fy-actions">
             <button type="button" class="fy-btn" onclick="reagirPost(${idx}, 'like')">
@@ -792,14 +884,14 @@
     async function criarPostForYou() {
       const personagemId = parseInt(document.getElementById('fySelectAutor').value);
       const texto = document.getElementById('fyPostTexto').value.trim();
-      const imagemUrl = document.getElementById('fyPostImg').value.trim();
+      const midiaUrl = document.getElementById('fyPostImg').value.trim();
 
       if (!personagemId) {
         alert('Selecione um personagem para postar!');
         return;
       }
-      if (!texto && !imagemUrl) {
-        alert('Escreva um texto ou cole o link de uma imagem!');
+      if (!texto && !midiaUrl) {
+        alert('Escreva um texto ou cole o link de uma foto ou vídeo!');
         return;
       }
 
@@ -808,7 +900,7 @@
         tipo: 'post',
         chave_unica: 'post_' + Date.now(),
         texto: texto,
-        imagem_url: imagemUrl,
+        imagem_url: midiaUrl,
         likes: 0,
         dislikes: 0,
         comentarios: []
