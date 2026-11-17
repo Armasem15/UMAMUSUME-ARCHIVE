@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UmaWiki - Criar Novo Perfil</title>
+  <title>UmaWiki - Criar / Editar Perfil</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Reset e Configurações Globais estilo Orkut */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: #E5ECF9;
@@ -17,7 +16,6 @@
     a { color: #983b8c; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* Header */
     .orkut-header {
       background-color: #b46d9c;
       height: 40px;
@@ -41,10 +39,8 @@
     .orkut-logo span { color: #b46dae; }
     .nav-menu a { color: white; margin-left: 15px; font-weight: bold; font-size: 11px; }
 
-    /* Container */
     .container { max-width: 850px; margin: 18px auto; padding: 0 10px; }
 
-    /* Caixas Orkut */
     .box {
       background-color: #FFFFFF;
       border: 1px solid #ffc3fb;
@@ -67,7 +63,6 @@
       align-items: center;
     }
 
-    /* Topo com Preview do Avatar */
     .top-profile-setup {
       display: flex;
       gap: 15px;
@@ -96,7 +91,6 @@
       margin-top: 4px;
     }
 
-    /* Inputs e Grids */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -128,7 +122,6 @@
     }
     textarea { height: 90px; resize: vertical; line-height: 1.4; }
 
-    /* Sliders de Status */
     .stat-input-row {
       display: flex;
       align-items: center;
@@ -139,24 +132,10 @@
       border: 1px solid #E5ECF9;
       border-radius: 4px;
     }
-    .stat-input-row label {
-      width: 95px;
-      margin: 0;
-      color: #983b85;
-    }
-    .stat-input-row input[type="range"] {
-      flex: 1;
-      accent-color: #E41A82;
-      cursor: pointer;
-    }
-    .stat-val {
-      width: 40px;
-      text-align: right;
-      font-weight: bold;
-      color: #E41A82;
-    }
+    .stat-input-row label { width: 95px; margin: 0; color: #983b85; }
+    .stat-input-row input[type="range"] { flex: 1; accent-color: #E41A82; cursor: pointer; }
+    .stat-val { width: 40px; text-align: right; font-weight: bold; color: #E41A82; }
 
-    /* Linhas Dinâmicas (Fotos, Habilidades, Aliados, etc.) */
     .dynamic-row {
       display: flex;
       gap: 6px;
@@ -168,7 +147,6 @@
       border-radius: 4px;
     }
 
-    /* Botões Estilo Orkut */
     .btn-orkut {
       background: #ECE9D8;
       border: 1px solid #b97fb0;
@@ -233,23 +211,26 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
+      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
-      <a href="wiki.html">Personagens</a>
+      <a href="comunidades.html">Comunidades</a>
       <a href="criar.html">+ Novo Perfil</a>
     </nav>
   </header>
 
   <div class="container">
 
-    <!-- Barra rápida para testar ou voltar -->
     <div class="helper-bar">
-      <span>✨ Preencha os dados abaixo para gerar automaticamente o perfil na <strong>UmaWiki</strong>.</span>
-      <button type="button" class="btn-orkut" onclick="preencherExemplo()">Preencher Exemplo (Goldship)</button>
+      <span id="helperText">✨ Preencha os dados abaixo para gerar automaticamente o perfil na <strong>UmaWiki</strong>.</span>
+      <div style="display: flex; gap: 6px;">
+        <a id="btnCancelarEdicao" href="wiki.html" class="btn-orkut" style="display: none; text-decoration: none;">Cancelar</a>
+        <button type="button" id="btnExemplo" class="btn-orkut" onclick="preencherExemplo()">Preencher Exemplo (Goldship)</button>
+      </div>
     </div>
 
     <form id="createForm" onsubmit="salvarPersonagem(event)">
       
-      <!-- 1. CABEÇALHO E DADOS DO PERFIL -->
+      <!-- 1. IDENTIDADE E PERFIL -->
       <div class="box">
         <div class="box-header">1. Identidade e Perfil Principal</div>
         
@@ -305,7 +286,7 @@
         </div>
       </div>
 
-      <!-- 2. AVALIAÇÕES ORKUT E APARIÇÕES NA MÍDIA -->
+      <!-- 2. AVALIAÇÕES & MÍDIA -->
       <div class="box">
         <div class="box-header">2. Avaliações Estilo Orkut & Aparições na Mídia</div>
         <div class="form-grid">
@@ -336,7 +317,7 @@
         </div>
       </div>
 
-      <!-- 3. FICHA TÉCNICA (ESTATÍSTICAS E HABILIDADES) -->
+      <!-- 3. FICHA TÉCNICA -->
       <div class="box">
         <div class="box-header">3. Ficha Técnica - Estatísticas de Corrida</div>
         
@@ -392,10 +373,10 @@
         <div id="comunidadesContainer"></div>
       </div>
 
-      <!-- 6. DEPOIMENTOS INICIAIS -->
+      <!-- 6. DEPOIMENTOS -->
       <div class="box">
         <div class="box-header">
-          <span>6. Depoimentos Iniciais (Opcional - outros podem enviar depois)</span>
+          <span>6. Depoimentos (Você pode editar ou excluir depoimentos aqui)</span>
           <button type="button" class="btn-orkut" onclick="addDepoimento()">+ Adicionar Depoimento</button>
         </div>
         <div id="deposContainer"></div>
@@ -406,14 +387,15 @@
   </div>
 
   <script>
-    // ==========================================
-    // CONFIGURAÇÃO DO SUPABASE
-    // ==========================================
     const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+    
+    // Verifica se a URL tem ?edit=ID
+    const params = new URLSearchParams(window.location.search);
+    const editId = params.get('edit');
 
     function atualizarPreview(url) {
       const img = document.getElementById('avatarPreview');
@@ -421,16 +403,18 @@
       img.onerror = () => { img.src = DEFAULT_AVATAR; };
     }
 
-    // Funções para adicionar linhas dinâmicas
     function addSkill(titulo = '', tipo = '', descricao = '') {
       const div = document.createElement('div');
       div.className = 'dynamic-row skill-item';
       div.innerHTML = `
-        <input type="text" placeholder="Nome da habilidade" class="s-titulo" value="${titulo}" style="flex:2">
-        <input type="text" placeholder="Tag (ex: cool, perigoso)" class="s-tipo" value="${tipo}" style="flex:1">
-        <input type="text" placeholder="Descrição da habilidade" class="s-desc" value="${descricao}" style="flex:3">
+        <input type="text" placeholder="Nome da habilidade" class="s-titulo" style="flex:2">
+        <input type="text" placeholder="Tag (ex: cool, perigoso)" class="s-tipo" style="flex:1">
+        <input type="text" placeholder="Descrição da habilidade" class="s-desc" style="flex:3">
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
+      div.querySelector('.s-titulo').value = titulo;
+      div.querySelector('.s-tipo').value = tipo;
+      div.querySelector('.s-desc').value = descricao;
       document.getElementById('skillsContainer').appendChild(div);
     }
 
@@ -438,11 +422,14 @@
       const div = document.createElement('div');
       div.className = 'dynamic-row foto-item';
       div.innerHTML = `
-        <input type="text" placeholder="URL da foto (https://...)" class="f-url" value="${url}" style="flex:3">
-        <input type="text" placeholder="Legenda da foto" class="f-legenda" value="${legenda}" style="flex:2">
-        <input type="text" placeholder="Data (ex: 12/04)" class="f-data" value="${data}" style="flex:1">
+        <input type="text" placeholder="URL da foto (https://...)" class="f-url" style="flex:3">
+        <input type="text" placeholder="Legenda da foto" class="f-legenda" style="flex:2">
+        <input type="text" placeholder="Data (ex: 12/04)" class="f-data" style="flex:1">
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
+      div.querySelector('.f-url').value = url;
+      div.querySelector('.f-legenda').value = legenda;
+      div.querySelector('.f-data').value = data;
       document.getElementById('fotosContainer').appendChild(div);
     }
 
@@ -450,10 +437,12 @@
       const div = document.createElement('div');
       div.className = 'dynamic-row aliado-item';
       div.innerHTML = `
-        <input type="text" placeholder="Nome do aliado" class="a-nome" value="${nome}" style="flex:2">
-        <input type="text" placeholder="URL do avatar" class="a-avatar" value="${avatar}" style="flex:3">
+        <input type="text" placeholder="Nome do aliado" class="a-nome" style="flex:2">
+        <input type="text" placeholder="URL do avatar" class="a-avatar" style="flex:3">
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
+      div.querySelector('.a-nome').value = nome;
+      div.querySelector('.a-avatar').value = avatar;
       document.getElementById('aliadosContainer').appendChild(div);
     }
 
@@ -461,10 +450,12 @@
       const div = document.createElement('div');
       div.className = 'dynamic-row com-item';
       div.innerHTML = `
-        <input type="text" placeholder="Nome da comunidade" class="c-nome" value="${nome}" style="flex:2">
-        <input type="text" placeholder="URL da imagem" class="c-avatar" value="${avatar}" style="flex:3">
+        <input type="text" placeholder="Nome da comunidade" class="c-nome" style="flex:2">
+        <input type="text" placeholder="URL da imagem" class="c-avatar" style="flex:3">
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
+      div.querySelector('.c-nome').value = nome;
+      div.querySelector('.c-avatar').value = avatar;
       document.getElementById('comunidadesContainer').appendChild(div);
     }
 
@@ -472,16 +463,91 @@
       const div = document.createElement('div');
       div.className = 'dynamic-row depo-item';
       div.innerHTML = `
-        <input type="text" placeholder="Quem enviou" class="d-autor" value="${autor}" style="flex:1.5">
-        <input type="text" placeholder="URL Avatar" class="d-avatar" value="${avatar}" style="flex:2">
-        <input type="text" placeholder="Mensagem do depoimento" class="d-texto" value="${texto}" style="flex:3">
-        <input type="text" placeholder="Data" class="d-data" value="${data || new Date().toLocaleDateString('pt-BR')}" style="flex:1">
+        <input type="text" placeholder="Quem enviou" class="d-autor" style="flex:1.5">
+        <input type="text" placeholder="URL Avatar" class="d-avatar" style="flex:2">
+        <input type="text" placeholder="Mensagem do depoimento" class="d-texto" style="flex:3">
+        <input type="text" placeholder="Data" class="d-data" style="flex:1">
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
+      div.querySelector('.d-autor').value = autor;
+      div.querySelector('.d-avatar').value = avatar;
+      div.querySelector('.d-texto').value = texto;
+      div.querySelector('.d-data').value = data || new Date().toLocaleDateString('pt-BR');
       document.getElementById('deposContainer').appendChild(div);
     }
 
-    // Preenche automaticamente com os dados do seu arquivo wiki_Goldship.html para teste
+    // Carrega os dados caso esteja no modo EDIÇÃO (?edit=ID)
+    async function inicializarFormulario() {
+      if (!editId) {
+        addSkill();
+        addFoto();
+        addAliado();
+        addComunidade();
+        return;
+      }
+
+      // Ajusta textos da interface para modo edição
+      document.title = 'UmaWiki - Editando Perfil';
+      document.getElementById('helperText').innerHTML = '✏️ <strong>Modo de Edição:</strong> Altere o que quiser e clique em salvar.';
+      document.getElementById('btnExemplo').style.display = 'none';
+      const btnCancel = document.getElementById('btnCancelarEdicao');
+      btnCancel.style.display = 'inline-block';
+      btnCancel.href = `perfil.html?id=${editId}`;
+      document.getElementById('btnSubmit').innerText = '💾 Salvar Alterações do Perfil';
+
+      const { data: p, error } = await supabaseClient
+        .from('personagens')
+        .select('*')
+        .eq('id', editId)
+        .single();
+
+      if (error || !p) {
+        alert('Erro ao carregar dados do personagem para edição.');
+        return;
+      }
+
+      document.getElementById('nome').value = p.nome || '';
+      document.getElementById('status').value = p.status || '';
+      document.getElementById('avatar_url').value = p.avatar_url || '';
+      atualizarPreview(p.avatar_url || '');
+
+      document.getElementById('nome_completo').value = p.nome_completo || '';
+      document.getElementById('aniversario').value = p.aniversario || '';
+      document.getElementById('especie').value = p.especie || '';
+      document.getElementById('afiliacao').value = p.afiliacao || '';
+      document.getElementById('ocupacao').value = p.ocupacao || '';
+      document.getElementById('gosta_de').value = p.gosta_de || '';
+      document.getElementById('biografia').value = p.biografia || '';
+
+      document.getElementById('aval_confiavel').value = p.aval_confiavel || '';
+      document.getElementById('aval_legal').value = p.aval_legal || '';
+      document.getElementById('aval_beleza').value = p.aval_beleza || '';
+      document.getElementById('midia_anime').value = p.midia_anime || '';
+      document.getElementById('midia_manga').value = p.midia_manga || '';
+      document.getElementById('midia_outros').value = p.midia_outros || '';
+
+      const sInt = p.stat_inteligencia ?? 50;
+      const sSta = p.stat_stamina ?? 50;
+      const sEst = p.stat_estomago ?? 50;
+      const sVel = p.stat_velocidade ?? 50;
+
+      document.getElementById('stat_inteligencia').value = sInt;
+      document.getElementById('val_int').innerText = sInt + '%';
+      document.getElementById('stat_stamina').value = sSta;
+      document.getElementById('val_sta').innerText = sSta + '%';
+      document.getElementById('stat_estomago').value = sEst;
+      document.getElementById('val_est').innerText = sEst + '%';
+      document.getElementById('stat_velocidade').value = sVel;
+      document.getElementById('val_vel').innerText = sVel + '%';
+
+      // Preenche listas dinâmicas existentes
+      (p.habilidades || []).forEach(s => addSkill(s.titulo, s.tipo, s.descricao));
+      (p.fotos || []).forEach(f => addFoto(f.url, f.legenda, f.data));
+      (p.aliados || []).forEach(a => addAliado(a.nome, a.avatar));
+      (p.comunidades || []).forEach(c => addComunidade(c.nome, c.avatar));
+      (p.depoimentos || []).forEach(d => addDepoimento(d.autor, d.avatar, d.texto, d.data));
+    }
+
     function preencherExemplo() {
       document.getElementById('nome').value = 'Goldship';
       document.getElementById('status').value = 'A maior encrenqueira de Tracen';
@@ -495,48 +561,21 @@
       document.getElementById('afiliacao').value = 'Tracen Academy';
       document.getElementById('ocupacao').value = 'corredora';
       document.getElementById('gosta_de').value = 'Movimento dos músculos faciais';
-      document.getElementById('biografia').value = 'Selvagem e imprevisível, este corredor dourado é diferente de qualquer outro!\n\nUma pessoa imprevisível e impetuosa, nascida com uma dose extra de espírito livre. Ela é propensa a mudanças drásticas de humor e motivação — num momento pode estar preparando uma piada elaborada, e no seguinte seria difícil fazê-la se mexer.';
+      document.getElementById('biografia').value = 'Selvagem e imprevisível, este corredor dourado é diferente de qualquer outro!';
 
       document.getElementById('aval_confiavel').value = 'NEM UM POUCO';
       document.getElementById('aval_legal').value = '👍👍👍';
       document.getElementById('aval_beleza').value = '❤️❤️❤️';
 
-      // Status
-      document.getElementById('stat_inteligencia').value = 95;
-      document.getElementById('val_int').innerText = '95%';
-      document.getElementById('stat_stamina').value = 70;
-      document.getElementById('val_sta').innerText = '70%';
-      document.getElementById('stat_estomago').value = 60;
-      document.getElementById('val_est').innerText = '60%';
-      document.getElementById('stat_velocidade').value = 80;
-      document.getElementById('val_vel').innerText = '80%';
+      document.getElementById('stat_inteligencia').value = 95; document.getElementById('val_int').innerText = '95%';
+      document.getElementById('stat_stamina').value = 70; document.getElementById('val_sta').innerText = '70%';
+      document.getElementById('stat_estomago').value = 60; document.getElementById('val_est').innerText = '60%';
+      document.getElementById('stat_velocidade').value = 80; document.getElementById('val_vel').innerText = '80%';
 
-      // Limpa e preenche listas
       document.getElementById('skillsContainer').innerHTML = '';
-      addSkill('Boa em quizzes de curiosidades', 'cool', 'Sabe curiosidades aleatórias.');
-      addSkill('Coices Surpresas', 'perigoso', 'Goldship gosta de dar coices no seu treinador quando está muito feliz (fé nas malucas)');
-
-      document.getElementById('fotosContainer').innerHTML = '';
-      addFoto('https://i.pinimg.com/1200x/b0/fa/47/b0fa4722e8e05ae83e70ec092c4219c0.jpg', '', '12/04');
-      addFoto('https://i.pinimg.com/736x/b4/2b/31/b42b311b8f3456116eb6d2d2bcbe8c98.jpg', 'eu não sei ler', '18/04');
-      addFoto('https://i.pinimg.com/736x/94/4c/30/944c3052b431b4a66a107aee1a36f666.jpg', 'eu e meu bro', '22/05');
-
-      document.getElementById('aliadosContainer').innerHTML = '';
-      addAliado('Mejiro McQueen', 'https://preview.redd.it/mejiro-mcqueen-v0-7cqlkv4tn7pf1.jpeg?width=1080&format=pjpg&auto=webp&s=c6058bdfbb01d890ca064db06ef0b552575dd62a');
-      addAliado('Vodka', 'https://i.pinimg.com/736x/e8/8c/90/e88c9026a30c32f2a2ff588d59baf30e.jpg');
-      addAliado('Daiwa Scarlet', 'https://i.pinimg.com/736x/8b/42/20/8b4220c7be622fd2a60a44774570dda8.jpg');
-
-      document.getElementById('comunidadesContainer').innerHTML = '';
-      addComunidade('Equipe Spica', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTS5eqVoNGyVDQ5Xo4w5CpRvU2elAv2-yU3QyYTHkrJFrntnlj7EdDldEQ1&s=10');
-      addComunidade('TakarazukaKinem2015', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlGQgPI7SKjI9KhOjtqEkeFE-vG4vpCe7CtC5jweXub1VV5xwwwmrFXLU&s=10');
-      addComunidade('Yakisoba', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6iw7XFds2zqQz-S6IsAlMNzWN0TDkBU7hg5GSDqzYuK44mo6vbpnwiK8&s=10');
-
-      document.getElementById('deposContainer').innerHTML = '';
-      addDepoimento('Treinador da Goldship', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS29_syD-Z8MEb45X1Ln3nYQIUELRRKMk89UQVnwaq9IA&s=10', 'Ah... ela é boa, porém ela me deu um coice do nada quando vencemos a corrida :/', '14/05/2026');
-      addDepoimento('Mejiro McQueen', 'https://preview.redd.it/mejiro-mcqueen-v0-7cqlkv4tn7pf1.jpeg?width=1080&format=pjpg&auto=webp&s=c6058bdfbb01d890ca064db06ef0b552575dd62a', 'Goldship, você não é o Everson Zoio. Apenas pare, por obséquio.', '02/04/2026');
+      addSkill('Coices Surpresas', 'perigoso', 'Goldship gosta de dar coices no seu treinador quando está muito feliz.');
     }
 
-    // Envia para o Supabase
     async function salvarPersonagem(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmit');
@@ -572,7 +611,7 @@
         data: el.querySelector('.d-data').value.trim()
       })).filter(x => x.autor && x.texto);
 
-      const novoPersonagem = {
+      const dadosPersonagem = {
         nome: document.getElementById('nome').value.trim(),
         status: document.getElementById('status').value.trim(),
         avatar_url: document.getElementById('avatar_url').value.trim(),
@@ -600,28 +639,24 @@
         depoimentos
       };
 
-      const { data, error } = await supabaseClient
-        .from('personagens')
-        .insert([novoPersonagem])
-        .select()
-        .single();
+      if (editId) {
+        // ATUALIZA REGISTRO EXISTENTE
+        const { error } = await supabaseClient
+          .from('personagens')
+          .update(dadosPersonagem)
+          .eq('id', editId);
 
-      if (error) {
-        alert('Erro ao salvar no Supabase: ' + error.message);
-        btn.disabled = false;
-        btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki';
-        return;
+        if (error) {
+          alert('Erro ao atualizar: ' + error.message);
+          btn.disabled = false;
+          btn.innerText = '💾 Salvar Alterações do Perfil';
+          return;
+        }
+        window.location.href = `perfil.html?id=${editId}`; } else { // CRIA NOVO REGISTRO const { data, error } = await supabaseClient .from('personagens') .insert([dadosPersonagem]) .select() .single();  if (error) { alert('Erro ao salvar: ' + error.message); btn.disabled = false; btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki'; return; } window.location.href = `perfil.html?id=${data.id}`;
       }
-
-      // Redireciona direto para o perfil recém-criado!
-      window.location.href = `perfil.html?id=${data.id}`;
     }
 
-    // Inicia o formulário com 1 linha vazia em cada seção
-    addSkill();
-    addFoto();
-    addAliado();
-    addComunidade();
+    inicializarFormulario();
   </script>
 </body>
 </html>

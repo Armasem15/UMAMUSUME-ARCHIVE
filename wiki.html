@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uma_Wiki - Página Inicial dos Personagens</title>
+  <title>Uma_Wiki - Página Inicial & For You</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,7 +47,7 @@
       padding: 0 10px;
     }
     .col-left { width: 190px; flex-shrink: 0; }
-    .col-center { flex: 1; }
+    .col-center { flex: 1; min-width: 0; }
     .col-right { width: 230px; flex-shrink: 0; }
 
     .box {
@@ -77,22 +77,64 @@
     .side-menu li:last-child { border-bottom: none; }
     .side-menu a { font-weight: bold; display: flex; align-items: center; gap: 6px; }
 
+    .welcome-banner {
+      background: linear-gradient(135deg, #b46da0, #a82d9a);
+      color: white;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .welcome-banner h2 { font-size: 16px; margin-bottom: 4px; }
+
+    /* ABAS PRINCIPAIS (Personagens vs For You) */
+    .main-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: -1px;
+      position: relative;
+      z-index: 10;
+    }
+    .main-tab {
+      padding: 7px 14px;
+      background: #E5ECF9;
+      border: 1px solid #ffc3ff;
+      border-radius: 4px 4px 0 0;
+      font-weight: bold;
+      color: #983b87;
+      cursor: pointer;
+      user-select: none;
+    }
+    .main-tab:hover { background: #f5e6f4; }
+    .main-tab.active {
+      background: #FFFFFF;
+      border-bottom: 1px solid #FFFFFF;
+      color: #E41A82;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Busca */
     .search-box {
       background: #F4F7FC;
       border: 1px solid #ffc3f7;
-      padding: 10px;
+      padding: 8px;
       border-radius: 4px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       display: flex;
       gap: 8px;
       align-items: center;
     }
-    .search-input {
+    .search-input, .retro-input, .retro-select {
       flex: 1;
       padding: 5px 8px;
       border: 1px solid #ffc3f0;
       border-radius: 3px;
       font-size: 11px;
+      font-family: Arial, sans-serif;
+      background: #FFF;
     }
     .btn-orkut {
       background: #ECE9D8;
@@ -106,18 +148,7 @@
     }
     .btn-orkut:hover { background: #F0EFE2; }
 
-    .welcome-banner {
-      background: linear-gradient(135deg, #b46da0, #a82d9a);
-      color: white;
-      padding: 12px;
-      border-radius: 4px;
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .welcome-banner h2 { font-size: 16px; margin-bottom: 4px; }
-
+    /* Grid de Personagens */
     .character-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -130,7 +161,7 @@
       padding: 8px;
       display: flex;
       gap: 10px;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: 0.2s;
     }
     .char-card:hover {
       background: #FFFFFF;
@@ -145,12 +176,7 @@
       border-radius: 3px;
       flex-shrink: 0;
     }
-    .char-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+    .char-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
     .char-title { font-size: 13px; font-weight: bold; color: #a82d9c; }
     .char-class { color: #666; font-size: 10px; margin-top: 2px; }
     .char-badge {
@@ -177,6 +203,142 @@
     }
     .char-card:hover .btn-view-profile { background: #983b96; color: white; }
 
+    /* ESTILOS DA ABA FOR YOU */
+    .fy-composer {
+      background: #F4F7FC;
+      border: 1px solid #C3D9FF;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 14px;
+    }
+    .fy-composer-header {
+      font-weight: bold;
+      color: #3B5998;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .fy-composer textarea {
+      width: 100%;
+      height: 55px;
+      border: 1px solid #BDC7D8;
+      border-radius: 3px;
+      padding: 6px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      resize: vertical;
+      margin-bottom: 6px;
+    }
+    .fy-composer-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .fy-card {
+      background: #FFFFFF;
+      border: 1px solid #D8DFEA;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .fy-card-top {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .fy-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid #ffc3f4;
+      flex-shrink: 0;
+    }
+    .fy-author-info { flex: 1; }
+    .fy-author-name { font-weight: bold; font-size: 13px; color: #983b8c; }
+    .fy-handle { color: #888; font-size: 11px; }
+    .fy-source-tag {
+      background: #f1d4ef;
+      color: #983b87;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .fy-text {
+      font-size: 12px;
+      line-height: 1.45;
+      color: #222;
+      margin-bottom: 8px;
+      white-space: pre-line;
+    }
+    .fy-photo {
+      width: 100%;
+      max-height: 340px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #E5ECF9;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .fy-actions {
+      display: flex;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid #EDEFF4;
+      align-items: center;
+    }
+    .fy-btn {
+      background: #F4F7FC;
+      border: 1px solid #C3D9FF;
+      color: #3B5998;
+      padding: 3px 9px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .fy-btn:hover { background: #E5ECF9; }
+    .fy-btn.dislike { color: #b02a37; border-color: #f1c4c8; background: #fff5f6; }
+    .fy-btn.dislike:hover { background: #ffe3e6; }
+
+    .fy-comments-box {
+      background: #EDEFF4;
+      border-top: 1px solid #D8DFEA;
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 0 0 3px 3px;
+    }
+    .fy-comment-item {
+      display: flex;
+      gap: 7px;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #E2E6F0;
+      font-size: 11px;
+    }
+    .fy-comment-item img {
+      width: 28px;
+      height: 28px;
+      border-radius: 2px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .fy-comment-form {
+      display: flex;
+      gap: 5px;
+      margin-top: 4px;
+    }
+
+    /* Listas Laterais */
     .top-list { list-style: none; }
     .top-list li {
       display: flex;
@@ -193,16 +355,26 @@
       border-radius: 50%;
       border: 1px solid #ffc3f1;
       object-fit: cover;
+      flex-shrink: 0;
     }
     .top-list-text strong { display: block; color: #983b7e; font-size: 11px; }
     .top-list-text span { font-size: 9px; color: #777; }
 
-    /* Grade 3x3 para a janelinha de Comunidades */
+    /* Grade 3x3 corrigida para nunca vazar a caixa */
     .grid-3x3 {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       text-align: center;
+      width: 100%;
+    }
+    .grid-card {
+      min-width: 0;
+      overflow: hidden;
+    }
+    .grid-card a {
+      display: block;
+      width: 100%;
     }
     .grid-card img {
       width: 100%;
@@ -210,20 +382,23 @@
       object-fit: cover;
       border: 1px solid #ffc3fa;
       border-radius: 2px;
+      display: block;
     }
     .grid-card span {
       display: block;
       font-size: 10px;
-      margin-top: 2px;
+      margin-top: 3px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 100%;
     }
 
     @media (max-width: 768px) {
       .main-container { flex-direction: column; }
       .col-left, .col-right { width: 100%; }
       .character-grid { grid-template-columns: 1fr; }
+      .fy-composer-controls, .fy-comment-form { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -232,8 +407,9 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
+      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
-      <a href="wiki.html">Personagens</a>
+      <a href="javascript:void(0)" onclick="ativarAba('tab-foryou', 1)">For You</a>
       <a href="comunidades.html">Comunidades</a>
       <a href="criar.html">+ Novo Personagem</a>
     </nav>
@@ -245,8 +421,8 @@
       <div class="box">
         <div class="box-header">Navegação Wiki</div>
         <ul class="side-menu">
-          <li><a href="wiki.html">🏠 Página Inicial</a></li>
-          <li><a href="wiki.html">👥 Todos os Personagens</a></li>
+          <li><a href="javascript:void(0)" onclick="ativarAba('tab-personagens', 0)">👥 Todos os Personagens</a></li>
+          <li><a href="javascript:void(0)" onclick="ativarAba('tab-foryou', 1)">🔥 Feed For You</a></li>
           <li><a href="comunidades.html">💬 Comunidades</a></li>
           <li><a href="criar.html">➕ Criar seu perfil</a></li>
         </ul>
@@ -260,37 +436,78 @@
       </div>
     </aside>
 
-    <!-- COLUNA CENTRAL -->
+    <!-- COLUNA CENTRAL: ABAS DE PERSONAGENS E FOR YOU -->
     <main class="col-center">
       <div class="welcome-banner">
         <div>
           <h2>Bem-vindo à UmaWiki</h2>
-          <p>Explore as resenhas dos perfis das Umas.</p>
+          <p>Explore os perfis das Umas ou veja o que elas estão postando no For You!</p>
         </div>
         <a href="criar.html" class="btn-orkut" style="text-decoration: none;">+ Criar Perfil</a>
       </div>
 
-      <div class="search-box">
-        <span style="font-weight: bold; color: #983b7f;">Buscar:</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Digite o nome, afiliação ou ocupação..." onkeyup="filterCharacters()">
-        <button class="btn-orkut" onclick="filterCharacters()">Pesquisar</button>
+      <!-- SELETOR DE ABAS -->
+      <div class="main-tabs">
+        <div class="main-tab active" onclick="ativarAba('tab-personagens', 0)">👥 Personagens</div>
+        <div class="main-tab" onclick="ativarAba('tab-foryou', 1)">🔥 For You (Feed)</div>
       </div>
 
       <div class="box">
-        <div class="box-header">
-          <span>Personagens Cadastrados</span>
-          <span id="charCount" style="font-size: 10px; font-weight: normal;">Carregando...</span>
+        <!-- ================= ABA 1: PERSONAGENS ================= -->
+        <div id="tab-personagens" class="tab-pane active">
+          <div class="search-box">
+            <span style="font-weight: bold; color: #983b7f;">Buscar:</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Digite o nome, afiliação ou ocupação..." onkeyup="filterCharacters()">
+            <button class="btn-orkut" onclick="filterCharacters()">Pesquisar</button>
+          </div>
+
+          <div class="box-header">
+            <span>Personagens Cadastrados</span>
+            <span id="charCount" style="font-size: 10px; font-weight: normal;">Carregando...</span>
+          </div>
+
+          <div class="character-grid" id="characterGrid">
+            <p style="padding: 10px; color: #666;">Buscando personagens no banco de dados...</p>
+          </div>
         </div>
 
-        <div class="character-grid" id="characterGrid">
-          <p style="padding: 10px; color: #666;">Buscando personagens no banco de dados...</p>
+        <!-- ================= ABA 2: FOR YOU (FEED SOCIAL) ================= -->
+        <div id="tab-foryou" class="tab-pane">
+          
+          <!-- Compositor Estilo Twitter / Fakebook -->
+          <div class="fy-composer">
+            <div class="fy-composer-header">
+              <span>✍️ O que está acontecendo em Tracen?</span>
+              <button type="button" class="btn-orkut" onclick="montarFeedForYou()" title="Embaralhar fotos aleatórias">🔄 Atualizar For You</button>
+            </div>
+            
+            <textarea id="fyPostTexto" placeholder="Escreva um post estilo Twitter / Fakebook antigo..."></textarea>
+            
+            <div class="fy-composer-controls">
+              <select id="fySelectAutor" class="retro-select" style="flex: 1.2;">
+                <option value="">Postar como...</option>
+              </select>
+              <input type="text" id="fyPostImg" class="retro-input" placeholder="🖼️ URL de foto (opcional)" style="flex: 1.5;">
+              <button type="button" class="btn-orkut" onclick="criarPostForYou()">Publicar</button>
+            </div>
+          </div>
+
+          <!-- Lista de Posts da For You -->
+          <div id="forYouFeed">
+            <p style="color:#666; padding: 10px;">Montando sua timeline For You...</p>
+          </div>
+
+          <!-- Indicador do Infinite Scroll -->
+          <div id="fyLoader" style="text-align: center; padding: 12px; color: #983b8c; font-weight: bold; display: none;">
+            ⏳ Carregando mais posts da For You...
+          </div>
+
         </div>
       </div>
     </main>
 
     <!-- COLUNA DIREITA -->
     <aside class="col-right">
-      <!-- Personagens Recentes -->
       <div class="box">
         <div class="box-header">Personagens Recentes</div>
         <ul class="top-list" id="recentList">
@@ -298,7 +515,6 @@
         </ul>
       </div>
 
-      <!-- JANELA DE COMUNIDADES (ESTILO ORKUT) -->
       <div class="box">
         <div class="box-header">
           <span id="commBoxTitle">Comunidades (0)</span>
@@ -312,7 +528,6 @@
         </div>
       </div>
 
-      <!-- Estatísticas do Site -->
       <div class="box">
         <div class="box-header">Estatísticas do Site</div>
         <p><strong>Total de Fichas:</strong> <span id="statTotalFichas">0</span></p>
@@ -328,10 +543,22 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+    
     let todosPersonagens = [];
+    let itensFeedAtual = [];
+    let poolCompletoForYou = [];
+    let indiceAtualForYou = 0;
+    const TAMANHO_LOTE_FY = 5;
+    let carregandoMaisFY = false;
+
+    function ativarAba(tabId, index) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelectorAll('.main-tab')[index].classList.add('active');
+    }
 
     async function carregarTudo() {
-      // Busca personagens e comunidades em paralelo
       const [resChars, resComms] = await Promise.all([
         supabaseClient.from('personagens').select('*').order('created_at', { ascending: false }),
         supabaseClient.from('comunidades').select('*').order('created_at', { ascending: false })
@@ -344,6 +571,8 @@
         todosPersonagens = resChars.data || [];
         renderizarGrid(todosPersonagens);
         atualizarEstatisticas(todosPersonagens);
+        preencherSelectAutores();
+        await montarFeedForYou();
       }
 
       if (!resComms.error) {
@@ -351,6 +580,325 @@
       }
     }
 
+    function preencherSelectAutores() {
+      const select = document.getElementById('fySelectAutor');
+      select.innerHTML = todosPersonagens.length
+        ? todosPersonagens.map(p => `<option value="${p.id}">Postar como: ${p.nome}</option>`).join('')
+        : '<option value="">Crie um personagem primeiro</option>';
+    }
+
+    // ==========================================
+    // LÓGICA DA FOR YOU COM INFINITE SCROLL
+    // ==========================================
+    function embaralharArray(array) {
+      const copia = [...array];
+      for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+      }
+      return copia;
+    }
+
+    async function montarFeedForYou() {
+      const feedContainer = document.getElementById('forYouFeed');
+      feedContainer.innerHTML = '<p style="color:#666; padding:10px;">Carregando novidades na For You...</p>';
+
+      const { data: postsSalvos, error } = await supabaseClient
+        .from('feed_posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        feedContainer.innerHTML = '<p style="color:red;">Erro ao carregar For You. Verifique a tabela feed_posts no Supabase.</p>';
+        return;
+      }
+
+      const mapaSalvos = {};
+      (postsSalvos || []).forEach(p => {
+        if (p.chave_unica) mapaSalvos[p.chave_unica] = p;
+      });
+
+      // 1. Coleta todas as fotos de galeria de todos os personagens
+      let poolFotosGaleria = [];
+      todosPersonagens.forEach(char => {
+        const fotos = Array.isArray(char.fotos) ? char.fotos : [];
+        fotos.forEach((foto, idx) => {
+          if (foto.url) {
+            const chave = `char_${char.id}_foto_${idx}_${foto.url.slice(-15)}`;
+            const salvo = mapaSalvos[chave];
+
+            poolFotosGaleria.push({
+              db_id: salvo ? salvo.id : null,
+              chave_unica: chave,
+              tipo: 'foto_galeria',
+              personagem_id: char.id,
+              texto: foto.legenda || `Foto postada no álbum de ${char.nome} 📸`,
+              imagem_url: foto.url,
+              created_at: salvo ? salvo.created_at : char.created_at,
+              likes: salvo ? salvo.likes : 0,
+              dislikes: salvo ? salvo.dislikes : 0,
+              comentarios: salvo && Array.isArray(salvo.comentarios) ? salvo.comentarios : []
+            });
+          }
+        });
+      });
+
+      const fotosEmbaralhadas = embaralharArray(poolFotosGaleria);
+
+      // 2. Coleta todos os posts criados direto na For You
+      const postsManuais = (postsSalvos || [])
+        .filter(p => p.tipo === 'post')
+        .map(p => ({
+          db_id: p.id,
+          chave_unica: p.chave_unica,
+          tipo: 'post',
+          personagem_id: p.personagem_id,
+          texto: p.texto,
+          imagem_url: p.imagem_url,
+          created_at: p.created_at,
+          likes: p.likes || 0,
+          dislikes: p.dislikes || 0,
+          comentarios: Array.isArray(p.comentarios) ? p.comentarios : []
+        }));
+
+      // 3. Intercala posts manuais e fotos aleatórias
+      poolCompletoForYou = [];
+      const maxLen = Math.max(postsManuais.length, fotosEmbaralhadas.length);
+      for (let i = 0; i < maxLen; i++) {
+        if (postsManuais[i]) poolCompletoForYou.push(postsManuais[i]);
+        if (fotosEmbaralhadas[i]) poolCompletoForYou.push(fotosEmbaralhadas[i]);
+      }
+
+      itensFeedAtual = [];
+      indiceAtualForYou = 0;
+      feedContainer.innerHTML = '';
+
+      if (poolCompletoForYou.length === 0) {
+        feedContainer.innerHTML = '<p style="color:#666; padding:10px;">Nada na For You ainda. Crie um post acima ou adicione fotos aos perfis!</p>';
+        return;
+      }
+
+      carregarProximoLoteForYou();
+    }
+
+    function carregarProximoLoteForYou() {
+      if (carregandoMaisFY || poolCompletoForYou.length === 0) return;
+      carregandoMaisFY = true;
+
+      const loader = document.getElementById('fyLoader');
+      if (loader) loader.style.display = 'block';
+
+      setTimeout(() => {
+        if (indiceAtualForYou >= poolCompletoForYou.length) {
+          poolCompletoForYou = embaralharArray(poolCompletoForYou);
+          indiceAtualForYou = 0;
+        }
+
+        const proximoLote = poolCompletoForYou.slice(indiceAtualForYou, indiceAtualForYou + TAMANHO_LOTE_FY);
+        indiceAtualForYou += TAMANHO_LOTE_FY;
+
+        const inicioIdx = itensFeedAtual.length;
+        itensFeedAtual.push(...proximoLote);
+
+        anexarCardsForYou(proximoLote, inicioIdx);
+
+        if (loader) loader.style.display = 'none';
+        carregandoMaisFY = false;
+      }, 250);
+    }
+
+    function gerarHtmlCardForYou(item, idx) {
+      const opcoesAutores = todosPersonagens.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+      const autor = todosPersonagens.find(p => p.id === item.personagem_id) || { nome: 'Uma Desconhecida', avatar_url: DEFAULT_AVATAR };
+      const arroba = '@' + autor.nome.toLowerCase().replace(/\s+/g, '_');
+      const badgeTipo = item.tipo === 'foto_galeria' ? '📸 Foto do Álbum' : '🐦 Status';
+
+      const comentariosHtml = item.comentarios.map(c => {
+        const cAutor = todosPersonagens.find(p => p.id === c.personagem_id) || { nome: c.autor_nome || 'Alguém', avatar_url: DEFAULT_AVATAR };
+        return `
+          <div class="fy-comment-item">
+            <img src="${cAutor.avatar_url || DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+            <div>
+              <a href="perfil.html?id=${cAutor.id}" style="font-weight:bold;">${cAutor.nome}</a>: ${c.texto}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="fy-card" id="fyCard_${idx}">
+          <div class="fy-card-top">
+            <a href="perfil.html?id=${autor.id}">
+              <img class="fy-avatar" src="${autor.avatar_url || DEFAULT_AVATAR}" alt="${autor.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+            </a>
+            <div class="fy-author-info">
+              <a href="perfil.html?id=${autor.id}" class="fy-author-name">${autor.nome}</a>
+              <div class="fy-handle">${arroba}</div>
+            </div>
+            <span class="fy-source-tag">${badgeTipo}</span>
+          </div>
+
+          ${item.texto ? `<div class="fy-text">${item.texto}</div>` : ''}
+          ${item.imagem_url ? `<img class="fy-photo" src="${item.imagem_url}" alt="Post" onerror="this.style.display='none'">` : ''}
+
+          <div class="fy-actions">
+            <button type="button" class="fy-btn" onclick="reagirPost(${idx}, 'like')">
+              👍 Curtir (<span>${item.likes}</span>)
+            </button>
+            <button type="button" class="fy-btn dislike" onclick="reagirPost(${idx}, 'dislike')">
+              👎 Dislike (<span>${item.dislikes}</span>)
+            </button>
+            <span style="margin-left:auto; font-size:10px; color:#888;">
+              💬 ${item.comentarios.length} comentário(s)
+            </span>
+          </div>
+
+          <div class="fy-comments-box">
+            ${comentariosHtml}
+            <div class="fy-comment-form">
+              <select id="comentAutor_${idx}" class="retro-select" style="max-width: 140px;">
+                ${opcoesAutores}
+              </select>
+              <input type="text" id="comentTexto_${idx}" class="retro-input" placeholder="Escreva um comentário...">
+              <button type="button" class="btn-orkut" onclick="comentarPost(${idx})">Comentar</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function anexarCardsForYou(lote, inicioIdx) {
+      const feedContainer = document.getElementById('forYouFeed');
+      const html = lote.map((item, i) => gerarHtmlCardForYou(item, inicioIdx + i)).join('');
+      feedContainer.insertAdjacentHTML('beforeend', html);
+    }
+
+    function atualizarCardEspecifico(idx) {
+      const cardEl = document.getElementById(`fyCard_${idx}`);
+      if (cardEl && itensFeedAtual[idx]) {
+        cardEl.outerHTML = gerarHtmlCardForYou(itensFeedAtual[idx], idx);
+      }
+    }
+
+    window.addEventListener('scroll', () => {
+      const abaForYouAtiva = document.getElementById('tab-foryou').classList.contains('active');
+      if (!abaForYouAtiva) return;
+
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 250) {
+        carregarProximoLoteForYou();
+      }
+    });
+
+    async function criarPostForYou() {
+      const personagemId = parseInt(document.getElementById('fySelectAutor').value);
+      const texto = document.getElementById('fyPostTexto').value.trim();
+      const imagemUrl = document.getElementById('fyPostImg').value.trim();
+
+      if (!personagemId) {
+        alert('Selecione um personagem para postar!');
+        return;
+      }
+      if (!texto && !imagemUrl) {
+        alert('Escreva um texto ou cole o link de uma imagem!');
+        return;
+      }
+
+      const novoPost = {
+        personagem_id: personagemId,
+        tipo: 'post',
+        chave_unica: 'post_' + Date.now(),
+        texto: texto,
+        imagem_url: imagemUrl,
+        likes: 0,
+        dislikes: 0,
+        comentarios: []
+      };
+
+      const { error } = await supabaseClient.from('feed_posts').insert([novoPost]);
+      if (error) {
+        alert('Erro ao publicar: ' + error.message);
+        return;
+      }
+
+      document.getElementById('fyPostTexto').value = '';
+      document.getElementById('fyPostImg').value = '';
+      await montarFeedForYou();
+    }
+
+    async function garantirRegistroNoBanco(item) {
+      if (item.db_id) return item.db_id;
+
+      const { data, error } = await supabaseClient
+        .from('feed_posts')
+        .upsert([{
+          personagem_id: item.personagem_id,
+          tipo: item.tipo,
+          chave_unica: item.chave_unica,
+          texto: item.texto,
+          imagem_url: item.imagem_url,
+          likes: item.likes,
+          dislikes: item.dislikes,
+          comentarios: item.comentarios
+        }], { onConflict: 'chave_unica' })
+        .select()
+        .single();
+
+      if (!error && data) {
+        item.db_id = data.id;
+        return data.id;
+      }
+      return null;
+    }
+
+    async function reagirPost(idx, tipoReacao) {
+      const item = itensFeedAtual[idx];
+      if (!item) return;
+
+      if (tipoReacao === 'like') item.likes += 1;
+      if (tipoReacao === 'dislike') item.dislikes += 1;
+      atualizarCardEspecifico(idx);
+
+      const dbId = await garantirRegistroNoBanco(item);
+      if (dbId) {
+        await supabaseClient
+          .from('feed_posts')
+          .update({ likes: item.likes, dislikes: item.dislikes })
+          .eq('id', dbId);
+      }
+    }
+
+    async function comentarPost(idx) {
+      const item = itensFeedAtual[idx];
+      const autorSelect = document.getElementById(`comentAutor_${idx}`);
+      const textoInput = document.getElementById(`comentTexto_${idx}`);
+
+      const personagemId = parseInt(autorSelect.value);
+      const texto = textoInput.value.trim();
+
+      if (!personagemId || !texto) return;
+
+      const autorObj = todosPersonagens.find(p => p.id === personagemId);
+      const novoComentario = {
+        personagem_id: personagemId,
+        autor_nome: autorObj ? autorObj.nome : 'Personagem',
+        texto: texto
+      };
+
+      item.comentarios.push(novoComentario);
+      atualizarCardEspecifico(idx);
+
+      const dbId = await garantirRegistroNoBanco(item);
+      if (dbId) {
+        await supabaseClient
+          .from('feed_posts')
+          .update({ comentarios: item.comentarios })
+          .eq('id', dbId);
+      }
+    }
+
+    // ==========================================
+    // FUNÇÕES DO CATÁLOGO DE PERSONAGENS E SIDEBAR
+    // ==========================================
     function renderizarMiniComunidades(comunidades) {
       document.getElementById('commBoxTitle').innerText = `Comunidades (${comunidades.length})`;
       document.getElementById('statTotalComms').innerText = comunidades.length;
@@ -361,7 +909,6 @@
         return;
       }
 
-      // Mostra até 6 comunidades na grade 3x3
       grid.innerHTML = comunidades.slice(0, 6).map(c => {
         const qtdMembros = Array.isArray(c.membros_ids) ? c.membros_ids.length : 0;
         return `
@@ -378,7 +925,6 @@
     function renderizarGrid(lista) {
       const grid = document.getElementById('characterGrid');
       const countLabel = document.getElementById('charCount');
-      
       countLabel.innerText = `Mostrando ${lista.length} de ${todosPersonagens.length}`;
 
       if (lista.length === 0) {
@@ -421,23 +967,18 @@
 
       const academias = {};
       lista.forEach(c => {
-        if (c.afiliacao) {
-          academias[c.afiliacao] = (academias[c.afiliacao] || 0) + 1;
-        }
+        if (c.afiliacao) academias[c.afiliacao] = (academias[c.afiliacao] || 0) + 1;
       });
 
       const academiasList = document.getElementById('academiasList');
       const entradas = Object.entries(academias);
-      if (entradas.length > 0) {
-        academiasList.innerHTML = entradas.map(([nome, qtd]) => `
-          <li><a href="javascript:void(0)" onclick="filtrarPorAcademia('${nome}')">${nome} (${qtd})</a></li>
-        `).join('');
-      } else {
-        academiasList.innerHTML = '<li><a href="#">Tracen (0)</a></li>';
-      }
+      academiasList.innerHTML = entradas.length > 0
+        ? entradas.map(([nome, qtd]) => `<li><a href="javascript:void(0)" onclick="filtrarPorAcademia('${nome}')">${nome} (${qtd})</a></li>`).join('')
+        : '<li><a href="#">Tracen (0)</a></li>';
     }
 
     function filtrarPorAcademia(academia) {
+      ativarAba('tab-personagens', 0);
       document.getElementById('searchInput').value = academia;
       filterCharacters();
     }

@@ -47,7 +47,7 @@
       padding: 0 10px;
     }
     .col-left { width: 200px; flex-shrink: 0; }
-    .col-center { flex: 1; }
+    .col-center { flex: 1; min-width: 0; }
     .col-right { width: 260px; flex-shrink: 0; }
 
     .box {
@@ -80,7 +80,7 @@
     /* Grid de Comunidades */
     .comm-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
     .comm-card {
@@ -91,6 +91,7 @@
       display: flex;
       gap: 10px;
       transition: 0.2s;
+      min-width: 0;
     }
     .comm-card:hover {
       background: #FFF;
@@ -105,8 +106,21 @@
       border-radius: 3px;
       flex-shrink: 0;
     }
-    .comm-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .comm-title { font-size: 13px; font-weight: bold; color: #983b8c; }
+    .comm-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
+    .comm-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #983b8c;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tags-row {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 3px;
+    }
     .comm-cat {
       display: inline-block;
       background: #f1d4ef;
@@ -115,7 +129,26 @@
       padding: 1px 5px;
       border-radius: 3px;
       font-weight: bold;
-      margin-top: 2px;
+    }
+    .tag-oficial {
+      display: inline-block;
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #b1dfbb;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .tag-nao-oficial {
+      display: inline-block;
+      background: #eeeeee;
+      color: #666666;
+      border: 1px solid #dddddd;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: bold;
     }
     .comm-desc {
       font-size: 11px;
@@ -138,6 +171,7 @@
       border-radius: 3px;
       font-family: Arial, sans-serif;
       font-size: 11px;
+      background: #FFF;
     }
     textarea { height: 60px; resize: vertical; }
     .btn-orkut {
@@ -165,6 +199,7 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
+      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
       <a href="wiki.html">Personagens</a>
       <a href="comunidades.html">Comunidades</a>
@@ -208,6 +243,13 @@
           <div class="form-group">
             <label>Nome do Grupo *</label>
             <input type="text" id="commNome" required placeholder="Ex: Eu odeio acordar cedo">
+          </div>
+          <div class="form-group">
+            <label>Status do Grupo</label>
+            <select id="commOficial">
+              <option value="Não Oficial">Não Oficial</option>
+              <option value="Oficial">✅ Oficial</option>
+            </select>
           </div>
           <div class="form-group">
             <label>Categoria</label>
@@ -261,14 +303,22 @@
 
       document.getElementById('commGrid').innerHTML = lista.map(c => {
         const qtdMembros = Array.isArray(c.membros_ids) ? c.membros_ids.length : 0;
+        const isOficial = c.status_oficial === 'Oficial';
+        const badgeStatus = isOficial
+          ? `<span class="tag-oficial">✅ Oficial</span>`
+          : `<span class="tag-nao-oficial">Não Oficial</span>`;
+
         return `
           <a href="comunidade.html?id=${c.id}" style="text-decoration: none;">
             <div class="comm-card">
               <img class="comm-thumb" src="${c.imagem_url || DEFAULT_IMG}" alt="${c.nome}" onerror="this.src='${DEFAULT_IMG}'">
               <div class="comm-info">
                 <div>
-                  <div class="comm-title">${c.nome}</div>
-                  <span class="comm-cat">${c.categoria || 'Geral'}</span>
+                  <div class="comm-title" title="${c.nome}">${c.nome}</div>
+                  <div class="tags-row">
+                    ${badgeStatus}
+                    <span class="comm-cat">${c.categoria || 'Geral'}</span>
+                  </div>
                   <div class="comm-desc">${c.descricao || 'Sem descrição.'}</div>
                 </div>
                 <div class="comm-meta">👥 <strong>${qtdMembros}</strong> membros &bull; Entrar &raquo;</div>
@@ -287,6 +337,7 @@
 
       const nova = {
         nome: document.getElementById('commNome').value.trim(),
+        status_oficial: document.getElementById('commOficial').value,
         categoria: document.getElementById('commCat').value,
         imagem_url: document.getElementById('commImg').value.trim(),
         descricao: document.getElementById('commDesc').value.trim(),

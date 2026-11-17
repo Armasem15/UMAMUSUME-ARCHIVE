@@ -47,7 +47,7 @@
       padding: 0 10px;
     }
     .col-left { width: 200px; flex-shrink: 0; }
-    .col-center { flex: 1; }
+    .col-center { flex: 1; min-width: 0; }
     .col-right { width: 240px; flex-shrink: 0; }
 
     .box {
@@ -81,10 +81,35 @@
     .action-list { list-style: none; margin-top: 10px; }
     .action-list li { margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
 
-    .comm-header-title { font-size: 20px; color: #983b7e; font-weight: bold; margin-bottom: 4px; }
+    .comm-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .comm-header-title { font-size: 20px; color: #983b7e; font-weight: bold; }
+    .tag-oficial {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #b1dfbb;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .tag-nao-oficial {
+      background: #eeeeee;
+      color: #666666;
+      border: 1px solid #dddddd;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+
     .comm-header-desc { color: #555; line-height: 1.4; background: #F9FAFC; padding: 8px; border: 1px solid #E5ECF9; border-radius: 4px; margin-bottom: 12px; }
 
-    /* Caixa de Nova Postagem (RPG / Fórum) */
     .post-composer {
       background: #F4F7FC;
       border: 1px solid #ffc3f4;
@@ -92,11 +117,7 @@
       padding: 10px;
       margin-bottom: 15px;
     }
-    .composer-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
+    .composer-row { display: flex; gap: 8px; margin-bottom: 8px; }
     select, input[type="text"], textarea {
       width: 100%;
       padding: 6px 8px;
@@ -120,7 +141,6 @@
     }
     .btn-orkut:hover { background: #F0EFE2; }
 
-    /* Feed de Mensagens / Tópicos */
     .forum-post {
       background: #FFFFFF;
       border: 1px solid #E5ECF9;
@@ -132,11 +152,7 @@
       gap: 10px;
     }
     .forum-post:nth-child(even) { background: #FAFBFD; }
-    .post-author-col {
-      width: 75px;
-      text-align: center;
-      flex-shrink: 0;
-    }
+    .post-author-col { width: 75px; text-align: center; flex-shrink: 0; }
     .post-author-col img {
       width: 60px;
       height: 60px;
@@ -151,7 +167,7 @@
       margin-top: 4px;
       word-break: break-word;
     }
-    .post-content-col { flex: 1; }
+    .post-content-col { flex: 1; min-width: 0; }
     .post-meta {
       display: flex;
       justify-content: space-between;
@@ -172,21 +188,22 @@
       display: block;
     }
 
-    /* Grid de Membros (Coluna Direita) */
     .grid-3x3 {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       text-align: center;
       margin-bottom: 10px;
+      width: 100%;
     }
-    .grid-card { position: relative; }
+    .grid-card { position: relative; min-width: 0; overflow: hidden; }
     .grid-card img {
       width: 100%;
       height: 55px;
       object-fit: cover;
       border: 1px solid #ffc3fa;
       border-radius: 2px;
+      display: block;
     }
     .grid-card span {
       display: block;
@@ -232,19 +249,20 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
+      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
-      <a href="wiki.html">Personagens</a>
       <a href="comunidades.html">Comunidades</a>
       <a href="criar.html">+ Novo Perfil</a>
     </nav>
   </header>
 
   <div class="main-container">
-    <!-- COLUNA ESQUERDA: INFO DO GRUPO -->
+    <!-- COLUNA ESQUERDA -->
     <aside class="col-left">
       <div class="box">
         <img id="commAvatar" class="comm-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Comunidade">
         <ul class="action-list">
+          <li>✏️ <a href="javascript:void(0)" onclick="toggleEditarComunidade()">Editar Comunidade</a></li>
           <li>🔙 <a href="comunidades.html">Todas as Comunidades</a></li>
           <li>🏠 <a href="wiki.html">Página Inicial</a></li>
         </ul>
@@ -252,16 +270,66 @@
 
       <div class="box">
         <div class="box-header">Informações</div>
+        <p><strong>Status:</strong> <span id="commStatusInfo">-</span></p>
         <p><strong>Categoria:</strong> <span id="commCategoria">-</span></p>
         <p><strong>Membros:</strong> <span id="commTotalMembros">0</span></p>
         <p><strong>Tipo:</strong> Pública</p>
       </div>
     </aside>
 
-    <!-- COLUNA CENTRAL: FÓRUM / CHAT DOS PERSONAGENS -->
+    <!-- COLUNA CENTRAL -->
     <main class="col-center">
+
+      <!-- PAINEL OCULTO PARA EDITAR COMUNIDADE -->
+      <div id="editCommBox" class="box" style="display: none; border-color: #E41A82; background: #FFF9FD;">
+        <div class="box-header">
+          <span>✏️ Editando Comunidade</span>
+          <a href="javascript:void(0)" onclick="toggleEditarComunidade()">[Fechar]</a>
+        </div>
+        <form onsubmit="salvarEdicaoComunidade(event)">
+          <div class="composer-row">
+            <div style="flex: 1.5;">
+              <label style="font-weight:bold; font-size:11px; color:#666;">Nome da Comunidade *</label>
+              <input type="text" id="editCommNome" required>
+            </div>
+            <div style="flex: 1;">
+              <label style="font-weight:bold; font-size:11px; color:#666;">Status</label>
+              <select id="editCommOficial">
+                <option value="Não Oficial">Não Oficial</option>
+                <option value="Oficial">✅ Oficial</option>
+              </select>
+            </div>
+            <div style="flex: 1;">
+              <label style="font-weight:bold; font-size:11px; color:#666;">Categoria</label>
+              <select id="editCommCat">
+                <option value="Equipes / Academias">Equipes / Academias</option>
+                <option value="Humor & Memes">Humor & Memes</option>
+                <option value="Corridas & Treinos">Corridas & Treinos</option>
+                <option value="Culinária & Lanches">Culinária & Lanches</option>
+                <option value="Geral">Geral</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom: 8px;">
+            <label style="font-weight:bold; font-size:11px; color:#666;">URL da Foto do Grupo</label>
+            <input type="text" id="editCommImg" placeholder="https://...">
+          </div>
+          <div style="margin-bottom: 8px;">
+            <label style="font-weight:bold; font-size:11px; color:#666;">Descrição</label>
+            <textarea id="editCommDesc" style="height: 60px; margin-bottom: 0;"></textarea>
+          </div>
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" class="btn-orkut" onclick="toggleEditarComunidade()">Cancelar</button>
+            <button type="submit" class="btn-orkut" style="background: #E41A82; color: white; border-color: #983b77;">💾 Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+
       <div class="box">
-        <h1 class="comm-header-title" id="commNome">Carregando comunidade...</h1>
+        <div class="comm-title-row">
+          <h1 class="comm-header-title" id="commNome">Carregando comunidade...</h1>
+          <span id="commBadgeTop"></span>
+        </div>
         <div class="comm-header-desc" id="commDesc">...</div>
 
         <!-- COMPOSITOR DE MENSAGEM -->
@@ -297,7 +365,7 @@
       </div>
     </main>
 
-    <!-- COLUNA DIREITA: MEMBROS DO GRUPO -->
+    <!-- COLUNA DIREITA -->
     <aside class="col-right">
       <div class="box">
         <div class="box-header">
@@ -306,7 +374,6 @@
 
         <div class="grid-3x3" id="membrosGrid"></div>
 
-        <!-- Adicionar Personagem Existente ao Grupo -->
         <div class="add-member-box">
           <label style="font-weight: bold; color: #983b87; display: block; margin-bottom: 4px; font-size: 11px;">
             ➕ Adicionar Personagem ao Grupo:
@@ -328,13 +395,12 @@
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
     
     let comunidadeAtual = null;
-    let todosPersonagens = []; // Mapa completo dos personagens do banco
+    let todosPersonagens = [];
 
     async function iniciar() {
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
 
-      // 1. Busca todos os personagens cadastrados na Wiki
       const { data: chars } = await supabaseClient
         .from('personagens')
         .select('id, nome, avatar_url, ocupacao')
@@ -342,7 +408,6 @@
       
       todosPersonagens = chars || [];
 
-      // 2. Busca os dados da comunidade
       let query = supabaseClient.from('comunidades').select('*');
       query = id ? query.eq('id', id).single() : query.limit(1).single();
       
@@ -357,12 +422,62 @@
       await carregarMensagens();
     }
 
+    function toggleEditarComunidade() {
+      if (!comunidadeAtual) return;
+      const box = document.getElementById('editCommBox');
+      const abrindo = box.style.display === 'none';
+
+      if (abrindo) {
+        document.getElementById('editCommNome').value = comunidadeAtual.nome || '';
+        document.getElementById('editCommOficial').value = comunidadeAtual.status_oficial || 'Não Oficial';
+        document.getElementById('editCommCat').value = comunidadeAtual.categoria || 'Geral';
+        document.getElementById('editCommImg').value = comunidadeAtual.imagem_url || '';
+        document.getElementById('editCommDesc').value = comunidadeAtual.descricao || '';
+        box.style.display = 'block';
+      } else {
+        box.style.display = 'none';
+      }
+    }
+
+    async function salvarEdicaoComunidade(e) {
+      e.preventDefault();
+      if (!comunidadeAtual) return;
+
+      const atualizados = {
+        nome: document.getElementById('editCommNome').value.trim(),
+        status_oficial: document.getElementById('editCommOficial').value,
+        categoria: document.getElementById('editCommCat').value,
+        imagem_url: document.getElementById('editCommImg').value.trim(),
+        descricao: document.getElementById('editCommDesc').value.trim()
+      };
+
+      const { error } = await supabaseClient
+        .from('comunidades')
+        .update(atualizados)
+        .eq('id', comunidadeAtual.id);
+
+      if (error) {
+        alert('Erro ao atualizar comunidade: ' + error.message);
+        return;
+      }
+
+      comunidadeAtual = { ...comunidadeAtual, ...atualizados };
+      renderizarComunidade();
+      document.getElementById('editCommBox').style.display = 'none';
+    }
+
     function renderizarComunidade() {
       document.title = `UmaWiki - ${comunidadeAtual.nome}`;
       document.getElementById('commNome').innerText = comunidadeAtual.nome;
       document.getElementById('commDesc').innerText = comunidadeAtual.descricao || 'Bem-vindo à comunidade!';
       document.getElementById('commCategoria').innerText = comunidadeAtual.categoria || 'Geral';
       document.getElementById('commAvatar').src = comunidadeAtual.imagem_url || DEFAULT_AVATAR;
+
+      const isOficial = comunidadeAtual.status_oficial === 'Oficial';
+      document.getElementById('commStatusInfo').innerText = isOficial ? '✅ Oficial' : 'Não Oficial';
+      document.getElementById('commBadgeTop').innerHTML = isOficial
+        ? `<span class="tag-oficial">✅ Comunidade Oficial</span>`
+        : `<span class="tag-nao-oficial">Não Oficial</span>`;
 
       const membrosIds = Array.isArray(comunidadeAtual.membros_ids) ? comunidadeAtual.membros_ids.map(Number) : [];
       const membros = todosPersonagens.filter(p => membrosIds.includes(p.id));
@@ -371,10 +486,9 @@
       document.getElementById('commTotalMembros').innerText = membros.length;
       document.getElementById('membrosHeader').innerText = `Membros (${membros.length})`;
 
-      // Grid de Membros (Coluna Direita)
       const grid = document.getElementById('membrosGrid');
       grid.innerHTML = membros.length ? membros.map(m => `
-        <div class="grid-card">
+        <div class="grid-card" title="${m.nome}">
           <button class="remove-member-btn" title="Remover do grupo" onclick="removerMembro(${m.id})">x</button>
           <a href="perfil.html?id=${m.id}">
             <img src="${m.avatar_url || DEFAULT_AVATAR}" alt="${m.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
@@ -383,13 +497,11 @@
         </div>
       `).join('') : '<p style="grid-column: 1/-1; color:#777; font-size:11px;">Nenhum membro ainda. Adicione abaixo!</p>';
 
-      // Dropdown para adicionar novos membros
       const selectNovo = document.getElementById('selectNovoMembro');
       selectNovo.innerHTML = naoMembros.length
         ? naoMembros.map(p => `<option value="${p.id}">${p.nome}</option>`).join('')
         : '<option value="">Todos já são membros!</option>';
 
-      // Dropdown de quem vai escrever a mensagem (só membros do grupo!)
       const selectAutor = document.getElementById('selectAutor');
       selectAutor.innerHTML = membros.length
         ? membros.map(m => `<option value="${m.id}">💬 Falar como: ${m.nome}</option>`).join('')
@@ -410,13 +522,10 @@
         .update({ membros_ids: atualizados })
         .eq('id', comunidadeAtual.id);
 
-      if (error) {
-        alert('Erro ao adicionar membro: ' + error.message);
-        return;
+      if (!error) {
+        comunidadeAtual.membros_ids = atualizados;
+        renderizarComunidade();
       }
-
-      comunidadeAtual.membros_ids = atualizados;
-      renderizarComunidade();
     }
 
     async function removerMembro(idRemover) {
@@ -452,7 +561,7 @@
       document.getElementById('postsCount').innerText = `Mensagens no Tópico (${lista.length})`;
 
       if (lista.length === 0) {
-        feed.innerHTML = '<p style="color:#666; padding:10px;">Nenhuma mensagem neste grupo ainda. Escolha um personagem acima e comece a conversa!</p>';
+        feed.innerHTML = '<p style="color:#666; padding:10px;">Nenhuma mensagem neste grupo ainda.</p>';
         return;
       }
 
@@ -506,15 +615,12 @@
           imagem_url: imagemUrl
         }]);
 
-      if (error) {
-        alert('Erro ao enviar mensagem: ' + error.message);
-        return;
+      if (!error) {
+        document.getElementById('postAssunto').value = '';
+        document.getElementById('postTexto').value = '';
+        document.getElementById('postImgUrl').value = '';
+        await carregarMensagens();
       }
-
-      document.getElementById('postAssunto').value = '';
-      document.getElementById('postTexto').value = '';
-      document.getElementById('postImgUrl').value = '';
-      await carregarMensagens();
     }
 
     iniciar();
