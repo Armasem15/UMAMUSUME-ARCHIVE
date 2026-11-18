@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UmaWiki - Criar / Editar Perfil</title>
+  <title>UmaWiki - Criar Novo Perfil</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -197,6 +197,17 @@
       align-items: center;
     }
 
+    .error-banner {
+      display: none;
+      background: #ffe5e5;
+      border: 1px solid #d9534f;
+      color: #a94442;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+      font-weight: bold;
+    }
+
     @media (max-width: 650px) {
       .top-profile-setup { flex-direction: column; }
       .avatar-preview-box { width: 100%; }
@@ -211,21 +222,20 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
-      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
       <a href="comunidades.html">Comunidades</a>
       <a href="criar.html">+ Novo Perfil</a>
+      <a href="editar.html">✏️ Editar Perfis</a>
     </nav>
   </header>
 
   <div class="container">
 
+    <div id="errorBanner" class="error-banner"></div>
+
     <div class="helper-bar">
-      <span id="helperText">✨ Preencha os dados abaixo para gerar automaticamente o perfil na <strong>UmaWiki</strong>.</span>
-      <div style="display: flex; gap: 6px;">
-        <a id="btnCancelarEdicao" href="wiki.html" class="btn-orkut" style="display: none; text-decoration: none;">Cancelar</a>
-        <button type="button" id="btnExemplo" class="btn-orkut" onclick="preencherExemplo()">Preencher Exemplo (Goldship)</button>
-      </div>
+      <span>✨ Preencha os dados abaixo para criar um novo perfil na <strong>UmaWiki</strong>.</span>
+      <button type="button" class="btn-orkut" onclick="preencherExemplo()">Preencher Exemplo (Goldship)</button>
     </div>
 
     <form id="createForm" onsubmit="salvarPersonagem(event)">
@@ -373,29 +383,26 @@
         <div id="comunidadesContainer"></div>
       </div>
 
-      <!-- 6. DEPOIMENTOS -->
-      <div class="box">
-        <div class="box-header">
-          <span>6. Depoimentos (Você pode editar ou excluir depoimentos aqui)</span>
-          <button type="button" class="btn-orkut" onclick="addDepoimento()">+ Adicionar Depoimento</button>
-        </div>
-        <div id="deposContainer"></div>
-      </div>
-
       <button type="submit" class="btn-save" id="btnSubmit">💾 Salvar e Publicar Perfil na UmaWiki</button>
     </form>
   </div>
 
   <script>
     const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9'.trim();
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
-    
-    // Verifica se a URL tem ?edit=ID
-    const params = new URLSearchParams(window.location.search);
-    const editId = params.get('edit');
+
+    function mostrarErro(msg) {
+      const banner = document.getElementById('errorBanner');
+      banner.innerText = '⚠️ ' + msg;
+      banner.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     function atualizarPreview(url) {
       const img = document.getElementById('avatarPreview');
@@ -459,95 +466,6 @@
       document.getElementById('comunidadesContainer').appendChild(div);
     }
 
-    function addDepoimento(autor = '', avatar = '', texto = '', data = '') {
-      const div = document.createElement('div');
-      div.className = 'dynamic-row depo-item';
-      div.innerHTML = `
-        <input type="text" placeholder="Quem enviou" class="d-autor" style="flex:1.5">
-        <input type="text" placeholder="URL Avatar" class="d-avatar" style="flex:2">
-        <input type="text" placeholder="Mensagem do depoimento" class="d-texto" style="flex:3">
-        <input type="text" placeholder="Data" class="d-data" style="flex:1">
-        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
-      `;
-      div.querySelector('.d-autor').value = autor;
-      div.querySelector('.d-avatar').value = avatar;
-      div.querySelector('.d-texto').value = texto;
-      div.querySelector('.d-data').value = data || new Date().toLocaleDateString('pt-BR');
-      document.getElementById('deposContainer').appendChild(div);
-    }
-
-    // Carrega os dados caso esteja no modo EDIÇÃO (?edit=ID)
-    async function inicializarFormulario() {
-      if (!editId) {
-        addSkill();
-        addFoto();
-        addAliado();
-        addComunidade();
-        return;
-      }
-
-      // Ajusta textos da interface para modo edição
-      document.title = 'UmaWiki - Editando Perfil';
-      document.getElementById('helperText').innerHTML = '✏️ <strong>Modo de Edição:</strong> Altere o que quiser e clique em salvar.';
-      document.getElementById('btnExemplo').style.display = 'none';
-      const btnCancel = document.getElementById('btnCancelarEdicao');
-      btnCancel.style.display = 'inline-block';
-      btnCancel.href = `perfil.html?id=${editId}`;
-      document.getElementById('btnSubmit').innerText = '💾 Salvar Alterações do Perfil';
-
-      const { data: p, error } = await supabaseClient
-        .from('personagens')
-        .select('*')
-        .eq('id', editId)
-        .single();
-
-      if (error || !p) {
-        alert('Erro ao carregar dados do personagem para edição.');
-        return;
-      }
-
-      document.getElementById('nome').value = p.nome || '';
-      document.getElementById('status').value = p.status || '';
-      document.getElementById('avatar_url').value = p.avatar_url || '';
-      atualizarPreview(p.avatar_url || '');
-
-      document.getElementById('nome_completo').value = p.nome_completo || '';
-      document.getElementById('aniversario').value = p.aniversario || '';
-      document.getElementById('especie').value = p.especie || '';
-      document.getElementById('afiliacao').value = p.afiliacao || '';
-      document.getElementById('ocupacao').value = p.ocupacao || '';
-      document.getElementById('gosta_de').value = p.gosta_de || '';
-      document.getElementById('biografia').value = p.biografia || '';
-
-      document.getElementById('aval_confiavel').value = p.aval_confiavel || '';
-      document.getElementById('aval_legal').value = p.aval_legal || '';
-      document.getElementById('aval_beleza').value = p.aval_beleza || '';
-      document.getElementById('midia_anime').value = p.midia_anime || '';
-      document.getElementById('midia_manga').value = p.midia_manga || '';
-      document.getElementById('midia_outros').value = p.midia_outros || '';
-
-      const sInt = p.stat_inteligencia ?? 50;
-      const sSta = p.stat_stamina ?? 50;
-      const sEst = p.stat_estomago ?? 50;
-      const sVel = p.stat_velocidade ?? 50;
-
-      document.getElementById('stat_inteligencia').value = sInt;
-      document.getElementById('val_int').innerText = sInt + '%';
-      document.getElementById('stat_stamina').value = sSta;
-      document.getElementById('val_sta').innerText = sSta + '%';
-      document.getElementById('stat_estomago').value = sEst;
-      document.getElementById('val_est').innerText = sEst + '%';
-      document.getElementById('stat_velocidade').value = sVel;
-      document.getElementById('val_vel').innerText = sVel + '%';
-
-      // Preenche listas dinâmicas existentes
-      (p.habilidades || []).forEach(s => addSkill(s.titulo, s.tipo, s.descricao));
-      (p.fotos || []).forEach(f => addFoto(f.url, f.legenda, f.data));
-      (p.aliados || []).forEach(a => addAliado(a.nome, a.avatar));
-      (p.comunidades || []).forEach(c => addComunidade(c.nome, c.avatar));
-      (p.depoimentos || []).forEach(d => addDepoimento(d.autor, d.avatar, d.texto, d.data));
-    }
-
     function preencherExemplo() {
       document.getElementById('nome').value = 'Goldship';
       document.getElementById('status').value = 'A maior encrenqueira de Tracen';
@@ -578,85 +496,105 @@
 
     async function salvarPersonagem(e) {
       e.preventDefault();
+      document.getElementById('errorBanner').style.display = 'none';
+
+      if (SUPABASE_KEY === 'SUA_CHAVE_ANON_DO_SUPABASE' || !SUPABASE_KEY) {
+        mostrarErro('Você esqueceu de colar a sua SUPABASE_KEY no código do criar.html!');
+        return;
+      }
+
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
       btn.innerText = 'Salvando no Supabase...';
 
-      const habilidades = Array.from(document.querySelectorAll('.skill-item')).map(el => ({
-        titulo: el.querySelector('.s-titulo').value.trim(),
-        tipo: el.querySelector('.s-tipo').value.trim(),
-        descricao: el.querySelector('.s-desc').value.trim()
-      })).filter(x => x.titulo);
+      // Trava de segurança de 15 segundos para nunca ficar carregando infinitamente
+      const timerSeguranca = setTimeout(() => {
+        btn.disabled = false;
+        btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki';
+        mostrarErro('A conexão com o Supabase demorou muito para responder. Verifique sua internet ou a chave API.');
+      }, 15000);
 
-      const fotos = Array.from(document.querySelectorAll('.foto-item')).map(el => ({
-        url: el.querySelector('.f-url').value.trim(),
-        legenda: el.querySelector('.f-legenda').value.trim(),
-        data: el.querySelector('.f-data').value.trim()
-      })).filter(x => x.url);
+      try {
+        const habilidades = Array.from(document.querySelectorAll('.skill-item')).map(el => ({
+          titulo: el.querySelector('.s-titulo').value.trim(),
+          tipo: el.querySelector('.s-tipo').value.trim(),
+          descricao: el.querySelector('.s-desc').value.trim()
+        })).filter(x => x.titulo);
 
-      const aliados = Array.from(document.querySelectorAll('.aliado-item')).map(el => ({
-        nome: el.querySelector('.a-nome').value.trim(),
-        avatar: el.querySelector('.a-avatar').value.trim()
-      })).filter(x => x.nome);
+        const fotos = Array.from(document.querySelectorAll('.foto-item')).map(el => ({
+          url: el.querySelector('.f-url').value.trim(),
+          legenda: el.querySelector('.f-legenda').value.trim(),
+          data: el.querySelector('.f-data').value.trim()
+        })).filter(x => x.url);
 
-      const comunidades = Array.from(document.querySelectorAll('.com-item')).map(el => ({
-        nome: el.querySelector('.c-nome').value.trim(),
-        avatar: el.querySelector('.c-avatar').value.trim()
-      })).filter(x => x.nome);
+        const aliados = Array.from(document.querySelectorAll('.aliado-item')).map(el => ({
+          nome: el.querySelector('.a-nome').value.trim(),
+          avatar: el.querySelector('.a-avatar').value.trim()
+        })).filter(x => x.nome);
 
-      const depoimentos = Array.from(document.querySelectorAll('.depo-item')).map(el => ({
-        autor: el.querySelector('.d-autor').value.trim(),
-        avatar: el.querySelector('.d-avatar').value.trim(),
-        texto: el.querySelector('.d-texto').value.trim(),
-        data: el.querySelector('.d-data').value.trim()
-      })).filter(x => x.autor && x.texto);
+        const comunidades = Array.from(document.querySelectorAll('.com-item')).map(el => ({
+          nome: el.querySelector('.c-nome').value.trim(),
+          avatar: el.querySelector('.c-avatar').value.trim()
+        })).filter(x => x.nome);
 
-      const dadosPersonagem = {
-        nome: document.getElementById('nome').value.trim(),
-        status: document.getElementById('status').value.trim(),
-        avatar_url: document.getElementById('avatar_url').value.trim(),
-        nome_completo: document.getElementById('nome_completo').value.trim() || document.getElementById('nome').value.trim(),
-        aniversario: document.getElementById('aniversario').value.trim(),
-        especie: document.getElementById('especie').value.trim(),
-        afiliacao: document.getElementById('afiliacao').value.trim(),
-        ocupacao: document.getElementById('ocupacao').value.trim(),
-        gosta_de: document.getElementById('gosta_de').value.trim(),
-        biografia: document.getElementById('biografia').value.trim(),
-        aval_confiavel: document.getElementById('aval_confiavel').value.trim(),
-        aval_legal: document.getElementById('aval_legal').value.trim(),
-        aval_beleza: document.getElementById('aval_beleza').value.trim(),
-        midia_anime: document.getElementById('midia_anime').value.trim(),
-        midia_manga: document.getElementById('midia_manga').value.trim(),
-        midia_outros: document.getElementById('midia_outros').value.trim(),
-        stat_inteligencia: parseInt(document.getElementById('stat_inteligencia').value),
-        stat_stamina: parseInt(document.getElementById('stat_stamina').value),
-        stat_estomago: parseInt(document.getElementById('stat_estomago').value),
-        stat_velocidade: parseInt(document.getElementById('stat_velocidade').value),
-        habilidades,
-        fotos,
-        aliados,
-        comunidades,
-        depoimentos
-      };
+        const novoPersonagem = {
+          nome: document.getElementById('nome').value.trim(),
+          status: document.getElementById('status').value.trim(),
+          avatar_url: document.getElementById('avatar_url').value.trim(),
+          nome_completo: document.getElementById('nome_completo').value.trim() || document.getElementById('nome').value.trim(),
+          aniversario: document.getElementById('aniversario').value.trim(),
+          especie: document.getElementById('especie').value.trim(),
+          afiliacao: document.getElementById('afiliacao').value.trim(),
+          ocupacao: document.getElementById('ocupacao').value.trim(),
+          gosta_de: document.getElementById('gosta_de').value.trim(),
+          biografia: document.getElementById('biografia').value.trim(),
+          aval_confiavel: document.getElementById('aval_confiavel').value.trim(),
+          aval_legal: document.getElementById('aval_legal').value.trim(),
+          aval_beleza: document.getElementById('aval_beleza').value.trim(),
+          midia_anime: document.getElementById('midia_anime').value.trim(),
+          midia_manga: document.getElementById('midia_manga').value.trim(),
+          midia_outros: document.getElementById('midia_outros').value.trim(),
+          stat_inteligencia: parseInt(document.getElementById('stat_inteligencia').value),
+          stat_stamina: parseInt(document.getElementById('stat_stamina').value),
+          stat_estomago: parseInt(document.getElementById('stat_estomago').value),
+          stat_velocidade: parseInt(document.getElementById('stat_velocidade').value),
+          habilidades,
+          fotos,
+          aliados,
+          comunidades,
+          depoimentos: []
+        };
 
-      if (editId) {
-        // ATUALIZA REGISTRO EXISTENTE
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from('personagens')
-          .update(dadosPersonagem)
-          .eq('id', editId);
+          .insert([novoPersonagem])
+          .select()
+          .single();
+
+        clearTimeout(timerSeguranca);
 
         if (error) {
-          alert('Erro ao atualizar: ' + error.message);
+          mostrarErro('Erro do Supabase: ' + error.message);
           btn.disabled = false;
-          btn.innerText = '💾 Salvar Alterações do Perfil';
+          btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki';
           return;
         }
-        window.location.href = `perfil.html?id=${editId}`; } else { // CRIA NOVO REGISTRO const { data, error } = await supabaseClient .from('personagens') .insert([dadosPersonagem]) .select() .single();  if (error) { alert('Erro ao salvar: ' + error.message); btn.disabled = false; btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki'; return; } window.location.href = `perfil.html?id=${data.id}`;
+
+        window.location.href = `perfil.html?id=${data.id}`;
+
+      } catch (err) {
+        clearTimeout(timerSeguranca);
+        mostrarErro('Falha inesperada: ' + (err.message || err));
+        btn.disabled = false;
+        btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki';
       }
     }
 
-    inicializarFormulario();
+    // Inicia com 1 linha vazia em cada seção
+    addSkill();
+    addFoto();
+    addAliado();
+    addComunidade();
   </script>
 </body>
 </html>
