@@ -3,540 +3,913 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uminha</title>
+  <title>UmaWiki - Jogos</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* --- BASE & ESTILO WINDOWS XP / ORKUT --- */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Tahoma', 'Verdana', Arial, sans-serif;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #f8e0f7; /* Azul claro estilo Orkut/XP */
-      color: #333;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background-color: #E5ECF9;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333333;
     }
+    a { color: #983b8c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    /* --- JANELA WINDOWS XP --- */
-    .xp-window {
-      width: 100%;
-      max-width: 980px;
-      background: #f0aad3; /* Cor cinza/bege padrão do Windows XP */
-      border: 3px solid #ea0081;
-      border-radius: 8px 8px 0 0;
-      box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    /* Barra de Título do Windows XP (Tema Luna) */
-    .xp-titlebar {
-      background: linear-gradient(to bottom, #ee0077 0%, #ff3a85 8%, #ea006d 25%, #d80077 50%, #b70055 75%, #a50060 100%);
-      padding: 4px 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      font-weight: bold;
-      font-size: 13px;
-      text-shadow: 1px 1px 1px #000;
-    }
-
-    .xp-titlebar-controls {
-      display: flex;
-      gap: 2px;
-    }
-
-    .xp-btn {
-      width: 18px;
-      height: 18px;
-      border: 1px solid #fff;
-      border-radius: 3px;
-      font-size: 10px;
-      font-weight: bold;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .xp-btn-close {
-      background: linear-gradient(to bottom, #e74c87, #c00050);
-    }
-
-    /* --- TOPO & LOGO ORKUT STYLE --- */
     .orkut-header {
-      background-color: #e8c0dc;
-      border-bottom: 2px solid #d4a2c3;
-      padding: 12px 15px;
+      background-color: #b46d9c;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 0 20px;
+      color: white;
+      border-bottom: 2px solid #983b77;
     }
-
     .orkut-logo {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: bold;
-      color: #e5007d; /* Rosa Orkut */
-      text-decoration: none;
+      font-style: italic;
+      color: #E41A82;
+      background-color: #FFFFFF;
+      padding: 2px 10px;
+      border-radius: 4px;
       letter-spacing: -1px;
     }
+    .orkut-logo span { color: #b46dae; }
+    .nav-menu a { color: white; margin-left: 15px; font-weight: bold; font-size: 11px; }
 
-    .orkut-logo span {
-      color: #22a202; /* Azul Orkut */
-    }
-
-    .user-badge {
-      background: #ffffff;
-      border: 1px solid #a2d4a2;
-      padding: 4px 8px;
-      font-size: 11px;
-      border-radius: 4px;
-      color: #333;
-    }
-
-    /* --- MENU DE NAVEGAÇÃO --- */
-    nav {
-      background: #f4d4ea;
-      border-bottom: 1px solid #d4a2b9;
-      padding: 6px 15px;
+    /* LAYOUT PRINCIPAL COM CANTO DE BANNERS */
+    .main-container {
+      max-width: 980px;
+      margin: 16px auto;
       display: flex;
-      gap: 15px;
-      font-size: 12px;
+      gap: 14px;
+      padding: 0 10px;
+      align-items: flex-start;
     }
+    .col-center { flex: 1; min-width: 0; }
+    .col-right { width: 260px; flex-shrink: 0; }
 
-    nav a {
-      color: #1da202;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-      color: #26e500;
-    }
-
-    .xp-body {
-      padding: 15px;
-    }
-
-    /* --- BANNER ROTATIVO --- */
-    .banner-box {
-      background: #fff;
-      border: 1px solid #e2b2d2;
+    .box {
+      background-color: #FFFFFF;
+      border: 1px solid #ffc3fb;
       border-radius: 4px;
-      padding: 5px;
-      margin-bottom: 20px;
+      padding: 12px;
+      margin-bottom: 14px;
     }
-
-    .banner-container {
-      position: relative;
-      width: 100%;
-      height: 240px;
-      background: #000;
-      overflow: hidden;
-      border: 1px solid #666;
-    }
-
-    .banner-slide {
-      display: none;
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
-
-    .banner-slide.active {
-      display: block;
-    }
-
-    .banner-slide img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .banner-caption {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(162, 2, 109, 0.85); /* Azul Orkut com transparência */
-      border-top: 2px solid #e50072;
-      color: white;
-      padding: 10px;
-    }
-
-    .banner-caption h2 {
-      font-size: 16px;
-      margin-bottom: 3px;
-    }
-
-    .banner-caption p {
-      font-size: 11px;
-    }
-
-    /* Botões estilo XP */
-    .xp-btn-play {
-      display: inline-block;
-      margin-top: 6px;
-      padding: 3px 12px;
-      background: linear-gradient(to bottom, #84e03f 0%, #3fa804 100%);
-      border: 1px solid #236100;
-      border-radius: 3px;
-      color: white;
-      font-size: 11px;
+    .box-header {
+      background-color: #f1d4ef;
+      color: #983b87;
       font-weight: bold;
-      text-decoration: none;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    }
-
-    .xp-btn-play:active {
-      background: #3fa804;
-    }
-
-    .banner-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #ece9d8;
-      border: 2px outset #fff;
-      color: #000;
-      font-weight: bold;
-      padding: 5px 8px;
-      cursor: pointer;
       font-size: 12px;
-    }
-
-    .prev { left: 5px; }
-    .next { right: 5px; }
-
-    /* --- BLOCOS/CAIXAS DE CONTEÚDO (ESTILO ORKUT) --- */
-    .orkut-box {
-      background: #ffffff;
-      border: 1px solid #e2b2d0;
-      border-radius: 5px;
-      margin-bottom: 15px;
-      overflow: hidden;
-    }
-
-    .orkut-box-header {
-      background: #f9e4f1;
-      border-bottom: 1px solid #e9c2dd;
       padding: 6px 10px;
-      color: #a2027a;
-      font-size: 12px;
-      font-weight: bold;
+      margin: -12px -12px 12px -12px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border-bottom: 1px solid #ffc3f4;
       display: flex;
       justify-content: space-between;
-    }
-
-    /* --- GRID DE JOGOS --- */
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-      padding: 12px;
-    }
-
-    .game-card {
-      background: #fcf5fa;
-      border: 1px solid #eac8e6;
-      border-radius: 4px;
-      padding: 6px;
-      text-decoration: none;
-      color: #333333;
-      display: flex;
-      flex-direction: column;
       align-items: center;
-      transition: all 0.1s ease;
     }
 
-    .game-card:hover {
-      background: #e8f2fe;
-      border-color: #26e500;
-      box-shadow: 0 0 5px rgba(229, 0, 125, 0.3);
-    }
-
-    .game-thumb {
-      width: 100%;
-      height: 105px;
-      object-fit: cover;
-      border: 1px solid #d4a2cd;
-      margin-bottom: 6px;
-    }
-
-    .game-title {
+    .btn-orkut {
+      background: #ECE9D8;
+      border: 1px solid #b97fb0;
+      padding: 4px 10px;
       font-size: 11px;
       font-weight: bold;
-      color: #1da202;
+      color: #000;
+      cursor: pointer;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .btn-orkut:hover { background: #F0EFE2; text-decoration: none; }
+
+    .btn-pink {
+      background: linear-gradient(180deg, #f23898, #c91270);
+      color: white;
+      border: 1px solid #8a0c4d;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .btn-pink:hover { background: linear-gradient(180deg, #ff47a6, #d6187a); }
+
+    /* FORMULÁRIO DE CADASTRO DE JOGO */
+    .add-form {
+      display: none;
+      background: #FFF9FD;
+      border: 1px dashed #E41A82;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+    }
+    .form-layout {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .icon-preview-box {
+      width: 96px;
+      flex-shrink: 0;
       text-align: center;
-      margin-bottom: 4px;
-      max-width: 100%;
+      background: #FFF;
+      border: 1px solid #ffc3f4;
+      padding: 6px;
+      border-radius: 6px;
+    }
+    .icon-preview-box img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid #C3D9FF;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      flex: 1;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      display: block;
+      font-weight: bold;
+      color: #666;
+      margin-bottom: 3px;
+      font-size: 11px;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ffc3f0;
+      border-radius: 3px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      background: #FFF;
+    }
+    textarea { height: 55px; resize: vertical; }
+
+    /* BARRA DE PESQUISA */
+    .search-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: #F4F7FC;
+      padding: 8px;
+      border: 1px solid #C3D9FF;
+      border-radius: 4px;
+    }
+
+    /* GRADE DE JOGOS COM ÍCONES */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 12px;
+    }
+    .game-card {
+      background: #FAFAFA;
+      border: 1px solid #C3D9FF;
+      border-radius: 5px;
+      padding: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .game-card:hover {
+      background: #FFF9FD;
+      border-color: #E41A82;
+      box-shadow: 0 2px 6px rgba(180, 109, 156, 0.2);
+    }
+    .game-icon-link {
+      flex-shrink: 0;
+      display: block;
+    }
+    .game-icon {
+      width: 82px;
+      height: 82px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 2px solid #ffc3f4;
+      background: #FFF;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      transition: transform 0.15s ease;
+    }
+    .game-card:hover .game-icon {
+      transform: scale(1.04);
+      border-color: #E41A82;
+    }
+    .game-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .game-title-link {
+      font-size: 14px;
+      font-weight: bold;
+      color: #983b8c;
+      display: inline-block;
+      margin-bottom: 3px;
+    }
+    .game-title-link:hover { color: #E41A82; }
+    .game-cat {
+      display: inline-block;
+      background: #f1d4ef;
+      color: #983b87;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .game-desc {
+      color: #555;
+      font-size: 11px;
+      line-height: 1.35;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* SISTEMA DE AVALIAÇÃO POR ESTRELAS */
+    .rating-box {
+      background: #FFFFFF;
+      border: 1px solid #E5ECF9;
+      border-radius: 4px;
+      padding: 4px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .stars-row {
+      display: inline-flex;
+      gap: 2px;
+    }
+    .star-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      color: #CCCCCC;
+      padding: 0 1px;
+      transition: transform 0.1s;
+    }
+    .star-btn:hover { transform: scale(1.2); }
+    .star-btn.active { color: #FFB800; text-shadow: 0 0 1px #b88200; }
+    .rating-info {
+      font-size: 10px;
+      color: #666;
+      font-weight: bold;
+    }
+    .btn-del-game {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #ffe5e5;
+      border: 1px solid #e09999;
+      color: #a00;
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    .btn-del-game:hover { opacity: 1; background: #ffcccc; }
+
+    /* CANTO DE BANNERS ROTATIVOS */
+    .banner-carousel {
+      position: relative;
+      width: 100%;
+      border: 1px solid #ffc3f4;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #F9FAFC;
+    }
+    .banner-slide {
+      display: none;
+      position: relative;
+    }
+    .banner-slide.active {
+      display: block;
+      animation: fadeBanner 0.45s ease;
+    }
+    @keyframes fadeBanner {
+      from { opacity: 0.35; }
+      to { opacity: 1; }
+    }
+    .banner-slide img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .banner-caption {
+      background: rgba(152, 59, 135, 0.9);
+      color: #FFF;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 6px 8px;
+      text-align: center;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    .game-stats {
-      font-size: 9px;
-      color: #666;
-      margin-bottom: 6px;
-    }
-
-    .btn-play-small {
-      width: 100%;
-      text-align: center;
-      background: linear-gradient(to bottom, #ffffff 0%, #ece9d8 100%);
-      border: 1px solid #b97fa3;
-      border-radius: 3px;
-      padding: 2px 0;
-      font-size: 10px;
+    .banner-arrow {
+      position: absolute;
+      top: 95px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #FFF;
+      border: none;
+      width: 24px;
+      height: 28px;
+      cursor: pointer;
       font-weight: bold;
-      color: #000;
+      font-size: 12px;
+      border-radius: 3px;
+      z-index: 5;
     }
+    .banner-arrow:hover { background: #E41A82; }
+    .banner-prev { left: 5px; }
+    .banner-next { right: 5px; }
 
-    .game-card:hover .btn-play-small {
-      background: #13e500;
-      color: #fff;
-      border-color: #05a000;
-    }
-
-    /* --- RODAPÉ --- */
-    footer {
-      background: #f4d4f0;
-      border-top: 1px solid #d4a2bf;
-      padding: 10px;
-      text-align: center;
-      font-size: 10px;
-      color: #555;
-    }
-
-    .stamps {
-      margin-top: 8px;
+    .banner-dots {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 5px;
+      padding: 6px 0 2px 0;
+    }
+    .banner-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d8c2d6;
+      border: none;
+      cursor: pointer;
+    }
+    .banner-dot.active { background: #E41A82; transform: scale(1.2); }
+
+    .banner-manage-form {
+      display: none;
+      background: #FFF9FD;
+      border: 1px dashed #E41A82;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .banner-manage-form input { margin-bottom: 5px; font-size: 11px; padding: 4px 6px; }
+    .banner-mini-list {
+      margin-top: 8px;
+      border-top: 1px dashed #ffc3f4;
+      padding-top: 6px;
+      max-height: 110px;
+      overflow-y: auto;
+    }
+    .banner-mini-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      padding: 3px 0;
+      border-bottom: 1px solid #F0F4FC;
     }
 
-    .stamp-btn {
-      background: #fff;
-      border: 1px inset #999;
-      padding: 2px 5px;
-      font-family: monospace;
-      font-size: 9px;
+    /* TOP AVALIADOS NO CANTO */
+    .top-game-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px dashed #f1d4ef;
+    }
+    .top-game-item:last-child { border-bottom: none; }
+    .top-game-item img {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid #ffc3f4;
+    }
+
+    @media (max-width: 768px) {
+      .main-container { flex-direction: column; }
+      .col-right { width: 100%; }
+      .form-layout { flex-direction: column; }
+      .form-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ESTRUTURA DE JANELA DO WINDOWS XP -->
-  <div class="xp-window">
-    
-    <!-- BARRA DE TÍTULO XP -->
-    <div class="xp-titlebar">
-      <span></span>
-      <div class="xp-titlebar-controls">
-        <div class="xp-btn">_</div>
-        <div class="xp-btn">□</div>
-        <div class="xp-btn xp-btn-close">X</div>
-      </div>
-    </div>
-
-    <!-- CABEÇALHO TIPO ORKUT -->
-    <div class="orkut-header">
-      <a href="#" class="orkut-logo">Uma <span>Games</span></a>
-      <div class="user-badge">
-        <b></b><a href="#" style="color:#a20252"></a>
-      </div>
-    </div>
-
-    <!-- NAVEGAÇÃO -->
-    <nav>
-      <a href="inicio.html">Início</a> |
-      <a href="post.html">Comunidade</a> |
-      <a href="wiki.html">UmaWiki</a> |
-      <a href="filminhos.html">UmaTube</a> |
-      <a href="fanarts.html">fanarts</a>
+  <header class="orkut-header">
+    <div class="orkut-logo">Uma <span>wiki</span></div>
+    <nav class="nav-menu">
+      <a href="wiki.html">Início</a>
+      <a href="comunidades.html">Comunidades</a>
+      <a href="jogos.html">🎮 Jogos</a>
+      <a href="fanarts.html">🎨 Fanarts</a>
+      <a href="criar.html">+ Novo Perfil</a>
+      <a href="editar.html">✏️ Editar Perfis</a>
     </nav>
+  </header>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <div class="xp-body">
+  <div class="main-container">
 
-      <!-- BANNER ROTATIVO (DESTAQUES) -->
-      <div class="banner-box">
-        <div class="banner-container">
-          
-          <!-- Slide 1 -->
-          <div class="banner-slide active">
-            <img src="https://i.pinimg.com/736x/7b/22/40/7b2240b7e392b1e4997fe5dc29380207.jpg" alt="Uma Volei">
-            <div class="banner-caption">
-              <h2>★ Destaque: Uma Volei</h2>
-              <p>jogue esse jogo com seu amigo em multiplayer local</p>
-              <a href="Uma Volei.html" class="xp-btn-play" target="_blank">▶ JOGAR AGORA</a>
+    <!-- COLUNA PRINCIPAL: LISTA DE JOGOS COM ÍCONES -->
+    <main class="col-center">
+      <div class="box">
+        <div class="box-header">
+          <span id="jogosCount">🎮 Meus Jogos HTML (0)</span>
+          <button type="button" class="btn-orkut" onclick="toggleFormJogo()">+ Adicionar Jogo</button>
+        </div>
+
+        <!-- FORMULÁRIO PARA CADASTRAR SEU JOGO HTML -->
+        <form id="formNovoJogo" class="add-form" onsubmit="salvarJogo(event)">
+          <div class="form-layout">
+            <div class="icon-preview-box">
+              <img id="iconPreview" src="https://cdn-icons-png.flaticon.com/512/686/686589.png" alt="Ícone">
+              <span style="display:block; font-size:10px; color:#777; margin-top:4px;">Ícone</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nome do Jogo *</label>
+                <input type="text" id="jogoTitulo" required placeholder="Ex: Corrida de Tracen">
+              </div>
+              <div class="form-group">
+                <label>Arquivo HTML ou Link *</label>
+                <input type="text" id="jogoLink" required placeholder="Ex: meu-jogo.html ou pasta/jogo.html">
+              </div>
+              <div class="form-group">
+                <label>URL do Ícone do Jogo</label>
+                <input type="text" id="jogoImagem" placeholder="https://... ou img/icone.png" oninput="atualizarPreviewIcone(this.value)">
+              </div>
+              <div class="form-group">
+                <label>Gênero / Categoria</label>
+                <input type="text" id="jogoCategoria" value="Arcade" placeholder="Ex: Corrida, Puzzle, RPG">
+              </div>
+              <div class="form-group full">
+                <label>Descrição curta</label>
+                <textarea id="jogoDescricao" placeholder="Explique como jogar..."></textarea>
+              </div>
+              <div class="form-group full">
+                <button type="submit" class="btn-pink" id="btnSalvarJogo">💾 Salvar Jogo</button>
+              </div>
             </div>
           </div>
+        </form>
 
-          <!-- Slide 2 -->
-          <div class="banner-slide">
-            <img src="https://i.pinimg.com/736x/52/ec/c4/52ecc4950c8ebf22674408b22fbf3587.jpg" alt="Bar da Vodka">
-            <div class="banner-caption">
-              <h2>★ Bar da Vodka</h2>
-              <p>Crie drinks saborosos com a vodka.</p>
-              <a href="bar da vodka.html" class="xp-btn-play" target="_blank">▶ JOGAR AGORA</a>
-            </div>
-          </div>
+        <!-- BARRA DE BUSCA -->
+        <div class="search-bar">
+          <input type="text" id="buscaJogo" placeholder="🔍 Pesquisar jogo por nome ou gênero..." oninput="renderizarJogos()">
+          <select id="ordenarJogos" style="width: 165px;" onchange="renderizarJogos()">
+            <option value="recentes">Mais recentes</option>
+            <option value="melhores">Melhor avaliados</option>
+            <option value="az">Ordem A - Z</option>
+          </select>
+        </div>
 
-          <!-- Slide 3 -->
-          <div class="banner-slide">
-            <img src="https://i.pinimg.com/736x/c9/04/b1/c904b1530fcda46e3369122f7fdf6f51.jpg" alt="Haru Urara vs Helicoptere">
-            <div class="banner-caption">
-              <h2>★ Haru Urara vs Helicoptres</h2>
-              <p>Sequestraram nossa presidenta Dilma Ruseff, Haru Urara the Goat terá que salvar toda a pátria nacional Brasileira dos malignos Helicopteres Argentinos.</p>
-              <a href="haru urara vs helicoptere.html" class="xp-btn-play" target="_blank">▶ JOGAR AGORA</a>
-            </div>
-          </div>
+        <!-- GRADE DE JOGOS -->
+        <div class="games-grid" id="gamesGrid">
+          <p style="color:#666;">Carregando jogos...</p>
+        </div>
+      </div>
+    </main>
 
- <!-- Slide 4 -->
-          <div class="banner-slide">
-            <img src="https://i.pinimg.com/736x/a7/e7/d8/a7e7d871610d8e9de68085997d8a6096.jpg" alt="Cassinão da Nakayama Festa">
-            <div class="banner-caption">
-              <h2>★ Cassinão da Nakayama Festa</h2>
-              <p>Aposte todo seu dinheiro com responssabilidade (livre para todos os publicos).</p>
-              <a href="cassinão da nakayama festa.html" class="xp-btn-play" target="_blank">▶ JOGAR AGORA</a>
-            </div>
-          </div>
+    <!-- CANTO DIREITO: BANNERS ROTATIVOS + RANKING -->
+    <aside class="col-right">
 
+      <!-- JANELA DE BANNERS QUE TROCAM ENTRE SI -->
+      <div class="box">
+        <div class="box-header">
+          <span>📢 Destaques & Banners</span>
+          <button type="button" class="btn-orkut" style="padding:2px 6px; font-size:10px;" onclick="toggleFormBanner()">+ Banner</button>
+        </div>
 
+        <form id="formBanner" class="banner-manage-form" onsubmit="salvarBanner(event)">
+          <input type="text" id="bannerTitulo" placeholder="Texto do banner (opcional)">
+          <input type="text" id="bannerImg" required placeholder="URL da imagem do banner *">
+          <input type="text" id="bannerLink" placeholder="Página destino (ex: meu-jogo.html)">
+          <button type="submit" class="btn-pink" style="width:100%; padding:4px; font-size:11px;">Adicionar Banner</button>
 
+          <div class="banner-mini-list" id="bannerMiniList"></div>
+        </form>
 
+        <div class="banner-carousel" id="bannerCarousel" onmouseenter="pausarBanners()" onmouseleave="iniciarRotacaoBanners()">
+          <button type="button" class="banner-arrow banner-prev" onclick="mudarBanner(-1)">◀</button>
+          <div id="bannerSlidesContainer"></div>
+          <button type="button" class="banner-arrow banner-next" onclick="mudarBanner(1)">▶</button>
+        </div>
+        <div class="banner-dots" id="bannerDots"></div>
+      </div>
 
-
-          <!-- Botões do Banner -->
-          <button class="banner-nav prev" onclick="changeSlide(-1)">&lt;</button>
-          <button class="banner-nav next" onclick="changeSlide(1)">&gt;</button>
+      <!-- TOP MELHOR AVALIADOS -->
+      <div class="box">
+        <div class="box-header">
+          <span>🏆 Mais Bem Avaliados</span>
+        </div>
+        <div id="topRatedList">
+          <p style="color:#777; font-size:11px;">Avalie os jogos para formar o ranking!</p>
         </div>
       </div>
 
-      <!-- SEÇÃO DE JOGOS (ORKUT STYLE) -->
-      <div class="orkut-box">
-        <div class="orkut-box-header">
-          <span>JOGOS POPULARES DA COMUNIDADE (8)</span>
-          <a href="#" style="color:#a2026d; text-decoration:none;">ver todos &raquo;</a>
-        </div>
-
-        <div class="games-grid">
-
-          <!-- Card 1 -->
-          <a href="Uma Volei.html" class="game-card" target="_blank">
-            <img src="https://i.pinimg.com/736x/8d/1a/60/8d1a609c635e40fc76322f837578c0dd.jpg" class="game-thumb" alt="Uma Volei">
-            <div class="game-title">Uma volei</div>
-            <div class="game-stats">⭐ 98%</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-          <!-- Card 2 -->
-          <a href="bar da vodka.html" class="game-card" target="_blank">
-            <img src="https://i.pinimg.com/736x/80/59/67/8059672107fb1518ee1c22f9cf242d1c.jpg" class="game-thumb" alt="bar da vodka">
-            <div class="game-title">Bar da Vodka</div>
-            <div class="game-stats">⭐ 95%</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-          <!-- Card 3 -->
-          <a href="haru urara vs helicoptere.html" target="_blank">
-            <img src="https://i.pinimg.com/736x/5b/b9/ec/5bb9ec32ccc4f114ed7c709b970e8295.jpg" class="game-thumb" alt="Haru Urara vs Helicoptere">
-            <div class="game-title">Haru Urara vs Helicoptere</div>
-            <div class="game-stats">⭐ 91%</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-          <!-- Card 4 -->
-          <a href="cassinão da nakayama festa.html" target="_blank">
-            <img src="https://i.pinimg.com/736x/e9/6d/21/e96d219804b782ee67bdbda97e3a2fdf.jpg" class="game-thumb" alt="Caissinão da Nakayma Festa">
-            <div class="game-title">Cassinão da Nakayma Festa</div>
-            <div class="game-stats">⭐ 6% LIVRE PARA TODAS AS IDADES</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-          <!-- Card 5 -->
-          <a href="https://exemplo.com/jogo5" class="game-card" target="_blank">
-            <img src="https://i.pinimg.com/736x/0e/30/04/0e3004a4c9d1de8aa2a6e0d4d76416c6.jpg" class="game-thumb" alt="Tower Shield">
-            <div class="game-title">jogo</div>
-            <div class="game-stats">⭐ 89%</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-          <!-- Card 6 -->
-          <a href="https://exemplo.com/jogo6" class="game-card" target="_blank">
-            <img src="https://i.pinimg.com/736x/0e/30/04/0e3004a4c9d1de8aa2a6e0d4d76416c6.jpg" class="game-thumb" alt="Sinuca 8 Ball">
-            <div class="game-title">jogo</div>
-            <div class="game-stats">⭐ 94%</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-          <!-- Card 7 -->
-          <a href="https://exemplo.com/jogo7" class="game-card" target="_blank">
-            <img src="https://i.pinimg.com/736x/0e/30/04/0e3004a4c9d1de8aa2a6e0d4d76416c6.jpg" class="game-thumb" alt="Sonic Flash">
-            <div class="game-title">jogo</div>
-            <div class="game-stats">⭐ 97%</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-          <!-- Card 8 -->
-          <a href="https://exemplo.com/jogo8" class="game-card" target="_blank">
-            <img src="https://i.pinimg.com/736x/0e/30/04/0e3004a4c9d1de8aa2a6e0d4d76416c6.jpg" class="game-thumb" alt="Zombie Arena">
-            <div class="game-title">jogo</div>
-            <div class="game-stats">⭐ 93%</div>
-            <div class="btn-play-small">Jogar</div>
-          </a>
-
-        </div>
-      </div>
-
-    </div>
-
-    <!-- RODAPÉ -->
-    <footer>
-      <p>site feito por fã</p>
-      <div class="stamps">
-        <span class="stamp-btn"></span>
-        <span class="stamp-btn"></span>
-        <span class="stamp-btn"></span>
-      </div>
-    </footer>
-
+    </aside>
   </div>
 
-  <!-- SCRIPT DO BANNER ROTATIVO -->
   <script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.banner-slide');
-    const intervalTime = 3500; // Troca a cada 3.5 segundos
+    const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
 
-    function showSlide(index) {
-      if (index >= slides.length) currentSlide = 0;
-      else if (index < 0) currentSlide = slides.length - 1;
-      else currentSlide = index;
+    const DEFAULT_ICON = 'https://cdn-icons-png.flaticon.com/512/686/686589.png';
 
-      slides.forEach(slide => slide.classList.remove('active'));
-      slides[currentSlide].classList.add('active');
+    // Banners padrão caso você ainda não tenha cadastrado nenhum no painel "+ Banner"
+    const BANNERS_PADRAO = [
+      {
+        id: 'def1',
+        titulo: '🎨 Confira a Galeria de Fanarts!',
+        imagem_url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500&auto=format&fit=crop&q=60',
+        link_destino: 'fanarts.html'
+      },
+      {
+        id: 'def2',
+        titulo: '💬 Participe das Comunidades!',
+        imagem_url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&auto=format&fit=crop&q=60',
+        link_destino: 'comunidades.html'
+      },
+      {
+        id: 'def3',
+        titulo: '➕ Crie um Novo Perfil na Wiki',
+        imagem_url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&auto=format&fit=crop&q=60',
+        link_destino: 'criar.html'
+      }
+    ];
+
+    let listaJogos = [];
+    let listaBanners = [];
+    let bannerAtualIdx = 0;
+    let timerBanners = null;
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
-    function changeSlide(direction) {
-      showSlide(currentSlide + direction);
+    function limparUrl(url) {
+      const u = String(url || '').trim();
+      if (!u) return '#';
+      if (/^javascript:/i.test(u)) return '#';
+      return u;
     }
 
-    // Timer automático
-    setInterval(() => {
-      showSlide(currentSlide + 1);
-    }, intervalTime);
+    function atualizarPreviewIcone(url) {
+      const img = document.getElementById('iconPreview');
+      img.src = url.trim() || DEFAULT_ICON;
+      img.onerror = () => { img.src = DEFAULT_ICON; };
+    }
+
+    function toggleFormJogo() {
+      const f = document.getElementById('formNovoJogo');
+      f.style.display = f.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function toggleFormBanner() {
+      const f = document.getElementById('formBanner');
+      f.style.display = f.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function iniciar() {
+      const [resJogos, resBanners] = await Promise.all([
+        supabaseClient.from('jogos').select('*').order('created_at', { ascending: false }),
+        supabaseClient.from('banners_jogos').select('*').order('created_at', { ascending: false })
+      ]);
+
+      listaJogos = resJogos.data || [];
+      const bannersDb = resBanners.data || [];
+      listaBanners = bannersDb.length > 0 ? bannersDb : BANNERS_PADRAO;
+
+      renderizarJogos();
+      renderizarRanking();
+      renderizarBanners();
+      renderizarListaMiniBanners(bannersDb);
+      iniciarRotacaoBanners();
+    }
+
+    function calcularMedia(jogo) {
+      const votos = Number(jogo.nota_votos || 0);
+      const soma = Number(jogo.nota_soma || 0);
+      if (votos === 0) return 0;
+      return soma / votos;
+    }
+
+    function renderizarJogos() {
+      const termo = document.getElementById('buscaJogo').value.trim().toLowerCase();
+      const ordem = document.getElementById('ordenarJogos').value;
+
+      let filtrados = listaJogos.filter(j =>
+        (j.titulo || '').toLowerCase().includes(termo) ||
+        (j.categoria || '').toLowerCase().includes(termo)
+      );
+
+      if (ordem === 'melhores') {
+        filtrados.sort((a, b) => calcularMedia(b) - calcularMedia(a));
+      } else if (ordem === 'az') {
+        filtrados.sort((a, b) => (a.titulo || '').localeCompare(b.titulo || ''));
+      }
+
+      document.getElementById('jogosCount').innerText = `🎮 Meus Jogos HTML (${filtrados.length})`;
+      const grid = document.getElementById('gamesGrid');
+
+      if (filtrados.length === 0) {
+        grid.innerHTML = '<p style="color:#666; grid-column:1/-1;">Nenhum jogo encontrado. Clique em "+ Adicionar Jogo" para cadastrar o link do seu arquivo HTML!</p>';
+        return;
+      }
+
+      grid.innerHTML = filtrados.map(j => {
+        const destino = limparUrl(j.link_jogo);
+        const media = calcularMedia(j);
+        const votos = Number(j.nota_votos || 0);
+        const estrelasArredondadas = Math.round(media);
+
+        const estrelasHtml = [1, 2, 3, 4, 5].map(n => `
+          <button type="button"
+                  class="star-btn ${n <= estrelasArredondadas ? 'active' : ''}"
+                  data-jogo="${j.id}"
+                  data-star="${n}"
+                  onmouseenter="previewEstrelas(${j.id}, ${n})"
+                  onmouseleave="resetarEstrelas(${j.id}, ${estrelasArredondadas})"
+                  onclick="avaliarJogo(${j.id}, ${n})"
+                  title="Dar nota ${n}">★</button>
+        `).join('');
+
+        return `
+          <div class="game-card">
+            <button type="button" class="btn-del-game" onclick="excluirJogo(${j.id})" title="Remover jogo">✕</button>
+
+            <a href="${escapeHtml(destino)}" class="game-icon-link" title="Abrir ${escapeHtml(j.titulo)}">
+              <img class="game-icon" src="${escapeHtml(j.imagem_url || DEFAULT_ICON)}" alt="${escapeHtml(j.titulo)}" onerror="this.src='${DEFAULT_ICON}'">
+            </a>
+
+            <div class="game-content">
+              <a href="${escapeHtml(destino)}" class="game-title-link">${escapeHtml(j.titulo)}</a>
+              <div><span class="game-cat">${escapeHtml(j.categoria || 'Jogo')}</span></div>
+              <div class="game-desc">${escapeHtml(j.descricao || 'Clique no ícone para jogar!')}</div>
+
+              <div class="rating-box">
+                <div class="stars-row" id="stars_${j.id}">
+                  ${estrelasHtml}
+                </div>
+                <span class="rating-info">
+                  ${votos > 0 ? `${media.toFixed(1)} (${votos})` : 'Sem notas'}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function previewEstrelas(jogoId, notaHover) {
+      const container = document.getElementById(`stars_${jogoId}`);
+      if (!container) return;
+      container.querySelectorAll('.star-btn').forEach(btn => {
+        const starVal = Number(btn.getAttribute('data-star'));
+        btn.classList.toggle('active', starVal <= notaHover);
+      });
+    }
+
+    function resetarEstrelas(jogoId, mediaAtual) {
+      const container = document.getElementById(`stars_${jogoId}`);
+      if (!container) return;
+      container.querySelectorAll('.star-btn').forEach(btn => {
+        const starVal = Number(btn.getAttribute('data-star'));
+        btn.classList.toggle('active', starVal <= mediaAtual);
+      });
+    }
+
+    async function avaliarJogo(jogoId, nota) {
+      const jogo = listaJogos.find(j => j.id === jogoId);
+      if (!jogo) return;
+
+      const novaSoma = Number(jogo.nota_soma || 0) + nota;
+      const novosVotos = Number(jogo.nota_votos || 0) + 1;
+
+      const { error } = await supabaseClient
+        .from('jogos')
+        .update({ nota_soma: novaSoma, nota_votos: novosVotos })
+        .eq('id', jogoId);
+
+      if (error) {
+        alert('Erro ao registrar avaliação (verifique se rodou o SQL de atualização): ' + error.message);
+        return;
+      }
+
+      jogo.nota_soma = novaSoma;
+      jogo.nota_votos = novosVotos;
+      renderizarJogos();
+      renderizarRanking();
+    }
+
+    function renderizarRanking() {
+      const box = document.getElementById('topRatedList');
+      const avaliados = listaJogos
+        .filter(j => Number(j.nota_votos || 0) > 0)
+        .sort((a, b) => calcularMedia(b) - calcularMedia(a))
+        .slice(0, 4);
+
+      if (avaliados.length === 0) {
+        box.innerHTML = '<p style="color:#777; font-size:11px;">Clique nas estrelas de um jogo para avaliar!</p>';
+        return;
+      }
+
+      box.innerHTML = avaliados.map((j, idx) => `
+        <div class="top-game-item">
+          <strong style="color:#E41A82; width:14px;">${idx + 1}.</strong>
+          <a href="${escapeHtml(limparUrl(j.link_jogo))}">
+            <img src="${escapeHtml(j.imagem_url || DEFAULT_ICON)}" onerror="this.src='${DEFAULT_ICON}'">
+          </a>
+          <div style="min-width:0; flex:1;">
+            <a href="${escapeHtml(limparUrl(j.link_jogo))}" style="font-weight:bold; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              ${escapeHtml(j.titulo)}
+            </a>
+            <span style="font-size:10px; color:#666;">⭐ ${calcularMedia(j).toFixed(1)} (${j.nota_votos} votos)</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function salvarJogo(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvarJogo');
+      btn.disabled = true;
+      btn.innerText = 'Salvando...';
+
+      const novo = {
+        titulo: document.getElementById('jogoTitulo').value.trim(),
+        link_jogo: document.getElementById('jogoLink').value.trim(),
+        imagem_url: document.getElementById('jogoImagem').value.trim(),
+        categoria: document.getElementById('jogoCategoria').value.trim() || 'Jogo',
+        descricao: document.getElementById('jogoDescricao').value.trim(),
+        nota_soma: 0,
+        nota_votos: 0
+      };
+
+      const { data, error } = await supabaseClient
+        .from('jogos')
+        .insert([novo])
+        .select()
+        .single();
+
+      btn.disabled = false;
+      btn.innerText = '💾 Salvar Jogo';
+
+      if (error) {
+        alert('Erro ao salvar jogo: ' + error.message);
+        return;
+      }
+
+      listaJogos.unshift(data);
+      renderizarJogos();
+      document.getElementById('formNovoJogo').reset();
+      atualizarPreviewIcone('');
+      document.getElementById('formNovoJogo').style.display = 'none';
+    }
+
+    async function excluirJogo(id) {
+      if (!confirm('Remover este jogo da lista?')) return;
+      const { error } = await supabaseClient.from('jogos').delete().eq('id', id);
+      if (!error) {
+        listaJogos = listaJogos.filter(j => j.id !== id);
+        renderizarJogos();
+        renderizarRanking();
+      }
+    }
+
+    // ==========================================
+    // LÓGICA DOS BANNERS ROTATIVOS
+    // ==========================================
+    function renderizarBanners() {
+      const container = document.getElementById('bannerSlidesContainer');
+      const dots = document.getElementById('bannerDots');
+
+      if (listaBanners.length === 0) return;
+      if (bannerAtualIdx >= listaBanners.length) bannerAtualIdx = 0;
+
+      container.innerHTML = listaBanners.map((b, i) => {
+        const link = limparUrl(b.link_destino);
+        const temLink = link && link !== '#';
+        const imgTag = `<img src="${escapeHtml(b.imagem_url)}" alt="${escapeHtml(b.titulo || 'Banner')}">`;
+        const captionTag = b.titulo ? `<div class="banner-caption">${escapeHtml(b.titulo)}</div>` : '';
+
+        return `
+          <div class="banner-slide ${i === bannerAtualIdx ? 'active' : ''}">
+            ${temLink ? `<a href="${escapeHtml(link)}">${imgTag}${captionTag}</a>` : `${imgTag}${captionTag}`}
+          </div>
+        `;
+      }).join('');
+
+      dots.innerHTML = listaBanners.map((_, i) => `
+        <button type="button" class="banner-dot ${i === bannerAtualIdx ? 'active' : ''}" onclick="irParaBanner(${i})"></button>
+      `).join('');
+    }
+
+    function mudarBanner(direcao) {
+      if (listaBanners.length === 0) return;
+      bannerAtualIdx = (bannerAtualIdx + direcao + listaBanners.length) % listaBanners.length;
+      renderizarBanners();
+    }
+
+    function irParaBanner(idx) {
+      bannerAtualIdx = idx;
+      renderizarBanners();
+    }
+
+    function iniciarRotacaoBanners() {
+      pausarBanners();
+      if (listaBanners.length > 1) {
+        timerBanners = setInterval(() => mudarBanner(1), 4000);
+      }
+    }
+
+    function pausarBanners() {
+      if (timerBanners) {
+        clearInterval(timerBanners);
+        timerBanners = null;
+      }
+    }
+
+    function renderizarListaMiniBanners(bannersDb) {
+      const box = document.getElementById('bannerMiniList');
+      if (!bannersDb || bannersDb.length === 0) {
+        box.innerHTML = '<span style="font-size:10px; color:#777;">Usando banners padrão. Adicione o seu acima!</span>';
+        return;
+      }
+      box.innerHTML = bannersDb.map(b => `
+        <div class="banner-mini-item">
+          <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:165px;">
+            ${escapeHtml(b.titulo || b.imagem_url)}
+          </span>
+          <button type="button" class="btn-orkut" style="padding:1px 5px; font-size:9px; color:#a00;" onclick="excluirBanner(${b.id})">✕</button>
+        </div>
+      `).join('');
+    }
+
+    async function salvarBanner(e) {
+      e.preventDefault();
+      const novoBanner = {
+        titulo: document.getElementById('bannerTitulo').value.trim(),
+        imagem_url: document.getElementById('bannerImg').value.trim(),
+        link_destino: document.getElementById('bannerLink').value.trim()
+      };
+
+      const { error } = await supabaseClient.from('banners_jogos').insert([novoBanner]);
+      if (error) {
+        alert('Erro ao salvar banner (rode o SQL do Passo 1 primeiro): ' + error.message);
+        return;
+      }
+
+      document.getElementById('formBanner').reset();
+      const { data: atualizados } = await supabaseClient
+        .from('banners_jogos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      listaBanners = atualizados && atualizados.length > 0 ? atualizados : BANNERS_PADRAO;
+      bannerAtualIdx = 0;
+      renderizarBanners();
+      renderizarListaMiniBanners(atualizados || []);
+      iniciarRotacaoBanners();
+    }
+
+    async function excluirBanner(id) {
+      const { error } = await supabaseClient.from('banners_jogos').delete().eq('id', id);
+      if (!error) {
+        const { data: atualizados } = await supabaseClient
+          .from('banners_jogos')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        listaBanners = atualizados && atualizados.length > 0 ? atualizados : BANNERS_PADRAO;
+        bannerAtualIdx = 0;
+        renderizarBanners();
+        renderizarListaMiniBanners(atualizados || []);
+      }
+    }
+
+    iniciar();
   </script>
-
 </body>
 </html>

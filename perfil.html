@@ -260,6 +260,7 @@
 
     .grid-3x3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; text-align: center; width: 100%; }
     .grid-card { min-width: 0; overflow: hidden; }
+    .grid-card a { display: block; width: 100%; }
     .grid-card img { width: 100%; height: 55px; object-fit: cover; border: 1px solid #ffc3fa; border-radius: 2px; display: block; }
     .grid-card span {
       display: block;
@@ -447,27 +448,28 @@
       personagemAtual = data;
       document.getElementById('btnEditarPerfil').href = `editar.html?id=${data.id}`;
 
-      // Se tiver um relacionamento sério, busca os dados do parceiro(a)
-      let parceiro = null;
-      if (data.relacionamento_id) {
-        const { data: partnerData } = await supabaseClient
-          .from('personagens')
-          .select('id, nome, avatar_url')
-          .eq('id', data.relacionamento_id)
-          .single();
-        parceiro = partnerData;
-      }
+      // Busca personagens e comunidades do banco para resolver dados atualizados e links clicáveis
+      const [resChars, resComms] = await Promise.all([
+        supabaseClient.from('personagens').select('id, nome, avatar_url'),
+        supabaseClient.from('comunidades').select('id, nome, imagem_url, membros_ids')
+      ]);
 
-      preencherTela(data, parceiro);
+      const todosChars = resChars.data || [];
+      const todasComms = resComms.data || [];
+
+      const parceiro = data.relacionamento_id
+        ? todosChars.find(c => c.id === data.relacionamento_id) || null
+        : null;
+
+      preencherTela(data, parceiro, todosChars, todasComms);
     }
 
-    function preencherTela(p, parceiro) {
+    function preencherTela(p, parceiro, todosChars, todasComms) {
       document.title = `UmaWiki - ${p.nome}`;
       document.getElementById('charName').innerText = p.nome;
       document.getElementById('charStatus').innerText = p.status || '';
       document.getElementById('charAvatar').src = p.avatar_url || DEFAULT_AVATAR;
 
-      // Exibe o card de Relacionamento Sério estilo Facebook
       if (parceiro) {
         const fbBox = document.getElementById('fbRelBox');
         fbBox.style.display = 'flex';
@@ -529,23 +531,71 @@
 
       renderizarDepoimentos(p.depoimentos || []);
 
-      const aliados = Array.isArray(p.aliados) ? p.aliados : [];
-      document.getElementById('aliadosCount').innerText = `Aliados (${aliados.length})`;
-      document.getElementById('aliadosGrid').innerHTML = aliados.map(a => `
-        <div class="grid-card" title="${a.nome}">
-          <img src="${a.avatar || DEFAULT_AVATAR}" alt="${a.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
-          <span>${a.nome}</span>
-        </div>
-      `).join('');
+      // Renderiza Aliados puxando nome/foto atualizados e linkando para o perfil
+      const aliadosBrutos = Array.isArray(p.aliados) ? p.aliados : [];
+      const aliadosResolvidos = aliadosBrutos.map(a => {
+        const live = a.id
+          ? todosChars.find(c => c.id === a.id)
+          : todosChars.find(c => (c.nome || '').toLowerCase() === (a.nome || '').toLowerCase());
+        return live
+          ? { id: live.id, nome: live.nome, avatar: live.avatar_url || DEFAULT_AVATAR }
+          : { id: null, nome: a.nome, avatar: a.avatar || DEFAULT_AVATAR };
+      });
 
-      const comunidades = Array.isArray(p.comunidades) ? p.comunidades : [];
-      document.getElementById('comunidadesCount').innerText = `Comunidades (${comunidades.length})`;
-      document.getElementById('comunidadesGrid').innerHTML = comunidades.map(c => `
-        <div class="grid-card" title="${c.nome}">
-          <img src="${c.avatar || DEFAULT_AVATAR}" alt="${c.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
-          <span>${c.nome}</span>
-        </div>
-      `).join('');
+      document.getElementById('aliadosCount').innerText = `Aliados (${aliadosResolvidos.length})`;
+      document.getElementById('aliadosGrid').innerHTML = aliadosResolvidos.length
+        ? aliadosResolvidos.map(a => a.id ? `
+          <div class="grid-card" title="${a.nome}">
+            <a href="perfil.html?id=${a.id}">
+              <img src="${a.avatar}" alt="${a.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <span>${a.nome}</span>
+            </a>
+          </div>
+        ` : `
+          <div class="grid-card" title="${a.nome}">
+            <img src="${a.avatar}" alt="${a.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+            <span>${a.nome}</span>
+          </div>
+        `).join('')
+        : '<p style="grid-column:1/-1; color:#777; font-size:10px;">Nenhum aliado ainda.</p>';
+
+      // Renderiza Comunidades (juntando as do perfil + as que o personagem entrou pelo grupo)
+      const mapaComunidades = new Map();
+
+      (Array.isArray(p.comunidades) ? p.comunidades : []).forEach(c => {
+        const live = c.id
+          ? todasComms.find(x => x.id === c.id)
+          : todasComms.find(x => (x.nome || '').toLowerCase() === (c.nome || '').toLowerCase());
+        if (live) {
+          mapaComunidades.set(live.id, { id: live.id, nome: live.nome, avatar: live.imagem_url || DEFAULT_AVATAR });
+        } else if (c.nome) {
+          mapaComunidades.set(`legacy_${c.nome}`, { id: null, nome: c.nome, avatar: c.avatar || DEFAULT_AVATAR });
+        }
+      });
+
+      todasComms.forEach(c => {
+        if (Array.isArray(c.membros_ids) && c.membros_ids.map(Number).includes(p.id)) {
+          mapaComunidades.set(c.id, { id: c.id, nome: c.nome, avatar: c.imagem_url || DEFAULT_AVATAR });
+        }
+      });
+
+      const comunidadesResolvidas = Array.from(mapaComunidades.values());
+      document.getElementById('comunidadesCount').innerText = `Comunidades (${comunidadesResolvidas.length})`;
+      document.getElementById('comunidadesGrid').innerHTML = comunidadesResolvidas.length
+        ? comunidadesResolvidas.map(c => c.id ? `
+          <div class="grid-card" title="${c.nome}">
+            <a href="comunidade.html?id=${c.id}">
+              <img src="${c.avatar}" alt="${c.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <span>${c.nome}</span>
+            </a>
+          </div>
+        ` : `
+          <div class="grid-card" title="${c.nome}">
+            <img src="${c.avatar}" alt="${c.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+            <span>${c.nome}</span>
+          </div>
+        `).join('')
+        : '<p style="grid-column:1/-1; color:#777; font-size:10px;">Nenhuma comunidade ainda.</p>';
     }
 
     function renderizarDepoimentos(lista) {

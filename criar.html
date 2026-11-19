@@ -138,13 +138,22 @@
 
     .dynamic-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 8px;
       align-items: center;
       background: #F9FAFC;
       padding: 8px;
       border: 1px dashed #ffc3f0;
       border-radius: 4px;
+    }
+    .mini-thumb {
+      width: 34px;
+      height: 34px;
+      object-fit: cover;
+      border-radius: 3px;
+      border: 1px solid #ffc3f0;
+      flex-shrink: 0;
+      background: #FFF;
     }
 
     .btn-orkut {
@@ -382,7 +391,7 @@
         <div id="fotosContainer"></div>
       </div>
 
-      <!-- 5. ALIADOS E COMUNIDADES -->
+      <!-- 5. ALIADOS E COMUNIDADES (PUXADOS DO BANCO) -->
       <div class="box">
         <div class="box-header">
           <span>5. Aliados (Coluna Direita)</span>
@@ -411,17 +420,25 @@
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
     let listaPersonagensExistentes = [];
+    let listaComunidadesExistentes = [];
 
-    async function carregarOpcoesRelacionamento() {
-      const { data } = await supabaseClient
-        .from('personagens')
-        .select('id, nome')
-        .order('nome', { ascending: true });
+    async function iniciar() {
+      const [resChars, resComms] = await Promise.all([
+        supabaseClient.from('personagens').select('id, nome, avatar_url, afiliacao').order('nome', { ascending: true }),
+        supabaseClient.from('comunidades').select('id, nome, imagem_url, membros_ids, categoria').order('nome', { ascending: true })
+      ]);
 
-      listaPersonagensExistentes = data || [];
-      const select = document.getElementById('relacionamento_id');
-      select.innerHTML = `<option value="">Solteira / Nenhum</option>` +
+      listaPersonagensExistentes = resChars.data || [];
+      listaComunidadesExistentes = resComms.data || [];
+
+      const selectRel = document.getElementById('relacionamento_id');
+      selectRel.innerHTML = `<option value="">Solteira / Nenhum</option>` +
         listaPersonagensExistentes.map(p => `<option value="${p.id}">❤️ Em relacionamento com: ${p.nome}</option>`).join('');
+
+      addSkill();
+      addFoto();
+      addAliado();
+      addComunidade();
     }
 
     function mostrarErro(msg) {
@@ -467,29 +484,67 @@
       document.getElementById('fotosContainer').appendChild(div);
     }
 
-    function addAliado(nome = '', avatar = '') {
+    function addAliado(selectedId = '') {
       const div = document.createElement('div');
       div.className = 'dynamic-row aliado-item';
+
+      const opcoes = listaPersonagensExistentes.length
+        ? `<option value="">-- Selecione um personagem criado --</option>` +
+          listaPersonagensExistentes.map(p => `<option value="${p.id}">${p.nome}${p.afiliacao ? ` (${p.afiliacao})` : ''}</option>`).join('')
+        : `<option value="">Nenhum personagem cadastrado ainda</option>`;
+
       div.innerHTML = `
-        <input type="text" placeholder="Nome do aliado" class="a-nome" style="flex:2">
-        <input type="text" placeholder="URL do avatar" class="a-avatar" style="flex:3">
+        <img class="mini-thumb" src="${DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+        <select class="a-id" style="flex:1;">${opcoes}</select>
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
-      div.querySelector('.a-nome').value = nome;
-      div.querySelector('.a-avatar').value = avatar;
+
+      const select = div.querySelector('.a-id');
+      const thumb = div.querySelector('.mini-thumb');
+
+      const atualizarThumb = () => {
+        const encontrado = listaPersonagensExistentes.find(p => String(p.id) === String(select.value));
+        thumb.src = encontrado && encontrado.avatar_url ? encontrado.avatar_url : DEFAULT_AVATAR;
+      };
+
+      select.onchange = atualizarThumb;
+      if (selectedId) {
+        select.value = selectedId;
+        atualizarThumb();
+      }
+
       document.getElementById('aliadosContainer').appendChild(div);
     }
 
-    function addComunidade(nome = '', avatar = '') {
+    function addComunidade(selectedId = '') {
       const div = document.createElement('div');
       div.className = 'dynamic-row com-item';
+
+      const opcoes = listaComunidadesExistentes.length
+        ? `<option value="">-- Selecione uma comunidade criada --</option>` +
+          listaComunidadesExistentes.map(c => `<option value="${c.id}">${c.nome}${c.categoria ? ` [${c.categoria}]` : ''}</option>`).join('')
+        : `<option value="">Nenhuma comunidade criada ainda (crie em Comunidades)</option>`;
+
       div.innerHTML = `
-        <input type="text" placeholder="Nome da comunidade" class="c-nome" style="flex:2">
-        <input type="text" placeholder="URL da imagem" class="c-avatar" style="flex:3">
+        <img class="mini-thumb" src="${DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+        <select class="c-id" style="flex:1;">${opcoes}</select>
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
-      div.querySelector('.c-nome').value = nome;
-      div.querySelector('.c-avatar').value = avatar;
+
+      const select = div.querySelector('.c-id');
+      const thumb = div.querySelector('.mini-thumb');
+
+      const atualizarThumb = () => {
+        const encontrada = listaComunidadesExistentes.find(c => String(c.id) === String(select.value));
+        thumb.src = encontrada && encontrada.imagem_url ? encontrada.imagem_url : DEFAULT_AVATAR;
+      };
+
+      select.onchange = atualizarThumb;
+      if (selectedId) {
+        select.value = selectedId;
+        atualizarThumb();
+      }
+
       document.getElementById('comunidadesContainer').appendChild(div);
     }
 
@@ -550,15 +605,29 @@
           data: el.querySelector('.f-data').value.trim()
         })).filter(x => x.url);
 
-        const aliados = Array.from(document.querySelectorAll('.aliado-item')).map(el => ({
-          nome: el.querySelector('.a-nome').value.trim(),
-          avatar: el.querySelector('.a-avatar').value.trim()
-        })).filter(x => x.nome);
+        // Coleta IDs únicos dos aliados selecionados
+        const aliadosIdsUnicos = [...new Set(
+          Array.from(document.querySelectorAll('.aliado-item .a-id'))
+            .map(sel => parseInt(sel.value))
+            .filter(id => !isNaN(id))
+        )];
 
-        const comunidades = Array.from(document.querySelectorAll('.com-item')).map(el => ({
-          nome: el.querySelector('.c-nome').value.trim(),
-          avatar: el.querySelector('.c-avatar').value.trim()
-        })).filter(x => x.nome);
+        const aliados = aliadosIdsUnicos.map(id => {
+          const p = listaPersonagensExistentes.find(x => x.id === id);
+          return p ? { id: p.id, nome: p.nome, avatar: p.avatar_url || '' } : null;
+        }).filter(Boolean);
+
+        // Coleta IDs únicos das comunidades selecionadas
+        const comunidadesIdsUnicos = [...new Set(
+          Array.from(document.querySelectorAll('.com-item .c-id'))
+            .map(sel => parseInt(sel.value))
+            .filter(id => !isNaN(id))
+        )];
+
+        const comunidades = comunidadesIdsUnicos.map(id => {
+          const c = listaComunidadesExistentes.find(x => x.id === id);
+          return c ? { id: c.id, nome: c.nome, avatar: c.imagem_url || '' } : null;
+        }).filter(Boolean);
 
         const relVal = document.getElementById('relacionamento_id').value;
         const relacionamentoId = relVal ? parseInt(relVal) : null;
@@ -608,7 +677,21 @@
           return;
         }
 
-        // Se marcou relacionamento sério, vincula o parceiro(a) e posta na For You!
+        // Adiciona este novo personagem na lista de membros das comunidades selecionadas
+        for (const commId of comunidadesIdsUnicos) {
+          const comm = listaComunidadesExistentes.find(c => c.id === commId);
+          if (comm) {
+            const atuais = Array.isArray(comm.membros_ids) ? comm.membros_ids.map(Number) : [];
+            if (!atuais.includes(data.id)) {
+              await supabaseClient
+                .from('comunidades')
+                .update({ membros_ids: [...atuais, data.id] })
+                .eq('id', commId);
+            }
+          }
+        }
+
+        // Sincroniza relacionamento sério
         if (relacionamentoId && data) {
           await supabaseClient
             .from('personagens')
@@ -641,11 +724,7 @@
       }
     }
 
-    carregarOpcoesRelacionamento();
-    addSkill();
-    addFoto();
-    addAliado();
-    addComunidade();
+    iniciar();
   </script>
 </body>
 </html>

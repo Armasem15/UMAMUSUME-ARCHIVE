@@ -160,7 +160,7 @@
 
     .dynamic-row {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 8px;
       align-items: center;
       background: #F9FAFC;
@@ -169,12 +169,13 @@
       border-radius: 4px;
     }
     .mini-thumb {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       object-fit: cover;
       border-radius: 3px;
       border: 1px solid #ffc3f0;
       flex-shrink: 0;
+      background: #FFF;
     }
 
     .btn-orkut {
@@ -414,7 +415,7 @@
         <div id="fotosContainer"></div>
       </div>
 
-      <!-- 5. ALIADOS E COMUNIDADES -->
+      <!-- 5. ALIADOS E COMUNIDADES (PUXADOS DO BANCO) -->
       <div class="box">
         <div class="box-header">
           <span>5. Aliados (Coluna Direita)</span>
@@ -456,6 +457,7 @@
     let idAtual = null;
     let relacionamentoAnteriorId = null;
     let todosPersonagens = [];
+    let todasComunidades = [];
 
     function atualizarPreview(url) {
       const img = document.getElementById('avatarPreview');
@@ -497,29 +499,68 @@
       document.getElementById('fotosContainer').appendChild(div);
     }
 
-    function addAliado(nome = '', avatar = '') {
+    function addAliado(selectedId = '') {
       const div = document.createElement('div');
       div.className = 'dynamic-row aliado-item';
+
+      const disponiveis = todosPersonagens.filter(p => p.id !== idAtual);
+      const opcoes = disponiveis.length
+        ? `<option value="">-- Selecione um personagem criado --</option>` +
+          disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.afiliacao ? ` (${p.afiliacao})` : ''}</option>`).join('')
+        : `<option value="">Nenhum outro personagem cadastrado</option>`;
+
       div.innerHTML = `
-        <input type="text" placeholder="Nome do aliado" class="a-nome" style="flex:2">
-        <input type="text" placeholder="URL do avatar" class="a-avatar" style="flex:3">
+        <img class="mini-thumb" src="${DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+        <select class="a-id" style="flex:1;">${opcoes}</select>
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
-      div.querySelector('.a-nome').value = nome;
-      div.querySelector('.a-avatar').value = avatar;
+
+      const select = div.querySelector('.a-id');
+      const thumb = div.querySelector('.mini-thumb');
+
+      const atualizarThumb = () => {
+        const encontrado = todosPersonagens.find(p => String(p.id) === String(select.value));
+        thumb.src = encontrado && encontrado.avatar_url ? encontrado.avatar_url : DEFAULT_AVATAR;
+      };
+
+      select.onchange = atualizarThumb;
+      if (selectedId) {
+        select.value = selectedId;
+        atualizarThumb();
+      }
+
       document.getElementById('aliadosContainer').appendChild(div);
     }
 
-    function addComunidade(nome = '', avatar = '') {
+    function addComunidade(selectedId = '') {
       const div = document.createElement('div');
       div.className = 'dynamic-row com-item';
+
+      const opcoes = todasComunidades.length
+        ? `<option value="">-- Selecione uma comunidade criada --</option>` +
+          todasComunidades.map(c => `<option value="${c.id}">${c.nome}${c.categoria ? ` [${c.categoria}]` : ''}</option>`).join('')
+        : `<option value="">Nenhuma comunidade criada ainda</option>`;
+
       div.innerHTML = `
-        <input type="text" placeholder="Nome da comunidade" class="c-nome" style="flex:2">
-        <input type="text" placeholder="URL da imagem" class="c-avatar" style="flex:3">
+        <img class="mini-thumb" src="${DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+        <select class="c-id" style="flex:1;">${opcoes}</select>
         <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
       `;
-      div.querySelector('.c-nome').value = nome;
-      div.querySelector('.c-avatar').value = avatar;
+
+      const select = div.querySelector('.c-id');
+      const thumb = div.querySelector('.mini-thumb');
+
+      const atualizarThumb = () => {
+        const encontrada = todasComunidades.find(c => String(c.id) === String(select.value));
+        thumb.src = encontrada && encontrada.imagem_url ? encontrada.imagem_url : DEFAULT_AVATAR;
+      };
+
+      select.onchange = atualizarThumb;
+      if (selectedId) {
+        select.value = selectedId;
+        atualizarThumb();
+      }
+
       document.getElementById('comunidadesContainer').appendChild(div);
     }
 
@@ -541,13 +582,16 @@
     }
 
     async function iniciar() {
-      const { data: lista, error } = await supabaseClient
-        .from('personagens')
-        .select('id, nome, afiliacao')
-        .order('nome', { ascending: true });
+      const [resChars, resComms] = await Promise.all([
+        supabaseClient.from('personagens').select('id, nome, avatar_url, afiliacao').order('nome', { ascending: true }),
+        supabaseClient.from('comunidades').select('id, nome, imagem_url, membros_ids, categoria').order('nome', { ascending: true })
+      ]);
+
+      const lista = resChars.data || [];
+      todasComunidades = resComms.data || [];
 
       const select = document.getElementById('selectPersonagem');
-      if (error || !lista || lista.length === 0) {
+      if (resChars.error || lista.length === 0) {
         select.innerHTML = '<option value="">Nenhum personagem cadastrado</option>';
         document.getElementById('loadingMsg').innerHTML = 'Nenhum personagem encontrado. <a href="criar.html">Crie o primeiro aqui!</a>';
         return;
@@ -592,7 +636,6 @@
       idAtual = p.id;
       relacionamentoAnteriorId = p.relacionamento_id || null;
 
-      // Preenche opções do seletor de Relacionamento (excluindo o próprio personagem)
       const selectRel = document.getElementById('relacionamento_id');
       const outros = todosPersonagens.filter(item => item.id !== p.id);
       selectRel.innerHTML = `<option value="">Solteira / Nenhum</option>` +
@@ -646,8 +689,30 @@
 
       (p.habilidades || []).forEach(s => addSkill(s.titulo, s.tipo, s.descricao));
       (p.fotos || []).forEach(f => addFoto(f.url, f.legenda, f.data));
-      (p.aliados || []).forEach(a => addAliado(a.nome, a.avatar));
-      (p.comunidades || []).forEach(c => addComunidade(c.nome, c.avatar));
+
+      // Preenche aliados já salvos (compatível tanto com ID novo quanto com nome antigo)
+      (p.aliados || []).forEach(a => {
+        const match = a.id
+          ? todosPersonagens.find(x => x.id === a.id)
+          : todosPersonagens.find(x => (x.nome || '').toLowerCase() === (a.nome || '').toLowerCase());
+        if (match && match.id !== p.id) addAliado(match.id);
+      });
+
+      // Preenche comunidades onde o personagem está (tanto no JSON do perfil quanto em membros_ids da tabela comunidades)
+      const commIdsDoPerfil = (p.comunidades || []).map(c => {
+        const match = c.id
+          ? todasComunidades.find(x => x.id === c.id)
+          : todasComunidades.find(x => (x.nome || '').toLowerCase() === (c.nome || '').toLowerCase());
+        return match ? match.id : null;
+      }).filter(Boolean);
+
+      const commIdsComoMembro = todasComunidades
+        .filter(c => Array.isArray(c.membros_ids) && c.membros_ids.map(Number).includes(p.id))
+        .map(c => c.id);
+
+      const todasCommIdsUnicas = [...new Set([...commIdsDoPerfil, ...commIdsComoMembro])];
+      todasCommIdsUnicas.forEach(commId => addComunidade(commId));
+
       (p.depoimentos || []).forEach(d => addDepoimento(d.autor, d.avatar, d.texto, d.data));
 
       document.getElementById('loadingMsg').style.display = 'none';
@@ -674,15 +739,29 @@
         data: el.querySelector('.f-data').value.trim()
       })).filter(x => x.url);
 
-      const aliados = Array.from(document.querySelectorAll('.aliado-item')).map(el => ({
-        nome: el.querySelector('.a-nome').value.trim(),
-        avatar: el.querySelector('.a-avatar').value.trim()
-      })).filter(x => x.nome);
+      // Coleta IDs únicos dos aliados selecionados
+      const aliadosIdsUnicos = [...new Set(
+        Array.from(document.querySelectorAll('.aliado-item .a-id'))
+          .map(sel => parseInt(sel.value))
+          .filter(id => !isNaN(id) && id !== idAtual)
+      )];
 
-      const comunidades = Array.from(document.querySelectorAll('.com-item')).map(el => ({
-        nome: el.querySelector('.c-nome').value.trim(),
-        avatar: el.querySelector('.c-avatar').value.trim()
-      })).filter(x => x.nome);
+      const aliados = aliadosIdsUnicos.map(id => {
+        const p = todosPersonagens.find(x => x.id === id);
+        return p ? { id: p.id, nome: p.nome, avatar: p.avatar_url || '' } : null;
+      }).filter(Boolean);
+
+      // Coleta IDs únicos das comunidades selecionadas
+      const comunidadesIdsUnicos = [...new Set(
+        Array.from(document.querySelectorAll('.com-item .c-id'))
+          .map(sel => parseInt(sel.value))
+          .filter(id => !isNaN(id))
+      )];
+
+      const comunidades = comunidadesIdsUnicos.map(id => {
+        const c = todasComunidades.find(x => x.id === id);
+        return c ? { id: c.id, nome: c.nome, avatar: c.imagem_url || '' } : null;
+      }).filter(Boolean);
 
       const depoimentos = Array.from(document.querySelectorAll('.depo-item')).map(el => ({
         autor: el.querySelector('.d-autor').value.trim(),
@@ -738,7 +817,26 @@
         return;
       }
 
-      // Sincroniza relacionamento mútuo e anuncia na For You se mudou!
+      // Sincroniza a tabela de comunidades (adiciona ou remove o personagem de membros_ids)
+      for (const comm of todasComunidades) {
+        const atuais = Array.isArray(comm.membros_ids) ? comm.membros_ids.map(Number) : [];
+        const deveEstar = comunidadesIdsUnicos.includes(comm.id);
+        const jaEsta = atuais.includes(idAtual);
+
+        if (deveEstar && !jaEsta) {
+          await supabaseClient
+            .from('comunidades')
+            .update({ membros_ids: [...atuais, idAtual] })
+            .eq('id', comm.id);
+        } else if (!deveEstar && jaEsta) {
+          await supabaseClient
+            .from('comunidades')
+            .update({ membros_ids: atuais.filter(x => x !== idAtual) })
+            .eq('id', comm.id);
+        }
+      }
+
+      // Sincroniza relacionamento mútuo e anuncia na For You se mudou
       if (relacionamentoAnteriorId && relacionamentoAnteriorId !== novoRelId) {
         await supabaseClient
           .from('personagens')

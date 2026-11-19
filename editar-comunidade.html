@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UmaWiki - Editar Comunidade</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #E5ECF9;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #333333;
+    }
+    a { color: #983b8c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .orkut-header {
+      background-color: #b46d9c;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      color: white;
+      border-bottom: 2px solid #983b77;
+    }
+    .orkut-logo {
+      font-size: 22px;
+      font-weight: bold;
+      font-style: italic;
+      color: #E41A82;
+      background-color: #FFFFFF;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: -1px;
+    }
+    .orkut-logo span { color: #b46dae; }
+    .nav-menu a { color: white; margin-left: 15px; font-weight: bold; font-size: 11px; }
+
+    .container { max-width: 850px; margin: 18px auto; padding: 0 10px; }
+
+    .box {
+      background-color: #FFFFFF;
+      border: 1px solid #ffc3fb;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 14px;
+    }
+    .box-header {
+      background-color: #f1d4ef;
+      color: #983b87;
+      font-weight: bold;
+      font-size: 12px;
+      padding: 6px 10px;
+      margin: -15px -15px 15px -15px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      border-bottom: 1px solid #ffc3f4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .selector-bar {
+      background: #FFF9FD;
+      border: 1px solid #E41A82;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .selector-bar label {
+      margin: 0;
+      color: #983b87;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .selector-bar select {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .top-setup {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+    }
+    .avatar-preview-box {
+      width: 140px;
+      flex-shrink: 0;
+      text-align: center;
+      background: #F9FAFC;
+      border: 1px solid #ffc3f4;
+      padding: 6px;
+      border-radius: 4px;
+    }
+    .avatar-preview-box img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 3px;
+      border: 1px solid #E5ECF9;
+    }
+    .avatar-preview-box span {
+      display: block;
+      font-size: 10px;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      flex: 1;
+    }
+    .form-group { margin-bottom: 8px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      display: block;
+      font-weight: bold;
+      color: #666;
+      margin-bottom: 3px;
+      font-size: 11px;
+    }
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ffc3f0;
+      border-radius: 3px;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      background: #FFF;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #E41A82;
+      background: #FFF9FD;
+    }
+    textarea { height: 90px; resize: vertical; line-height: 1.4; }
+
+    .add-member-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      background: #F4F7FC;
+      padding: 8px;
+      border: 1px solid #C3D9FF;
+      border-radius: 4px;
+    }
+
+    .members-manage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .member-row-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #F9FAFC;
+      border: 1px solid #ffc3f0;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .member-info img {
+      width: 36px;
+      height: 36px;
+      border-radius: 3px;
+      object-fit: cover;
+      border: 1px solid #C3D9FF;
+      flex-shrink: 0;
+    }
+    .member-name {
+      font-weight: bold;
+      color: #983b8c;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .member-sub {
+      font-size: 10px;
+      color: #777;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-orkut {
+      background: #ECE9D8;
+      border: 1px solid #b97fb0;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+      border-radius: 2px;
+      text-decoration: none;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .btn-orkut:hover { background: #F0EFE2; text-decoration: none; }
+
+    .btn-remove {
+      background: #ffe5e5;
+      border: 1px solid #e09999;
+      color: #a00;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .btn-remove:hover { background: #ffcccc; }
+
+    .actions-footer {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    .btn-save {
+      background: linear-gradient(180deg, #f23898, #c91270);
+      color: white;
+      border: 1px solid #8a0c4d;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      flex: 1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .btn-save:hover { background: linear-gradient(180deg, #ff47a6, #d6187a); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-delete-comm {
+      background: #fff0f0;
+      color: #b00020;
+      border: 1px solid #e09999;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .btn-delete-comm:hover { background: #ffd6d6; }
+
+    @media (max-width: 650px) {
+      .top-setup { flex-direction: column; }
+      .avatar-preview-box { width: 100%; }
+      .avatar-preview-box img { width: 140px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .actions-footer, .add-member-bar { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="orkut-header">
+    <div class="orkut-logo">Uma <span>wiki</span></div>
+    <nav class="nav-menu">
+      <a href="wiki.html">Início</a>
+      <a href="comunidades.html">Comunidades</a>
+      <a href="criar.html">+ Criar Perfil</a>
+      <a href="editar.html">✏️ Editar Perfis</a>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <div class="selector-bar">
+      <label for="selectComunidade">✏️ Editando Comunidade:</label>
+      <select id="selectComunidade" onchange="trocarComunidade(this.value)">
+        <option value="">Carregando comunidades...</option>
+      </select>
+      <a id="btnVerComunidade" href="comunidades.html" class="btn-orkut">👁️ Ver Comunidade</a>
+    </div>
+
+    <div id="loadingMsg" class="box" style="text-align: center; color: #666;">
+      Carregando dados da comunidade...
+    </div>
+
+    <form id="editCommForm" style="display: none;" onsubmit="salvarComunidade(event)">
+
+      <!-- 1. DADOS DA COMUNIDADE -->
+      <div class="box">
+        <div class="box-header">1. Informações da Comunidade</div>
+
+        <div class="top-setup">
+          <div class="avatar-preview-box">
+            <img id="commPreview" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Preview">
+            <span>Capa da Comunidade</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nome da Comunidade *</label>
+              <input type="text" id="nome" required>
+            </div>
+            <div class="form-group" id="groupCategoria">
+              <label>Categoria</label>
+              <input type="text" id="categoria" placeholder="Ex: Clubes, Corridas, Humor...">
+            </div>
+            <div class="form-group full">
+              <label>URL da Imagem / Capa</label>
+              <input type="text" id="imagem_url" placeholder="https://..." oninput="atualizarPreview(this.value)">
+            </div>
+            <div class="form-group full" id="groupDono" style="display:none;">
+              <label>Dono(a) / Moderador(a) da Comunidade</label>
+              <select id="dono_id">
+                <option value="">Sem dono definido</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full" id="groupDescricao" style="margin-top: 10px;">
+          <label>Descrição da Comunidade</label>
+          <textarea id="descricao" placeholder="Escreva sobre o que é esta comunidade..."></textarea>
+        </div>
+      </div>
+
+      <!-- 2. PARTICIPANTES DO GRUPO -->
+      <div class="box">
+        <div class="box-header">
+          <span id="headerMembrosCount">2. Participantes do Grupo (0)</span>
+          <span style="font-weight: normal; font-size: 10px;">Adicione ou remova membros da comunidade</span>
+        </div>
+
+        <div class="add-member-bar">
+          <select id="selectNovoMembro" style="flex: 1;">
+            <option value="">-- Selecione um personagem para adicionar --</option>
+          </select>
+          <button type="button" class="btn-orkut" onclick="adicionarMembroLista()">+ Adicionar ao Grupo</button>
+        </div>
+
+        <div id="membrosContainer" class="members-manage-grid"></div>
+      </div>
+
+      <div class="actions-footer">
+        <button type="submit" class="btn-save" id="btnSubmit">💾 Salvar Alterações da Comunidade</button>
+        <button type="button" class="btn-delete-comm" onclick="excluirComunidade()">🗑️ Excluir Comunidade</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
+
+    const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+
+    let comunidadeAtual = null;
+    let todasComunidades = [];
+    let todosPersonagens = [];
+    let membrosIdsAtuais = [];
+
+    function atualizarPreview(url) {
+      const img = document.getElementById('commPreview');
+      img.src = url.trim() ? url.trim() : DEFAULT_AVATAR;
+      img.onerror = () => { img.src = DEFAULT_AVATAR; };
+    }
+
+    async function iniciar() {
+      const [resComms, resChars] = await Promise.all([
+        supabaseClient.from('comunidades').select('*').order('nome', { ascending: true }),
+        supabaseClient.from('personagens').select('id, nome, avatar_url, afiliacao, comunidades').order('nome', { ascending: true })
+      ]);
+
+      todasComunidades = resComms.data || [];
+      todosPersonagens = resChars.data || [];
+
+      const select = document.getElementById('selectComunidade');
+      if (resComms.error || todasComunidades.length === 0) {
+        select.innerHTML = '<option value="">Nenhuma comunidade cadastrada</option>';
+        document.getElementById('loadingMsg').innerHTML = 'Nenhuma comunidade encontrada. <a href="comunidades.html">Voltar para Comunidades</a>';
+        return;
+      }
+
+      select.innerHTML = todasComunidades.map(c =>
+        `<option value="${c.id}">${c.nome}${c.categoria ? ` [${c.categoria}]` : ''}</option>`
+      ).join('');
+
+      const params = new URLSearchParams(window.location.search);
+      const urlId = params.get('id');
+      const idInicial = urlId && todasComunidades.some(c => String(c.id) === String(urlId))
+        ? urlId
+        : todasComunidades[0].id;
+
+      select.value = idInicial;
+      await carregarComunidade(idInicial);
+    }
+
+    async function trocarComunidade(novoId) {
+      if (!novoId) return;
+      window.history.replaceState({}, '', `${window.location.pathname}?id=${novoId}`);
+      await carregarComunidade(novoId);
+    }
+
+    async function carregarComunidade(id) {
+      document.getElementById('editCommForm').style.display = 'none';
+      document.getElementById('loadingMsg').style.display = 'block';
+
+      const { data: c, error } = await supabaseClient
+        .from('comunidades')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !c) {
+        document.getElementById('loadingMsg').innerText = 'Erro ao carregar dados da comunidade.';
+        return;
+      }
+
+      comunidadeAtual = c;
+      document.title = `UmaWiki - Editando ${c.nome}`;
+      document.getElementById('btnVerComunidade').href = `comunidade.html?id=${c.id}`;
+
+      document.getElementById('nome').value = c.nome || '';
+      document.getElementById('imagem_url').value = c.imagem_url || '';
+      atualizarPreview(c.imagem_url || '');
+
+      if ('categoria' in c) {
+        document.getElementById('groupCategoria').style.display = 'block';
+        document.getElementById('categoria').value = c.categoria || '';
+      } else {
+        document.getElementById('groupCategoria').style.display = 'none';
+      }
+
+      if ('descricao' in c) {
+        document.getElementById('groupDescricao').style.display = 'block';
+        document.getElementById('descricao').value = c.descricao || '';
+      } else {
+        document.getElementById('groupDescricao').style.display = 'none';
+      }
+
+      if ('dono_id' in c) {
+        document.getElementById('groupDono').style.display = 'block';
+        const selDono = document.getElementById('dono_id');
+        selDono.innerHTML = `<option value="">Sem dono definido</option>` +
+          todosPersonagens.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+        selDono.value = c.dono_id || '';
+      } else {
+        document.getElementById('groupDono').style.display = 'none';
+      }
+
+      // Junta membros de membros_ids e também personagens que têm essa comunidade no perfil
+      const idsTabela = Array.isArray(c.membros_ids) ? c.membros_ids.map(Number) : [];
+      const idsPerfis = todosPersonagens
+        .filter(p => Array.isArray(p.comunidades) && p.comunidades.some(item =>
+          item.id === c.id || (item.nome || '').toLowerCase() === (c.nome || '').toLowerCase()
+        ))
+        .map(p => p.id);
+
+      membrosIdsAtuais = [...new Set([...idsTabela, ...idsPerfis])].filter(mid =>
+        todosPersonagens.some(p => p.id === mid)
+      );
+
+      renderizarMembros();
+
+      document.getElementById('loadingMsg').style.display = 'none';
+      document.getElementById('editCommForm').style.display = 'block';
+    }
+
+    function renderizarMembros() {
+      document.getElementById('headerMembrosCount').innerText = `2. Participantes do Grupo (${membrosIdsAtuais.length})`;
+
+      // Atualiza dropdown de personagens disponíveis para adicionar
+      const disponiveis = todosPersonagens.filter(p => !membrosIdsAtuais.includes(p.id));
+      const selectNovo = document.getElementById('selectNovoMembro');
+      selectNovo.innerHTML = disponiveis.length
+        ? `<option value="">-- Selecione um personagem para adicionar --</option>` +
+          disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.afiliacao ? ` (${p.afiliacao})` : ''}</option>`).join('')
+        : `<option value="">Todos os personagens já estão nesta comunidade</option>`;
+
+      const container = document.getElementById('membrosContainer');
+      if (membrosIdsAtuais.length === 0) {
+        container.innerHTML = '<p style="color:#777; grid-column:1/-1;">Nenhum participante nesta comunidade.</p>';
+        return;
+      }
+
+      container.innerHTML = membrosIdsAtuais.map(id => {
+        const p = todosPersonagens.find(x => x.id === id);
+        if (!p) return '';
+        return `
+          <div class="member-row-card">
+            <div class="member-info">
+              <img src="${p.avatar_url || DEFAULT_AVATAR}" alt="${p.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <div style="min-width:0;">
+                <div class="member-name"><a href="perfil.html?id=${p.id}" target="_blank">${p.nome}</a></div>
+                <div class="member-sub">${p.afiliacao || 'Membro'}</div>
+              </div>
+            </div>
+            <button type="button" class="btn-remove" onclick="removerMembroLista(${p.id})" title="Remover participante">✕ Remover</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function adicionarMembroLista() {
+      const sel = document.getElementById('selectNovoMembro');
+      const novoId = parseInt(sel.value);
+      if (isNaN(novoId) || membrosIdsAtuais.includes(novoId)) return;
+      membrosIdsAtuais.push(novoId);
+      renderizarMembros();
+    }
+
+    function removerMembroLista(id) {
+      membrosIdsAtuais = membrosIdsAtuais.filter(m => m !== id);
+      renderizarMembros();
+    }
+
+    async function salvarComunidade(e) {
+      e.preventDefault();
+      if (!comunidadeAtual) return;
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerText = 'Salvando alterações...';
+
+      const nomeAntigo = comunidadeAtual.nome || '';
+      const novoNome = document.getElementById('nome').value.trim();
+      const novaImagem = document.getElementById('imagem_url').value.trim();
+
+      const dadosUpdate = {
+        nome: novoNome,
+        imagem_url: novaImagem,
+        membros_ids: membrosIdsAtuais
+      };
+
+      if ('categoria' in comunidadeAtual) {
+        dadosUpdate.categoria = document.getElementById('categoria').value.trim();
+      }
+      if ('descricao' in comunidadeAtual) {
+        dadosUpdate.descricao = document.getElementById('descricao').value.trim();
+      }
+      if ('dono_id' in comunidadeAtual) {
+        const donoVal = document.getElementById('dono_id').value;
+        dadosUpdate.dono_id = donoVal ? parseInt(donoVal) : null;
+      }
+
+      const { error } = await supabaseClient
+        .from('comunidades')
+        .update(dadosUpdate)
+        .eq('id', comunidadeAtual.id);
+
+      if (error) {
+        alert('Erro ao salvar comunidade: ' + error.message);
+        btn.disabled = false;
+        btn.innerText = '💾 Salvar Alterações da Comunidade';
+        return;
+      }
+
+      // Sincroniza a lista de comunidades dentro de cada perfil afetado
+      for (const p of todosPersonagens) {
+        const listaAtual = Array.isArray(p.comunidades) ? p.comunidades : [];
+        const estavaNoPerfil = listaAtual.some(c =>
+          c.id === comunidadeAtual.id || (c.nome || '').toLowerCase() === nomeAntigo.toLowerCase()
+        );
+        const deveEstar = membrosIdsAtuais.includes(p.id);
+
+        if (deveEstar) {
+          const semAntiga = listaAtual.filter(c =>
+            c.id !== comunidadeAtual.id && (c.nome || '').toLowerCase() !== nomeAntigo.toLowerCase()
+          );
+          const novaLista = [...semAntiga, { id: comunidadeAtual.id, nome: novoNome, avatar: novaImagem }];
+          await supabaseClient
+            .from('personagens')
+            .update({ comunidades: novaLista })
+            .eq('id', p.id);
+        } else if (estavaNoPerfil) {
+          const novaLista = listaAtual.filter(c =>
+            c.id !== comunidadeAtual.id && (c.nome || '').toLowerCase() !== nomeAntigo.toLowerCase()
+          );
+          await supabaseClient
+            .from('personagens')
+            .update({ comunidades: novaLista })
+            .eq('id', p.id);
+        }
+      }
+
+      window.location.href = `comunidade.html?id=${comunidadeAtual.id}`;
+    }
+
+    async function excluirComunidade() {
+      if (!comunidadeAtual) return;
+      const confirmar = confirm(`Tem certeza que deseja excluir a comunidade "${comunidadeAtual.nome}"?`);
+      if (!confirmar) return;
+
+      const { error } = await supabaseClient
+        .from('comunidades')
+        .delete()
+        .eq('id', comunidadeAtual.id);
+
+      if (error) {
+        alert('Erro ao excluir comunidade: ' + error.message);
+        return;
+      }
+
+      // Remove a comunidade excluída dos perfis que a tinham
+      for (const p of todosPersonagens) {
+        const listaAtual = Array.isArray(p.comunidades) ? p.comunidades : [];
+        const novaLista = listaAtual.filter(c =>
+          c.id !== comunidadeAtual.id && (c.nome || '').toLowerCase() !== (comunidadeAtual.nome || '').toLowerCase()
+        );
+        if (novaLista.length !== listaAtual.length) {
+          await supabaseClient
+            .from('personagens')
+            .update({ comunidades: novaLista })
+            .eq('id', p.id);
+        }
+      }
+
+      window.location.href = 'comunidades.html';
+    }
+
+    iniciar();
+  </script>
+</body>
+</html>
