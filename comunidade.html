@@ -132,14 +132,56 @@
     .btn-orkut {
       background: #ECE9D8;
       border: 1px solid #b97fb0;
-      padding: 5px 14px;
+      padding: 5px 12px;
       font-size: 11px;
       font-weight: bold;
       color: #000;
       cursor: pointer;
       border-radius: 2px;
+      white-space: nowrap;
     }
     .btn-orkut:hover { background: #F0EFE2; }
+
+    /* Barra de Emojis Personalizados */
+    .emoji-picker-bar {
+      display: none;
+      flex-wrap: wrap;
+      gap: 5px;
+      background: #FFFFFF;
+      border: 1px solid #ffc3f0;
+      padding: 6px;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+    .emoji-picker-bar.open { display: flex; }
+    .emoji-pick-btn {
+      background: #F9FAFC;
+      border: 1px solid #E5ECF9;
+      border-radius: 3px;
+      padding: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .emoji-pick-btn:hover {
+      background: #ffe6f5;
+      border-color: #E41A82;
+      transform: scale(1.1);
+    }
+    .emoji-pick-btn img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+    .custom-emoji {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      vertical-align: middle;
+      margin: 0 2px;
+      display: inline-block;
+    }
 
     .forum-post {
       background: #FFFFFF;
@@ -249,10 +291,10 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
-      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
       <a href="comunidades.html">Comunidades</a>
       <a href="criar.html">+ Novo Perfil</a>
+      <a href="editar.html">✏️ Editar Perfis</a>
     </nav>
   </header>
 
@@ -332,7 +374,7 @@
         </div>
         <div class="comm-header-desc" id="commDesc">...</div>
 
-        <!-- COMPOSITOR DE MENSAGEM -->
+        <!-- COMPOSITOR DE MENSAGEM COM EMOJIS PERSONALIZADOS -->
         <div class="post-composer">
           <div style="font-weight: bold; color: #983b82; margin-bottom: 6px;">
             💬 Escrever no Fórum da Comunidade:
@@ -349,8 +391,11 @@
 
           <div class="composer-row" style="margin-bottom: 0; align-items: center;">
             <input type="text" id="postImgUrl" placeholder="🖼️ URL de foto/meme para anexar (opcional)" style="flex: 1;">
+            <button type="button" class="btn-orkut" onclick="toggleCommEmojiPicker()" title="Inserir emoji personalizado">😀 Emojis</button>
             <button type="button" class="btn-orkut" onclick="enviarMensagem()">Postar Mensagem</button>
           </div>
+
+          <div id="commEmojiPicker" class="emoji-picker-bar"></div>
         </div>
 
         <!-- LISTA DE POSTAGENS -->
@@ -390,14 +435,73 @@
   <script>
     const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
-    
+
+    // ========================================================
+    // 🎨 SEUS 12 EMOJIS PERSONALIZADOS (Troque os links abaixo!)
+    // ========================================================
+    const CUSTOM_EMOJIS = [
+      { code: ':uma1:',  nome: 'Emoji 1',  url: 'https://cdn-icons-png.flaticon.com/64/742/742751.png' },
+      { code: ':uma2:',  nome: 'Emoji 2',  url: 'https://cdn-icons-png.flaticon.com/64/742/742752.png' },
+      { code: ':uma3:',  nome: 'Emoji 3',  url: 'https://cdn-icons-png.flaticon.com/64/742/742920.png' },
+      { code: ':uma4:',  nome: 'Emoji 4',  url: 'https://cdn-icons-png.flaticon.com/64/742/742760.png' },
+      { code: ':uma5:',  nome: 'Emoji 5',  url: 'https://cdn-icons-png.flaticon.com/64/742/742822.png' },
+      { code: ':uma6:',  nome: 'Emoji 6',  url: 'https://cdn-icons-png.flaticon.com/64/742/742923.png' },
+      { code: ':uma7:',  nome: 'Emoji 7',  url: 'https://cdn-icons-png.flaticon.com/64/742/742745.png' },
+      { code: ':uma8:',  nome: 'Emoji 8',  url: 'https://cdn-icons-png.flaticon.com/64/742/742874.png' },
+      { code: ':uma9:',  nome: 'Emoji 9',  url: 'https://cdn-icons-png.flaticon.com/64/742/742774.png' },
+      { code: ':uma10:', nome: 'Emoji 10', url: 'https://cdn-icons-png.flaticon.com/64/742/742914.png' },
+      { code: ':uma11:', nome: 'Emoji 11', url: 'https://cdn-icons-png.flaticon.com/64/742/742802.png' },
+      { code: ':uma12:', nome: 'Emoji 12', url: 'https://cdn-icons-png.flaticon.com/64/742/742785.png' }
+    ];
+
     let comunidadeAtual = null;
     let todosPersonagens = [];
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatarTextoComEmojis(texto) {
+      let seguro = escapeHtml(texto);
+      CUSTOM_EMOJIS.forEach(em => {
+        const regex = new RegExp(em.code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        seguro = seguro.replace(regex, `<img src="${em.url}" alt="${em.code}" title="${em.nome}" class="custom-emoji">`);
+      });
+      return seguro;
+    }
+
+    function montarEmojiPickerComunidade() {
+      const picker = document.getElementById('commEmojiPicker');
+      picker.innerHTML = CUSTOM_EMOJIS.map(em => `
+        <button type="button" class="emoji-pick-btn" title="${em.nome} (${em.code})" onclick="inserirEmojiChat('${em.code}')">
+          <img src="${em.url}" alt="${em.code}">
+        </button>
+      `).join('');
+    }
+
+    function toggleCommEmojiPicker() {
+      document.getElementById('commEmojiPicker').classList.toggle('open');
+    }
+
+    function inserirEmojiChat(code) {
+      const textarea = document.getElementById('postTexto');
+      textarea.value = (textarea.value + ' ' + code).trim() + ' ';
+      textarea.focus();
+    }
+
     async function iniciar() {
+      montarEmojiPickerComunidade();
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
 
@@ -488,23 +592,23 @@
 
       const grid = document.getElementById('membrosGrid');
       grid.innerHTML = membros.length ? membros.map(m => `
-        <div class="grid-card" title="${m.nome}">
+        <div class="grid-card" title="${escapeHtml(m.nome)}">
           <button class="remove-member-btn" title="Remover do grupo" onclick="removerMembro(${m.id})">x</button>
           <a href="perfil.html?id=${m.id}">
-            <img src="${m.avatar_url || DEFAULT_AVATAR}" alt="${m.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
-            <span>${m.nome}</span>
+            <img src="${m.avatar_url || DEFAULT_AVATAR}" alt="${escapeHtml(m.nome)}" onerror="this.src='${DEFAULT_AVATAR}'">
+            <span>${escapeHtml(m.nome)}</span>
           </a>
         </div>
       `).join('') : '<p style="grid-column: 1/-1; color:#777; font-size:11px;">Nenhum membro ainda. Adicione abaixo!</p>';
 
       const selectNovo = document.getElementById('selectNovoMembro');
       selectNovo.innerHTML = naoMembros.length
-        ? naoMembros.map(p => `<option value="${p.id}">${p.nome}</option>`).join('')
+        ? naoMembros.map(p => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`).join('')
         : '<option value="">Todos já são membros!</option>';
 
       const selectAutor = document.getElementById('selectAutor');
       selectAutor.innerHTML = membros.length
-        ? membros.map(m => `<option value="${m.id}">💬 Falar como: ${m.nome}</option>`).join('')
+        ? membros.map(m => `<option value="${m.id}">💬 Falar como: ${escapeHtml(m.nome)}</option>`).join('')
         : '<option value="">⚠️ Adicione um personagem ao grupo primeiro!</option>';
     }
 
@@ -573,16 +677,16 @@
           <div class="forum-post">
             <div class="post-author-col">
               <a href="perfil.html?id=${autor.id}">
-                <img src="${autor.avatar_url || DEFAULT_AVATAR}" alt="${autor.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
-                <span class="post-author-name">${autor.nome}</span>
+                <img src="${autor.avatar_url || DEFAULT_AVATAR}" alt="${escapeHtml(autor.nome)}" onerror="this.src='${DEFAULT_AVATAR}'">
+                <span class="post-author-name">${escapeHtml(autor.nome)}</span>
               </a>
             </div>
             <div class="post-content-col">
               <div class="post-meta">
-                <span class="post-subject">${m.assunto || 'Sem assunto'}</span>
+                <span class="post-subject">${escapeHtml(m.assunto || 'Sem assunto')}</span>
                 <span>${dataFormatada}</span>
               </div>
-              <div class="post-text">${m.mensagem}</div>
+              <div class="post-text">${formatarTextoComEmojis(m.mensagem)}</div>
               ${m.imagem_url ? `<img class="post-attached-img" src="${m.imagem_url}" alt="Anexo" onerror="this.style.display='none'">` : ''}
             </div>
           </div>

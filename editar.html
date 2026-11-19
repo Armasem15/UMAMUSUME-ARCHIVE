@@ -63,7 +63,6 @@
       align-items: center;
     }
 
-    /* Barra de Seleção de Personagem */
     .selector-bar {
       background: #FFF9FD;
       border: 1px solid #E41A82;
@@ -259,7 +258,6 @@
 
   <div class="container">
 
-    <!-- SELETOR DE PERSONAGEM PARA EDITAR -->
     <div class="selector-bar">
       <label for="selectPersonagem">✏️ Editando Perfil:</label>
       <select id="selectPersonagem" onchange="trocarPersonagem(this.value)">
@@ -302,6 +300,12 @@
               <input type="text" id="nome_completo">
             </div>
             <div class="form-group">
+              <label>❤️ Relacionamento Sério (Facebook)</label>
+              <select id="relacionamento_id">
+                <option value="">Solteira / Nenhum</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label>Aniversário</label>
               <input type="text" id="aniversario">
             </div>
@@ -317,9 +321,17 @@
               <label>Ocupação</label>
               <input type="text" id="ocupacao">
             </div>
+            <div class="form-group full">
+              <label>Hobbies</label>
+              <input type="text" id="hobbies">
+            </div>
             <div class="form-group">
               <label>Gosta de</label>
               <input type="text" id="gosta_de">
+            </div>
+            <div class="form-group">
+              <label>Coisas que não gosto</label>
+              <input type="text" id="nao_gosta_de">
             </div>
           </div>
         </div>
@@ -436,10 +448,14 @@
   <script>
     const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
     let idAtual = null;
+    let relacionamentoAnteriorId = null;
+    let todosPersonagens = [];
 
     function atualizarPreview(url) {
       const img = document.getElementById('avatarPreview');
@@ -525,7 +541,6 @@
     }
 
     async function iniciar() {
-      // 1. Busca todos os personagens para montar o seletor do topo
       const { data: lista, error } = await supabaseClient
         .from('personagens')
         .select('id, nome, afiliacao')
@@ -538,11 +553,11 @@
         return;
       }
 
+      todosPersonagens = lista;
       select.innerHTML = lista.map(p => 
         `<option value="${p.id}">${p.nome}${p.afiliacao ? ` (${p.afiliacao})` : ''}</option>`
       ).join('');
 
-      // 2. Verifica se veio ?id=X na URL; senão pega o primeiro da lista
       const params = new URLSearchParams(window.location.search);
       const urlId = params.get('id');
       const idInicial = urlId && lista.some(p => String(p.id) === String(urlId)) ? urlId : lista[0].id;
@@ -553,7 +568,6 @@
 
     async function trocarPersonagem(novoId) {
       if (!novoId) return;
-      // Atualiza a URL sem recarregar a página
       const novaUrl = `${window.location.pathname}?id=${novoId}`;
       window.history.replaceState({}, '', novaUrl);
       await carregarDadosPersonagem(novoId);
@@ -576,6 +590,15 @@
       }
 
       idAtual = p.id;
+      relacionamentoAnteriorId = p.relacionamento_id || null;
+
+      // Preenche opções do seletor de Relacionamento (excluindo o próprio personagem)
+      const selectRel = document.getElementById('relacionamento_id');
+      const outros = todosPersonagens.filter(item => item.id !== p.id);
+      selectRel.innerHTML = `<option value="">Solteira / Nenhum</option>` +
+        outros.map(o => `<option value="${o.id}">❤️ Em relacionamento com: ${o.nome}</option>`).join('');
+      selectRel.value = p.relacionamento_id || '';
+
       document.title = `UmaWiki - Editando ${p.nome}`;
       document.getElementById('btnVerPerfil').href = `perfil.html?id=${p.id}`;
 
@@ -589,7 +612,9 @@
       document.getElementById('especie').value = p.especie || '';
       document.getElementById('afiliacao').value = p.afiliacao || '';
       document.getElementById('ocupacao').value = p.ocupacao || '';
+      document.getElementById('hobbies').value = p.hobbies || '';
       document.getElementById('gosta_de').value = p.gosta_de || '';
+      document.getElementById('nao_gosta_de').value = p.nao_gosta_de || '';
       document.getElementById('biografia').value = p.biografia || '';
 
       document.getElementById('aval_confiavel').value = p.aval_confiavel || '';
@@ -613,7 +638,6 @@
       document.getElementById('stat_velocidade').value = sVel;
       document.getElementById('val_vel').innerText = sVel + '%';
 
-      // Limpa e preenche listas dinâmicas
       document.getElementById('skillsContainer').innerHTML = '';
       document.getElementById('fotosContainer').innerHTML = '';
       document.getElementById('aliadosContainer').innerHTML = '';
@@ -667,16 +691,23 @@
         data: el.querySelector('.d-data').value.trim()
       })).filter(x => x.autor && x.texto);
 
+      const relVal = document.getElementById('relacionamento_id').value;
+      const novoRelId = relVal ? parseInt(relVal) : null;
+      const nomeAtual = document.getElementById('nome').value.trim();
+
       const dadosAtualizados = {
-        nome: document.getElementById('nome').value.trim(),
+        nome: nomeAtual,
         status: document.getElementById('status').value.trim(),
         avatar_url: document.getElementById('avatar_url').value.trim(),
-        nome_completo: document.getElementById('nome_completo').value.trim() || document.getElementById('nome').value.trim(),
+        nome_completo: document.getElementById('nome_completo').value.trim() || nomeAtual,
+        relacionamento_id: novoRelId,
         aniversario: document.getElementById('aniversario').value.trim(),
         especie: document.getElementById('especie').value.trim(),
         afiliacao: document.getElementById('afiliacao').value.trim(),
         ocupacao: document.getElementById('ocupacao').value.trim(),
+        hobbies: document.getElementById('hobbies').value.trim(),
         gosta_de: document.getElementById('gosta_de').value.trim(),
+        nao_gosta_de: document.getElementById('nao_gosta_de').value.trim(),
         biografia: document.getElementById('biografia').value.trim(),
         aval_confiavel: document.getElementById('aval_confiavel').value.trim(),
         aval_legal: document.getElementById('aval_legal').value.trim(),
@@ -707,13 +738,42 @@
         return;
       }
 
+      // Sincroniza relacionamento mútuo e anuncia na For You se mudou!
+      if (relacionamentoAnteriorId && relacionamentoAnteriorId !== novoRelId) {
+        await supabaseClient
+          .from('personagens')
+          .update({ relacionamento_id: null })
+          .eq('id', relacionamentoAnteriorId);
+      }
+
+      if (novoRelId && novoRelId !== relacionamentoAnteriorId) {
+        await supabaseClient
+          .from('personagens')
+          .update({ relacionamento_id: idAtual })
+          .eq('id', novoRelId);
+
+        const parceiroObj = todosPersonagens.find(p => p.id === novoRelId);
+        if (parceiroObj) {
+          await supabaseClient.from('feed_posts').insert([{
+            personagem_id: idAtual,
+            tipo: 'relacionamento',
+            chave_unica: `rel_${idAtual}_${parceiroObj.id}_${Date.now()}`,
+            texto: `❤️ ${nomeAtual} e ${parceiroObj.nome} agora estão em um relacionamento sério!`,
+            imagem_url: '',
+            likes: 0,
+            dislikes: 0,
+            comentarios: []
+          }]);
+        }
+      }
+
       window.location.href = `perfil.html?id=${idAtual}`;
     }
 
     async function excluirPersonagem() {
       if (!idAtual) return;
       const nome = document.getElementById('nome').value;
-      const confirmar = confirm(`Tem certeza que deseja excluir o perfil de "${nome}"? Essa ação não pode ser desfeita.`);
+      const confirmar = confirm(`Tem certeza que deseja excluir o perfil de "${nome}"?`);
       if (!confirmar) return;
 
       const { error } = await supabaseClient
@@ -722,7 +782,7 @@
         .eq('id', idAtual);
 
       if (error) {
-        alert('Erro ao excluir (verifique se a política DELETE está ativa no Supabase): ' + error.message);
+        alert('Erro ao excluir: ' + error.message);
         return;
       }
 

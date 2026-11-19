@@ -115,7 +115,7 @@
       font-size: 12px;
       background: #FFF;
     }
-    input[type="text"]:focus, textarea:focus {
+    input[type="text"]:focus, textarea:focus, select:focus {
       outline: none;
       border-color: #E41A82;
       background: #FFF9FD;
@@ -268,6 +268,12 @@
               <input type="text" id="nome_completo" placeholder="Ex: Goldship">
             </div>
             <div class="form-group">
+              <label>❤️ Relacionamento Sério (Facebook)</label>
+              <select id="relacionamento_id">
+                <option value="">Solteira / Nenhum</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label>Aniversário</label>
               <input type="text" id="aniversario" placeholder="Ex: 6 de março de 2009">
             </div>
@@ -283,9 +289,17 @@
               <label>Ocupação</label>
               <input type="text" id="ocupacao" value="corredora">
             </div>
+            <div class="form-group full">
+              <label>Hobbies</label>
+              <input type="text" id="hobbies" placeholder="Ex: Pescar, pregar peças, correr na praia...">
+            </div>
             <div class="form-group">
               <label>Gosta de</label>
               <input type="text" id="gosta_de" placeholder="Ex: Movimento dos músculos faciais">
+            </div>
+            <div class="form-group">
+              <label>Coisas que não gosto</label>
+              <input type="text" id="nao_gosta_de" placeholder="Ex: Acordar cedo, treinos chatos...">
             </div>
           </div>
         </div>
@@ -389,13 +403,26 @@
 
   <script>
     const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9'.trim();
+    const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false }
     });
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
+    let listaPersonagensExistentes = [];
+
+    async function carregarOpcoesRelacionamento() {
+      const { data } = await supabaseClient
+        .from('personagens')
+        .select('id, nome')
+        .order('nome', { ascending: true });
+
+      listaPersonagensExistentes = data || [];
+      const select = document.getElementById('relacionamento_id');
+      select.innerHTML = `<option value="">Solteira / Nenhum</option>` +
+        listaPersonagensExistentes.map(p => `<option value="${p.id}">❤️ Em relacionamento com: ${p.nome}</option>`).join('');
+    }
 
     function mostrarErro(msg) {
       const banner = document.getElementById('errorBanner');
@@ -478,7 +505,9 @@
       document.getElementById('especie').value = 'cavalo';
       document.getElementById('afiliacao').value = 'Tracen Academy';
       document.getElementById('ocupacao').value = 'corredora';
+      document.getElementById('hobbies').value = 'Pescar, andar de Segway, sumir antes do treino';
       document.getElementById('gosta_de').value = 'Movimento dos músculos faciais';
+      document.getElementById('nao_gosta_de').value = 'Regras rígidas e treinos monótonos';
       document.getElementById('biografia').value = 'Selvagem e imprevisível, este corredor dourado é diferente de qualquer outro!';
 
       document.getElementById('aval_confiavel').value = 'NEM UM POUCO';
@@ -498,20 +527,14 @@
       e.preventDefault();
       document.getElementById('errorBanner').style.display = 'none';
 
-      if (SUPABASE_KEY === 'SUA_CHAVE_ANON_DO_SUPABASE' || !SUPABASE_KEY) {
-        mostrarErro('Você esqueceu de colar a sua SUPABASE_KEY no código do criar.html!');
-        return;
-      }
-
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
       btn.innerText = 'Salvando no Supabase...';
 
-      // Trava de segurança de 15 segundos para nunca ficar carregando infinitamente
       const timerSeguranca = setTimeout(() => {
         btn.disabled = false;
         btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki';
-        mostrarErro('A conexão com o Supabase demorou muito para responder. Verifique sua internet ou a chave API.');
+        mostrarErro('A conexão com o Supabase demorou muito para responder.');
       }, 15000);
 
       try {
@@ -537,16 +560,22 @@
           avatar: el.querySelector('.c-avatar').value.trim()
         })).filter(x => x.nome);
 
+        const relVal = document.getElementById('relacionamento_id').value;
+        const relacionamentoId = relVal ? parseInt(relVal) : null;
+
         const novoPersonagem = {
           nome: document.getElementById('nome').value.trim(),
           status: document.getElementById('status').value.trim(),
           avatar_url: document.getElementById('avatar_url').value.trim(),
           nome_completo: document.getElementById('nome_completo').value.trim() || document.getElementById('nome').value.trim(),
+          relacionamento_id: relacionamentoId,
           aniversario: document.getElementById('aniversario').value.trim(),
           especie: document.getElementById('especie').value.trim(),
           afiliacao: document.getElementById('afiliacao').value.trim(),
           ocupacao: document.getElementById('ocupacao').value.trim(),
+          hobbies: document.getElementById('hobbies').value.trim(),
           gosta_de: document.getElementById('gosta_de').value.trim(),
+          nao_gosta_de: document.getElementById('nao_gosta_de').value.trim(),
           biografia: document.getElementById('biografia').value.trim(),
           aval_confiavel: document.getElementById('aval_confiavel').value.trim(),
           aval_legal: document.getElementById('aval_legal').value.trim(),
@@ -571,15 +600,37 @@
           .select()
           .single();
 
-        clearTimeout(timerSeguranca);
-
         if (error) {
+          clearTimeout(timerSeguranca);
           mostrarErro('Erro do Supabase: ' + error.message);
           btn.disabled = false;
           btn.innerText = '💾 Salvar e Publicar Perfil na UmaWiki';
           return;
         }
 
+        // Se marcou relacionamento sério, vincula o parceiro(a) e posta na For You!
+        if (relacionamentoId && data) {
+          await supabaseClient
+            .from('personagens')
+            .update({ relacionamento_id: data.id })
+            .eq('id', relacionamentoId);
+
+          const parceiroObj = listaPersonagensExistentes.find(p => p.id === relacionamentoId);
+          if (parceiroObj) {
+            await supabaseClient.from('feed_posts').insert([{
+              personagem_id: data.id,
+              tipo: 'relacionamento',
+              chave_unica: `rel_${data.id}_${parceiroObj.id}_${Date.now()}`,
+              texto: `❤️ ${data.nome} e ${parceiroObj.nome} agora estão em um relacionamento sério!`,
+              imagem_url: '',
+              likes: 0,
+              dislikes: 0,
+              comentarios: []
+            }]);
+          }
+        }
+
+        clearTimeout(timerSeguranca);
         window.location.href = `perfil.html?id=${data.id}`;
 
       } catch (err) {
@@ -590,7 +641,7 @@
       }
     }
 
-    // Inicia com 1 linha vazia em cada seção
+    carregarOpcoesRelacionamento();
     addSkill();
     addFoto();
     addAliado();

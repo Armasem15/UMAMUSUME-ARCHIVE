@@ -48,7 +48,7 @@
     }
     .col-left { width: 190px; flex-shrink: 0; }
     .col-center { flex: 1; min-width: 0; }
-    .col-right { width: 230px; flex-shrink: 0; }
+    .col-right { width: 240px; flex-shrink: 0; }
 
     .box {
       background-color: #FFFFFF;
@@ -89,7 +89,7 @@
     }
     .welcome-banner h2 { font-size: 16px; margin-bottom: 4px; }
 
-    /* ABAS PRINCIPAIS (Personagens vs For You) */
+    /* ABAS PRINCIPAIS */
     .main-tabs {
       display: flex;
       gap: 4px;
@@ -139,12 +139,13 @@
     .btn-orkut {
       background: #ECE9D8;
       border: 1px solid #b97fb3;
-      padding: 4px 12px;
+      padding: 4px 10px;
       font-size: 11px;
       font-weight: bold;
       color: #000;
       cursor: pointer;
       border-radius: 2px;
+      white-space: nowrap;
     }
     .btn-orkut:hover { background: #F0EFE2; }
 
@@ -209,7 +210,7 @@
       border: 1px solid #C3D9FF;
       border-radius: 4px;
       padding: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
     .fy-composer-header {
       font-weight: bold;
@@ -236,6 +237,18 @@
       align-items: center;
     }
 
+    /* Barra de Pesquisa por Autor na For You */
+    .fy-search-bar {
+      background: #FFF9FD;
+      border: 1px solid #ffc3f0;
+      border-radius: 4px;
+      padding: 7px 10px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
     .fy-card {
       background: #FFFFFF;
       border: 1px solid #D8DFEA;
@@ -243,6 +256,10 @@
       padding: 10px;
       margin-bottom: 12px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .fy-card.rel-post {
+      border: 1px solid #f7a8d0;
+      background: linear-gradient(180deg, #fff7fb, #ffffff);
     }
     .fy-card-top {
       display: flex;
@@ -258,9 +275,19 @@
       border: 1px solid #ffc3f4;
       flex-shrink: 0;
     }
-    .fy-author-info { flex: 1; }
+    .fy-author-info { flex: 1; min-width: 0; }
     .fy-author-name { font-weight: bold; font-size: 13px; color: #983b8c; }
     .fy-handle { color: #888; font-size: 11px; }
+    .fy-rel-tag {
+      display: inline-block;
+      font-size: 10px;
+      color: #d6187a;
+      background: #ffe6f2;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-top: 2px;
+      font-weight: bold;
+    }
     .fy-source-tag {
       background: #f1d4ef;
       color: #983b87;
@@ -268,6 +295,7 @@
       padding: 2px 6px;
       border-radius: 3px;
       font-weight: bold;
+      flex-shrink: 0;
     }
     .fy-text {
       font-size: 12px;
@@ -286,10 +314,49 @@
       display: block;
     }
 
-    /* Players de Vídeo (YouTube & MP4) */
+    /* Card Visual de Relacionamento Sério estilo Facebook */
+    .fy-rel-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #FFF;
+      border: 1px dashed #f285bc;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+    .fy-rel-person {
+      text-align: center;
+      width: 90px;
+    }
+    .fy-rel-person img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #E41A82;
+    }
+    .fy-rel-person span {
+      display: block;
+      font-weight: bold;
+      font-size: 11px;
+      color: #983b8c;
+      margin-top: 4px;
+    }
+    .fy-rel-heart {
+      font-size: 28px;
+      animation: pulseHeart 1.5s infinite;
+    }
+    @keyframes pulseHeart {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    /* Players de Vídeo */
     .fy-video-wrapper {
       position: relative;
-      padding-bottom: 56.25%; /* Proporção 16:9 */
+      padding-bottom: 56.25%;
       height: 0;
       overflow: hidden;
       border-radius: 4px;
@@ -299,10 +366,7 @@
     }
     .fy-video-wrapper iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
     }
     .fy-video {
       width: 100%;
@@ -338,6 +402,7 @@
     .fy-btn.dislike { color: #b02a37; border-color: #f1c4c8; background: #fff5f6; }
     .fy-btn.dislike:hover { background: #ffe3e6; }
 
+    /* Comentários e Emojis Personalizados */
     .fy-comments-box {
       background: #EDEFF4;
       border-top: 1px solid #D8DFEA;
@@ -352,18 +417,95 @@
       margin-bottom: 6px;
       border-bottom: 1px solid #E2E6F0;
       font-size: 11px;
+      align-items: flex-start;
     }
-    .fy-comment-item img {
+    .fy-comment-item > img {
       width: 28px;
       height: 28px;
       border-radius: 2px;
       object-fit: cover;
       flex-shrink: 0;
     }
+    .custom-emoji {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      vertical-align: middle;
+      margin: 0 2px;
+      display: inline-block;
+    }
     .fy-comment-form {
       display: flex;
       gap: 5px;
       margin-top: 4px;
+      align-items: center;
+    }
+    .emoji-picker-bar {
+      display: none;
+      flex-wrap: wrap;
+      gap: 4px;
+      background: #FFFFFF;
+      border: 1px solid #ffc3f0;
+      padding: 5px;
+      border-radius: 4px;
+      margin-top: 6px;
+    }
+    .emoji-picker-bar.open { display: flex; }
+    .emoji-pick-btn {
+      background: #F9FAFC;
+      border: 1px solid #E5ECF9;
+      border-radius: 3px;
+      padding: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .emoji-pick-btn:hover {
+      background: #ffe6f5;
+      border-color: #E41A82;
+      transform: scale(1.1);
+    }
+    .emoji-pick-btn img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+
+    /* TRENDING TOPICS (ASSUNTOS DO MOMENTO - ESTILO TWITTER) */
+    .trending-list { list-style: none; }
+    .trending-item {
+      padding: 6px 4px;
+      border-bottom: 1px dashed #f1d4ef;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: 0.15s;
+    }
+    .trending-item:last-child { border-bottom: none; }
+    .trending-item:hover { background: #FFF5FB; }
+    .trending-meta {
+      font-size: 9px;
+      color: #888;
+      display: flex;
+      justify-content: space-between;
+    }
+    .trending-tag-hot { color: #E41A82; font-weight: bold; }
+    .trending-tag-drama { color: #b02a37; font-weight: bold; }
+    .trending-topic-title {
+      font-weight: bold;
+      color: #983b8c;
+      font-size: 11px;
+      margin: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .trending-snippet {
+      font-size: 10px;
+      color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Listas Laterais */
@@ -388,7 +530,7 @@
     .top-list-text strong { display: block; color: #983b7e; font-size: 11px; }
     .top-list-text span { font-size: 9px; color: #777; }
 
-    /* Grade 3x3 corrigida */
+    /* Grade 3x3 */
     .grid-3x3 {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -396,14 +538,8 @@
       text-align: center;
       width: 100%;
     }
-    .grid-card {
-      min-width: 0;
-      overflow: hidden;
-    }
-    .grid-card a {
-      display: block;
-      width: 100%;
-    }
+    .grid-card { min-width: 0; overflow: hidden; }
+    .grid-card a { display: block; width: 100%; }
     .grid-card img {
       width: 100%;
       height: 55px;
@@ -521,6 +657,13 @@
             </div>
           </div>
 
+          <!-- PESQUISA DE POSTS POR NOME DE QUEM POSTOU -->
+          <div class="fy-search-bar">
+            <span style="font-weight: bold; color: #983b8c;">🔍 Filtrar posts por autor:</span>
+            <input type="text" id="fySearchAuthor" class="retro-input" placeholder="Digite o nome de quem postou..." oninput="filtrarForYouPorAutor()">
+            <button type="button" class="btn-orkut" onclick="limparFiltroForYou()">Limpar</button>
+          </div>
+
           <!-- Lista de Posts da For You -->
           <div id="forYouFeed">
             <p style="color:#666; padding: 10px;">Montando sua timeline For You...</p>
@@ -537,6 +680,18 @@
 
     <!-- COLUNA DIREITA -->
     <aside class="col-right">
+
+      <!-- ASSUNTOS DO MOMENTO (TWITTER TRENDING TOPICS) -->
+      <div class="box">
+        <div class="box-header">
+          <span>📈 Assuntos do Momento</span>
+          <span style="font-size: 9px; font-weight: normal;">Top Reações</span>
+        </div>
+        <ul class="trending-list" id="trendingList">
+          <li style="color:#777; font-size:11px;">Calculando tópicos em alta...</li>
+        </ul>
+      </div>
+
       <div class="box">
         <div class="box-header">Personagens Recentes</div>
         <ul class="top-list" id="recentList">
@@ -569,16 +724,56 @@
   <script>
     const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
-    
+
+    // ========================================================
+    // 🎨 SEUS 12 EMOJIS PERSONALIZADOS (Troque os links abaixo!)
+    // ========================================================
+    const CUSTOM_EMOJIS = [
+      { code: ':uma1:',  nome: 'Emoji 1',  url: 'https://cdn-icons-png.flaticon.com/64/742/742751.png' },
+      { code: ':uma2:',  nome: 'Emoji 2',  url: 'https://cdn-icons-png.flaticon.com/64/742/742752.png' },
+      { code: ':uma3:',  nome: 'Emoji 3',  url: 'https://cdn-icons-png.flaticon.com/64/742/742920.png' },
+      { code: ':uma4:',  nome: 'Emoji 4',  url: 'https://cdn-icons-png.flaticon.com/64/742/742760.png' },
+      { code: ':uma5:',  nome: 'Emoji 5',  url: 'https://cdn-icons-png.flaticon.com/64/742/742822.png' },
+      { code: ':uma6:',  nome: 'Emoji 6',  url: 'https://cdn-icons-png.flaticon.com/64/742/742923.png' },
+      { code: ':uma7:',  nome: 'Emoji 7',  url: 'https://cdn-icons-png.flaticon.com/64/742/742745.png' },
+      { code: ':uma8:',  nome: 'Emoji 8',  url: 'https://cdn-icons-png.flaticon.com/64/742/742874.png' },
+      { code: ':uma9:',  nome: 'Emoji 9',  url: 'https://cdn-icons-png.flaticon.com/64/742/742774.png' },
+      { code: ':uma10:', nome: 'Emoji 10', url: 'https://cdn-icons-png.flaticon.com/64/742/742914.png' },
+      { code: ':uma11:', nome: 'Emoji 11', url: 'https://cdn-icons-png.flaticon.com/64/742/742802.png' },
+      { code: ':uma12:', nome: 'Emoji 12', url: 'https://cdn-icons-png.flaticon.com/64/742/742785.png' }
+    ];
+
     let todosPersonagens = [];
     let itensFeedAtual = [];
     let poolCompletoForYou = [];
     let indiceAtualForYou = 0;
     const TAMANHO_LOTE_FY = 5;
     let carregandoMaisFY = false;
+    let filtroAutorAtivo = '';
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatarTextoComEmojis(texto) {
+      let seguro = escapeHtml(texto);
+      CUSTOM_EMOJIS.forEach(em => {
+        const regex = new RegExp(em.code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        seguro = seguro.replace(regex, `<img src="${em.url}" alt="${em.code}" title="${em.nome}" class="custom-emoji">`);
+      });
+      return seguro;
+    }
 
     function ativarAba(tabId, index) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -595,7 +790,7 @@
 
       if (resChars.error) {
         console.error('Erro ao buscar personagens:', resChars.error);
-        document.getElementById('characterGrid').innerHTML = '<p style="color:red;">Erro ao conectar com o Supabase. Verifique a URL e a Key.</p>';
+        document.getElementById('characterGrid').innerHTML = '<p style="color:red;">Erro ao conectar com o Supabase.</p>';
       } else {
         todosPersonagens = resChars.data || [];
         renderizarGrid(todosPersonagens);
@@ -629,13 +824,11 @@
       if (!url) return '';
       const cleanUrl = url.trim();
 
-      // 1. YouTube (watch, youtu.be, shorts, embed)
       const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
       const ytMatch = cleanUrl.match(ytRegex);
       if (ytMatch && ytMatch[1]) {
         const videoId = ytMatch[1];
 
-        // Se estiver aberto como arquivo local (file://), evita o Erro 153 mostrando a capa clicável
         if (window.location.protocol === 'file:') {
           return `
             <a href="https://www.youtube.com/watch?v=${videoId}" target="_blank" style="display:block; position:relative; margin-bottom:8px; text-decoration:none;">
@@ -660,7 +853,6 @@
         `;
       }
 
-      // 2. Arquivos de vídeo direto (.mp4, .webm, .ogg, .mov)
       if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(cleanUrl)) {
         return `
           <video class="fy-video" controls preload="metadata" playsinline>
@@ -670,11 +862,59 @@
         `;
       }
 
-      // 3. Imagem padrão
       return `<img class="fy-photo" src="${cleanUrl}" alt="Post" onerror="this.style.display='none'">`;
     }
+
     // ==========================================
-    // LÓGICA DA FOR YOU COM INFINITE SCROLL
+    // ASSUNTOS DO MOMENTO (TWITTER TRENDING)
+    // ==========================================
+    function atualizarTrendingTopics(postsSalvos) {
+      const listEl = document.getElementById('trendingList');
+      const comReacoes = (postsSalvos || [])
+        .map(p => ({
+          ...p,
+          totalReacoes: (p.likes || 0) + (p.dislikes || 0)
+        }))
+        .filter(p => p.totalReacoes > 0)
+        .sort((a, b) => b.totalReacoes - a.totalReacoes)
+        .slice(0, 5);
+
+      if (comReacoes.length === 0) {
+        listEl.innerHTML = '<li style="color:#777; font-size:10px;">Curta ou dê dislike nos posts da For You para gerar assuntos em alta!</li>';
+        return;
+      }
+
+      listEl.innerHTML = comReacoes.map((p, idx) => {
+        const autor = todosPersonagens.find(char => char.id === p.personagem_id) || { nome: 'Uma' };
+        const isPolemica = (p.dislikes || 0) > (p.likes || 0);
+        const tag = isPolemica
+          ? `<span class="trending-tag-drama">🔥 Polêmica</span>`
+          : `<span class="trending-tag-hot">❤️ Em alta</span>`;
+        const resumo = p.texto ? escapeHtml(p.texto) : 'Post com mídia na For You';
+
+        return `
+          <li class="trending-item" onclick="abrirTrendingAutor('${escapeHtml(autor.nome)}')">
+            <div class="trending-meta">
+              <span>${idx + 1} · ${tag}</span>
+              <span>👍 ${p.likes || 0} | 👎 ${p.dislikes || 0}</span>
+            </div>
+            <div class="trending-topic-title">${escapeHtml(autor.nome)}</div>
+            <div class="trending-snippet">${resumo}</div>
+          </li>
+        `;
+      }).join('');
+    }
+
+    function abrirTrendingAutor(nomeAutor) {
+      ativarAba('tab-foryou', 1);
+      const input = document.getElementById('fySearchAuthor');
+      input.value = nomeAutor;
+      filtrarForYouPorAutor();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // LÓGICA DA FOR YOU + PESQUISA + INFINITE SCROLL
     // ==========================================
     function embaralharArray(array) {
       const copia = [...array];
@@ -695,9 +935,12 @@
         .order('created_at', { ascending: false });
 
       if (error) {
-        feedContainer.innerHTML = '<p style="color:red;">Erro ao carregar For You. Verifique a tabela feed_posts no Supabase.</p>';
+        feedContainer.innerHTML = '<p style="color:red;">Erro ao carregar For You.</p>';
         return;
       }
+
+      // Atualiza a caixa de Assuntos do Momento com base nos likes/dislikes
+      atualizarTrendingTopics(postsSalvos || []);
 
       const mapaSalvos = {};
       (postsSalvos || []).forEach(p => {
@@ -731,14 +974,15 @@
 
       const fotosEmbaralhadas = embaralharArray(poolFotosGaleria);
 
-      // 2. Coleta todos os posts criados direto na For You
+      // 2. Coleta todos os posts criados direto na For You (incluindo anúncios de relacionamento)
       const postsManuais = (postsSalvos || [])
-        .filter(p => p.tipo === 'post')
+        .filter(p => p.tipo === 'post' || p.tipo === 'relacionamento')
         .map(p => ({
           db_id: p.id,
           chave_unica: p.chave_unica,
-          tipo: 'post',
+          tipo: p.tipo,
           personagem_id: p.personagem_id,
+          parceiro_id: p.parceiro_id || null,
           texto: p.texto,
           imagem_url: p.imagem_url,
           created_at: p.created_at,
@@ -755,20 +999,58 @@
         if (fotosEmbaralhadas[i]) poolCompletoForYou.push(fotosEmbaralhadas[i]);
       }
 
-      itensFeedAtual = [];
-      indiceAtualForYou = 0;
-      feedContainer.innerHTML = '';
+      if (filtroAutorAtivo) {
+        filtrarForYouPorAutor();
+      } else {
+        itensFeedAtual = [];
+        indiceAtualForYou = 0;
+        feedContainer.innerHTML = '';
 
-      if (poolCompletoForYou.length === 0) {
-        feedContainer.innerHTML = '<p style="color:#666; padding:10px;">Nada na For You ainda. Crie um post acima ou adicione fotos aos perfis!</p>';
+        if (poolCompletoForYou.length === 0) {
+          feedContainer.innerHTML = '<p style="color:#666; padding:10px;">Nada na For You ainda. Crie um post acima ou adicione fotos aos perfis!</p>';
+          return;
+        }
+        carregarProximoLoteForYou();
+      }
+    }
+
+    // Pesquisa de posts pelo nome de quem postou
+    function filtrarForYouPorAutor() {
+      const termo = document.getElementById('fySearchAuthor').value.trim().toLowerCase();
+      filtroAutorAtivo = termo;
+      const feedContainer = document.getElementById('forYouFeed');
+
+      if (!termo) {
+        itensFeedAtual = [];
+        indiceAtualForYou = 0;
+        feedContainer.innerHTML = '';
+        carregarProximoLoteForYou();
         return;
       }
 
-      carregarProximoLoteForYou();
+      const filtrados = poolCompletoForYou.filter(item => {
+        const autor = todosPersonagens.find(p => p.id === item.personagem_id);
+        return autor && (autor.nome || '').toLowerCase().includes(termo);
+      });
+
+      itensFeedAtual = filtrados;
+      feedContainer.innerHTML = '';
+
+      if (filtrados.length === 0) {
+        feedContainer.innerHTML = `<p style="color:#666; padding:10px;">Nenhum post encontrado para "<strong>${escapeHtml(termo)}</strong>".</p>`;
+        return;
+      }
+
+      anexarCardsForYou(filtrados, 0);
+    }
+
+    function limparFiltroForYou() {
+      document.getElementById('fySearchAuthor').value = '';
+      filtrarForYouPorAutor();
     }
 
     function carregarProximoLoteForYou() {
-      if (carregandoMaisFY || poolCompletoForYou.length === 0) return;
+      if (carregandoMaisFY || poolCompletoForYou.length === 0 || filtroAutorAtivo) return;
       carregandoMaisFY = true;
 
       const loader = document.getElementById('fyLoader');
@@ -794,15 +1076,44 @@
     }
 
     function gerarHtmlCardForYou(item, idx) {
-      const opcoesAutores = todosPersonagens.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+      const opcoesAutores = todosPersonagens.map(p => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`).join('');
       const autor = todosPersonagens.find(p => p.id === item.personagem_id) || { nome: 'Uma Desconhecida', avatar_url: DEFAULT_AVATAR };
       const arroba = '@' + autor.nome.toLowerCase().replace(/\s+/g, '_');
-      
+
+      // Verifica se o autor tem um relacionamento sério ativo no perfil
+      const parceiro = autor.relacionamento_id
+        ? todosPersonagens.find(p => p.id === autor.relacionamento_id)
+        : null;
+
+      const relSubtituloHtml = parceiro
+        ? `<div class="fy-rel-tag">❤️ Em um relacionamento sério com <a href="perfil.html?id=${parceiro.id}" style="color:#b01060;">${escapeHtml(parceiro.nome)}</a></div>`
+        : '';
+
       let badgeTipo = '🐦 Status';
-      if (item.tipo === 'foto_galeria') {
+      if (item.tipo === 'relacionamento') {
+        badgeTipo = '💍 Relacionamento';
+      } else if (item.tipo === 'foto_galeria') {
         badgeTipo = '📸 Foto do Álbum';
       } else if (isUrlVideo(item.imagem_url)) {
         badgeTipo = '🎬 Vídeo';
+      }
+
+      // Banner especial estilo Facebook se for um post de anúncio de relacionamento
+      let relBannerHtml = '';
+      if (item.tipo === 'relacionamento' && parceiro) {
+        relBannerHtml = `
+          <div class="fy-rel-banner">
+            <a href="perfil.html?id=${autor.id}" class="fy-rel-person">
+              <img src="${autor.avatar_url || DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <span>${escapeHtml(autor.nome)}</span>
+            </a>
+            <div class="fy-rel-heart">❤️</div>
+            <a href="perfil.html?id=${parceiro.id}" class="fy-rel-person">
+              <img src="${parceiro.avatar_url || DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <span>${escapeHtml(parceiro.nome)}</span>
+            </a>
+          </div>
+        `;
       }
 
       const comentariosHtml = item.comentarios.map(c => {
@@ -811,26 +1122,34 @@
           <div class="fy-comment-item">
             <img src="${cAutor.avatar_url || DEFAULT_AVATAR}" onerror="this.src='${DEFAULT_AVATAR}'">
             <div>
-              <a href="perfil.html?id=${cAutor.id}" style="font-weight:bold;">${cAutor.nome}</a>: ${c.texto}
+              <a href="perfil.html?id=${cAutor.id}" style="font-weight:bold;">${escapeHtml(cAutor.nome)}</a>: ${formatarTextoComEmojis(c.texto)}
             </div>
           </div>
         `;
       }).join('');
 
+      const emojisPickerHtml = CUSTOM_EMOJIS.map(em => `
+        <button type="button" class="emoji-pick-btn" title="${em.nome} (${em.code})" onclick="inserirEmojiComentario(${idx}, '${em.code}')">
+          <img src="${em.url}" alt="${em.code}">
+        </button>
+      `).join('');
+
       return `
-        <div class="fy-card" id="fyCard_${idx}">
+        <div class="fy-card ${item.tipo === 'relacionamento' ? 'rel-post' : ''}" id="fyCard_${idx}">
           <div class="fy-card-top">
             <a href="perfil.html?id=${autor.id}">
-              <img class="fy-avatar" src="${autor.avatar_url || DEFAULT_AVATAR}" alt="${autor.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <img class="fy-avatar" src="${autor.avatar_url || DEFAULT_AVATAR}" alt="${escapeHtml(autor.nome)}" onerror="this.src='${DEFAULT_AVATAR}'">
             </a>
             <div class="fy-author-info">
-              <a href="perfil.html?id=${autor.id}" class="fy-author-name">${autor.nome}</a>
+              <a href="perfil.html?id=${autor.id}" class="fy-author-name">${escapeHtml(autor.nome)}</a>
               <div class="fy-handle">${arroba}</div>
+              ${relSubtituloHtml}
             </div>
             <span class="fy-source-tag">${badgeTipo}</span>
           </div>
 
-          ${item.texto ? `<div class="fy-text">${item.texto}</div>` : ''}
+          ${item.texto ? `<div class="fy-text">${formatarTextoComEmojis(item.texto)}</div>` : ''}
+          ${relBannerHtml}
           ${renderizarMidia(item.imagem_url)}
 
           <div class="fy-actions">
@@ -848,15 +1167,31 @@
           <div class="fy-comments-box">
             ${comentariosHtml}
             <div class="fy-comment-form">
-              <select id="comentAutor_${idx}" class="retro-select" style="max-width: 140px;">
+              <select id="comentAutor_${idx}" class="retro-select" style="max-width: 130px;">
                 ${opcoesAutores}
               </select>
               <input type="text" id="comentTexto_${idx}" class="retro-input" placeholder="Escreva um comentário...">
+              <button type="button" class="btn-orkut" onclick="toggleEmojiPicker(${idx})" title="Emojis personalizados">😀</button>
               <button type="button" class="btn-orkut" onclick="comentarPost(${idx})">Comentar</button>
+            </div>
+            <div id="emojiPicker_${idx}" class="emoji-picker-bar">
+              ${emojisPickerHtml}
             </div>
           </div>
         </div>
       `;
+    }
+
+    function toggleEmojiPicker(idx) {
+      const picker = document.getElementById(`emojiPicker_${idx}`);
+      if (picker) picker.classList.toggle('open');
+    }
+
+    function inserirEmojiComentario(idx, code) {
+      const input = document.getElementById(`comentTexto_${idx}`);
+      if (!input) return;
+      input.value = (input.value + ' ' + code).trim() + ' ';
+      input.focus();
     }
 
     function anexarCardsForYou(lote, inicioIdx) {
@@ -874,7 +1209,7 @@
 
     window.addEventListener('scroll', () => {
       const abaForYouAtiva = document.getElementById('tab-foryou').classList.contains('active');
-      if (!abaForYouAtiva) return;
+      if (!abaForYouAtiva || filtroAutorAtivo) return;
 
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 250) {
         carregarProximoLoteForYou();
@@ -1004,10 +1339,10 @@
       grid.innerHTML = comunidades.slice(0, 6).map(c => {
         const qtdMembros = Array.isArray(c.membros_ids) ? c.membros_ids.length : 0;
         return `
-          <div class="grid-card" title="${c.nome} (${qtdMembros} membros)">
+          <div class="grid-card" title="${escapeHtml(c.nome)} (${qtdMembros} membros)">
             <a href="comunidade.html?id=${c.id}">
-              <img src="${c.imagem_url || DEFAULT_AVATAR}" alt="${c.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
-              <span>${c.nome}</span>
+              <img src="${c.imagem_url || DEFAULT_AVATAR}" alt="${escapeHtml(c.nome)}" onerror="this.src='${DEFAULT_AVATAR}'">
+              <span>${escapeHtml(c.nome)}</span>
             </a>
           </div>
         `;
@@ -1027,12 +1362,12 @@
       grid.innerHTML = lista.map(char => `
         <a href="perfil.html?id=${char.id}" style="text-decoration: none;">
           <div class="char-card">
-            <img class="char-thumb" src="${char.avatar_url || DEFAULT_AVATAR}" alt="${char.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+            <img class="char-thumb" src="${char.avatar_url || DEFAULT_AVATAR}" alt="${escapeHtml(char.nome)}" onerror="this.src='${DEFAULT_AVATAR}'">
             <div class="char-info">
               <div>
-                <div class="char-title">${char.nome}</div>
-                <div class="char-class">${char.ocupacao || 'Corredora'}</div>
-                ${char.afiliacao ? `<span class="char-badge">${char.afiliacao}</span>` : ''}
+                <div class="char-title">${escapeHtml(char.nome)}</div>
+                <div class="char-class">${escapeHtml(char.ocupacao || 'Corredora')}</div>
+                ${char.afiliacao ? `<span class="char-badge">${escapeHtml(char.afiliacao)}</span>` : ''}
               </div>
               <span class="btn-view-profile">Ver Perfil completo &raquo;</span>
             </div>
@@ -1049,10 +1384,10 @@
       const recentList = document.getElementById('recentList');
       recentList.innerHTML = lista.slice(0, 4).map(char => `
         <li>
-          <img src="${char.avatar_url || DEFAULT_AVATAR}" alt="${char.nome}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <img src="${char.avatar_url || DEFAULT_AVATAR}" alt="${escapeHtml(char.nome)}" onerror="this.src='${DEFAULT_AVATAR}'">
           <div class="top-list-text">
-            <strong><a href="perfil.html?id=${char.id}">${char.nome}</a></strong>
-            <span>${char.afiliacao || 'UmaWiki'}</span>
+            <strong><a href="perfil.html?id=${char.id}">${escapeHtml(char.nome)}</a></strong>
+            <span>${escapeHtml(char.afiliacao || 'UmaWiki')}</span>
           </div>
         </li>
       `).join('');
@@ -1065,7 +1400,7 @@
       const academiasList = document.getElementById('academiasList');
       const entradas = Object.entries(academias);
       academiasList.innerHTML = entradas.length > 0
-        ? entradas.map(([nome, qtd]) => `<li><a href="javascript:void(0)" onclick="filtrarPorAcademia('${nome}')">${nome} (${qtd})</a></li>`).join('')
+        ? entradas.map(([nome, qtd]) => `<li><a href="javascript:void(0)" onclick="filtrarPorAcademia('${escapeHtml(nome)}')">${escapeHtml(nome)} (${qtd})</a></li>`).join('')
         : '<li><a href="#">Tracen (0)</a></li>';
     }
 

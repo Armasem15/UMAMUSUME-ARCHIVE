@@ -85,6 +85,30 @@
     .char-name { font-size: 20px; color: #983b7e; font-weight: bold; }
     .char-status { color: #666; font-size: 11px; margin-top: 2px; }
 
+    /* Caixa de Relacionamento Sério estilo Facebook */
+    .fb-rel-box {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: #FFF0F7;
+      border: 1px solid #f7a8d0;
+      padding: 8px 10px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .fb-rel-box img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #E41A82;
+      flex-shrink: 0;
+    }
+    .fb-rel-text {
+      font-size: 12px;
+      color: #8a0c4d;
+    }
+
     .orkut-tabs { display: flex; gap: 4px; margin-bottom: -1px; position: relative; z-index: 10; }
     .tab {
       padding: 6px 12px;
@@ -118,7 +142,7 @@
     .info-table td { padding: 4px 0; vertical-align: top; }
     .info-table .label {
       color: #666666;
-      width: 130px;
+      width: 145px;
       font-weight: bold;
       text-align: right;
       padding-right: 12px;
@@ -258,10 +282,10 @@
   <header class="orkut-header">
     <div class="orkut-logo">Uma <span>wiki</span></div>
     <nav class="nav-menu">
-      <a href="editar.html">✏️ Editar Perfis</a>
       <a href="wiki.html">Início</a>
       <a href="comunidades.html">Comunidades</a>
       <a href="criar.html">+ Criar Perfil</a>
+      <a href="editar.html">✏️ Editar Perfis</a>
     </nav>
   </header>
 
@@ -271,7 +295,7 @@
         <img id="charAvatar" class="profile-avatar" src="https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7" alt="Avatar">
         
         <ul class="action-list">
-          <li>✏️ <a id="btnEditarPerfil" href="#">Editar Wiki</a></li>
+          <li>✏️ <a id="btnEditarPerfil" href="#">Editar Perfil</a></li>
           <li>🏠 <a href="wiki.html">Voltar ao Início</a></li>
           <li>💬 <a href="javascript:void(0)" onclick="openTab('tab-depoimentos', 3)">Deixar Depoimento</a></li>
         </ul>
@@ -299,6 +323,14 @@
           <div class="char-status" id="charStatus">...</div>
         </div>
 
+        <!-- RELACIONAMENTO SÉRIO (FACEBOOK STYLE) -->
+        <div id="fbRelBox" class="fb-rel-box">
+          <img id="relPartnerAvatar" src="" alt="Parceiro(a)">
+          <div class="fb-rel-text">
+            ❤️ <strong>Em um relacionamento sério</strong> com <a id="relPartnerLink" href="#" style="font-weight:bold; font-size:13px;">...</a>
+          </div>
+        </div>
+
         <!-- ABA 1: PERFIL -->
         <div id="tab-perfil" class="tab-content active">
           <div class="ratings-bar">
@@ -318,11 +350,14 @@
 
           <table class="info-table">
             <tr><td class="label">Nome Completo:</td><td class="value" id="infoNomeCompleto">-</td></tr>
+            <tr><td class="label">Relacionamento:</td><td class="value" id="infoRelacionamento">Solteira</td></tr>
             <tr><td class="label">Aniversário:</td><td class="value" id="infoAniversario">-</td></tr>
             <tr><td class="label">Espécie:</td><td class="value" id="infoEspecie">-</td></tr>
             <tr><td class="label">Afiliação:</td><td class="value"><a href="wiki.html" id="infoAfiliacao">-</a></td></tr>
             <tr><td class="label">Ocupação:</td><td class="value" id="infoOcupacao">-</td></tr>
+            <tr><td class="label">Hobbies:</td><td class="value" id="infoHobbies">-</td></tr>
             <tr><td class="label">Gosta de:</td><td class="value" id="infoGostaDe">-</td></tr>
+            <tr><td class="label">Coisas que não gosto:</td><td class="value" id="infoNaoGostaDe">-</td></tr>
           </table>
 
           <div class="box-header">Quem sou eu (Biografia)</div>
@@ -387,7 +422,9 @@
   <script>
     const SUPABASE_URL = 'https://sxgclsyumorpwogtffwg.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_9sFpZtTu1jkrNn1E6_78_Q_Bd9Mago9';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
 
     const DEFAULT_AVATAR = 'https://preview.redd.it/msn-frutiger-aero-symbol-but-it-went-rogue-and-became-dark-v0-q3akdrcrrp5f1.jpeg?width=640&crop=smart&auto=webp&s=3c6bc8247bc94b7572dad65fbe49b1afcc4ce5b7';
     let personagemAtual = null;
@@ -408,16 +445,42 @@
       }
 
       personagemAtual = data;
-      // Aponta o link "Editar Wiki" para criar.html?edit=ID
-      document.getElementById('btnEditarPerfil').href = `criar.html?edit=${data.id}`;
-      preencherTela(data);
+      document.getElementById('btnEditarPerfil').href = `editar.html?id=${data.id}`;
+
+      // Se tiver um relacionamento sério, busca os dados do parceiro(a)
+      let parceiro = null;
+      if (data.relacionamento_id) {
+        const { data: partnerData } = await supabaseClient
+          .from('personagens')
+          .select('id, nome, avatar_url')
+          .eq('id', data.relacionamento_id)
+          .single();
+        parceiro = partnerData;
+      }
+
+      preencherTela(data, parceiro);
     }
 
-    function preencherTela(p) {
+    function preencherTela(p, parceiro) {
       document.title = `UmaWiki - ${p.nome}`;
       document.getElementById('charName').innerText = p.nome;
       document.getElementById('charStatus').innerText = p.status || '';
       document.getElementById('charAvatar').src = p.avatar_url || DEFAULT_AVATAR;
+
+      // Exibe o card de Relacionamento Sério estilo Facebook
+      if (parceiro) {
+        const fbBox = document.getElementById('fbRelBox');
+        fbBox.style.display = 'flex';
+        document.getElementById('relPartnerAvatar').src = parceiro.avatar_url || DEFAULT_AVATAR;
+        const link = document.getElementById('relPartnerLink');
+        link.innerText = parceiro.nome;
+        link.href = `perfil.html?id=${parceiro.id}`;
+
+        document.getElementById('infoRelacionamento').innerHTML = `❤️ Em um relacionamento sério com <a href="perfil.html?id=${parceiro.id}" style="font-weight:bold;">${parceiro.nome}</a>`;
+      } else {
+        document.getElementById('fbRelBox').style.display = 'none';
+        document.getElementById('infoRelacionamento').innerText = 'Solteira';
+      }
 
       document.getElementById('midiaAnime').innerText = p.midia_anime || '...';
       document.getElementById('midiaManga').innerText = p.midia_manga || '...';
@@ -432,7 +495,9 @@
       document.getElementById('infoEspecie').innerText = p.especie || 'Cavalo';
       document.getElementById('infoAfiliacao').innerText = p.afiliacao || 'Nenhuma';
       document.getElementById('infoOcupacao').innerText = p.ocupacao || 'Corredora';
+      document.getElementById('infoHobbies').innerText = p.hobbies || '...';
       document.getElementById('infoGostaDe').innerText = p.gosta_de || '...';
+      document.getElementById('infoNaoGostaDe').innerText = p.nao_gosta_de || '...';
       document.getElementById('infoBiografia').innerText = p.biografia || 'Sem biografia cadastrada.';
 
       document.getElementById('barInteligencia').style.width = `${p.stat_inteligencia || 10}%`;
